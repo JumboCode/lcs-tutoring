@@ -1,7 +1,6 @@
-import FirstComponent from '@/components/firstComponent';
-
+import FirstComponent from "@/components/firstComponent";
+//
 function App() {
-
   return (
     <div>
       <FirstComponent></FirstComponent>
@@ -9,4 +8,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
