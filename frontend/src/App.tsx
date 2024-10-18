@@ -1,12 +1,17 @@
 import FirstComponent from '@/components/firstComponent';
+import Button from '../src/components/button';
 
 function App() {
 
   return (
-    <div>
-      <FirstComponent></FirstComponent>
+    <div style={{
+      backgroundColor: 'blue',
+      width: '1755px',
+      height: '1000px'
+    }}>
+      <Button/>
     </div>
   );
-}
+};
 
 export default App
