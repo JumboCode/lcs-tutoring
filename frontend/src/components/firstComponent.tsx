@@ -2,6 +2,9 @@
 
 export default function firstComponent() {
     return (
-        <div className="text-red-400">this is a test component</div>
+        <div style={{ textAlign: "center", fontSize: "40px"}} className="text-red-400">
+            <b>Ticket 1: Anne and Rainier</b>
+        </div>
+        // why is there double bracket?
     );
 }

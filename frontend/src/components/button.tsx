@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import weatherIcon from "weather-logo.png";
+import temperatureIcon from "temperature-logo.jpg";
 
 export default function Button() {
     const [temperature, setTemperature] = useState();
@@ -18,14 +20,25 @@ export default function Button() {
     }
 
     return (
-        <div className="flex flex-col">
-            <button onClick={handleClick}>
-                A button! Yayyyy!
-            </button>
-            <ul>
-                <li>Weather: {weather}</li>
-                <li>Temperature: {temperature} F</li>
+        <div>
+            <div>
+            </div>
+            <ul style={{ paddingTop: "200px"}}
+            className="flex items-center justify-center">
+                <li>
+                    <img src={weatherIcon} alt="Weather Icon" style={{ width: "200px", height: "200px" }} />
+                    Weather: {weather}
+                </li>
+                <li>
+                    <img src={temperatureIcon} alt="Weather Icon" style={{ width: "200px", height: "200px" }} />
+                    Temperature: {temperature} F
+                </li>
             </ul>
+
+            <button style={{ position:"center", backgroundColor: "coral", margin: "50px", padding: "20px"}} 
+                onClick={handleClick}>
+                    A button! Yayyyy!
+            </button>
         </div>
     );
 }
