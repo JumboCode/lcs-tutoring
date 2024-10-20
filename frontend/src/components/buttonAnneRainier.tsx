@@ -1,6 +1,6 @@
 import { useState } from "react";
-import weatherIcon from "weather-logo.png";
-import temperatureIcon from "temperature-logo.jpg";
+import weatherIcon from "@/assets/images/weather-logo.png";
+import temperatureIcon from "@/assets/images/temperature-logo.jpg";
 
 export default function Button() {
   const [temperature, setTemperature] = useState();

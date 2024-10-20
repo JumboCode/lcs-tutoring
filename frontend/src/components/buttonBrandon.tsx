@@ -5,6 +5,7 @@ export default function BrandonButton() {
   const [forecast, setForecast] = useState<
     { name: string; shortForecast: string } | undefined
   >(undefined);
+  const [isClicked, setIsClicked] = useState(false);
 
   // Fetch the weather data
   function handleClick() {
@@ -24,23 +25,25 @@ export default function BrandonButton() {
       .catch((error) => {
         console.error("There was an error fetching the forecast:", error);
       });
+
+    setIsClicked(true);
   }
 
   return (
     <div className="w-screen h-screen flex flex-col items-center justify-center">
       {forecast && (
         <div>
-          <i className="text-center font-mono text-base">
+          <i className="text-center font-interExtraBoldItalic">
             Weather {forecast.name}:
           </i>
-          <p className="text-center font-mono text-xl">
-            {forecast.shortForecast}
-          </p>
+          <p className="text-center text-xl">{forecast.shortForecast}</p>
         </div>
       )}
       <button
         onClick={handleClick}
-        className="bg-blue-900 hover:bg-red-700 text-white font-bold py-2 px-4 rounded border-8 border-emerald-800"
+        className={`bg-blue-600 hover:bg-blue-700 text-white font-interBlack p-5 rounded-md text-2xl ${
+          isClicked ? "" : "animate-spin-move"
+        }`}
       >
         Get Forecast
       </button>
