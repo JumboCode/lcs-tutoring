@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import BrandonButton from "@/components/buttonBrandon";
 import SethRachelButton from "./components/buttonSethRachel";
+import AnneRainierButton from "@/components/buttonAnneRainier";
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
             <div>
               {/* <BrandonButton /> */}
               {/* <SethRachelButton /> */}
-              <ValentinaCharlieButton />
+              {/* <ValentinaCharlieButton /> */}
+              <AnneRainierButton />
             </div>
           }
         ></Route>
