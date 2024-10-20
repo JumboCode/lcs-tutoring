@@ -1,12 +1,11 @@
-import FirstComponent from '@/components/firstComponent';
+import BrandonButton from "@/components/brandon_button";
 
 function App() {
-
   return (
     <div>
-      <FirstComponent></FirstComponent>
+      <BrandonButton />
     </div>
   );
 }
 
-export default App
+export default App;
