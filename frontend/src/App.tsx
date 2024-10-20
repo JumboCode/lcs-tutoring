@@ -1,31 +1,22 @@
-import FirstComponent from '@/components/firstComponent';
-import Button from '../src/components/button';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import BrandonButton from "@/components/brandon_button";
-import FirstComponent from "@/components/firstComponent";
-import SethRachelButton from "./components/seth_rachel_button";
+import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
+import BrandonButton from "@/components/buttonBrandon";
+import SethRachelButton from "./components/buttonSethRachel";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <div>
-              <FirstComponent />
-            </div>
-          }
-        ></Route>
+        <Route path="/" element={<div></div>}></Route>
 
         <Route
           path="/testbuttons"
           element={
             <div>
-              <BrandonButton />
+              {/* <BrandonButton /> */}
               {/* <SethRachelButton /> */}
-              <Button className="bg-blue w-[1755px] h-[1000px]" />
+              <ValentinaCharlieButton />
             </div>
           }
         ></Route>
@@ -38,6 +29,6 @@ function App() {
       </Routes>
     </Router>
   );
-};
+}
 
 export default App;
