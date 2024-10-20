@@ -1,3 +1,5 @@
+import FirstComponent from '@/components/firstComponent';
+import Button from '../src/components/button';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import BrandonButton from "@/components/brandon_button";
@@ -23,6 +25,7 @@ function App() {
             <div>
               <BrandonButton />
               {/* <SethRachelButton /> */}
+              <Button className="bg-blue w-[1755px] h-[1000px]" />
             </div>
           }
         ></Route>
@@ -35,6 +38,6 @@ function App() {
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
