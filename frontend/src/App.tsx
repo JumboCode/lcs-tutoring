@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import Footer from "./components/Footer";
 // import BrandonButton from "@/components/buttonBrandon";
 // import SethRachelButton from "./components/buttonSethRachel";
 // import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
@@ -27,8 +27,12 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/[new name]" // TODO: Change the path name to match that of your component
-          element={<div>{/* TODO: Include your component here: */}</div>}
+          path="/footer" // TODO: Change the path name to match that of your component
+          element={
+            <div>
+              <Footer />
+            </div>
+          }
         ></Route>
       </Routes>
     </Router>
