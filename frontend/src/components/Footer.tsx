@@ -1,28 +1,34 @@
 // Footer.tsx
 import GrayLogo from "../assets/images/gray_logo.svg";
+import { Instagram } from "lucide-react";
+import "./Footer.css"
 const Footer = () => {
   return (
-    <div>
-      <div className="flex w-screen flex-row bg-blue-100">
-        <div className="w-1/2 flex flex-col justify-between justify-items-start m-4">
-          <img src={GrayLogo} alt="Your SVG" className="w-10 h-10" />
-          <p className="text-gray-500 text-xs ">Tufts LCS Tutoring © 2024</p>
+    <div className="h-screen font-inter">
+      <div className="flex px-20 py-8 w-screen flex-row bg-blue-100 h-80">
+        <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4">
+          <img src={GrayLogo} alt="Your SVG" className="w-14 h-14" />
+          <p className="text-[#2F3335] text-sm mt-5">Tufts LCS Tutoring © 2024</p>
         </div>
-        <div className="w-1/2 flex flex-col justify-items-end">
-          <div className="flex flex-col">
-            <p className="text-gray-500 text-xs font-bold">Pages</p>
-            <p className="text-gray-500 text-xs">Home</p>
-            <p className="text-gray-500 text-xs">About</p>
-            <p className="text-gray-500 text-xs">Team</p>
-            <p className="text-gray-500 text-xs">Forms</p>
+        <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4 items-end">
+          <div className="flex flex-col space-y-2">
+            <p className="text-black text-base font-bold font-inter">Pages</p>
+            <p className="text-[#2F3335] text-base">Home</p>
+            <p className="text-[#2F3335] text-base">About</p>
+            <p className="text-[#2F3335] text-base">Team</p>
+            <p className="text-[#2F3335] text-base">Forms</p>
           </div>
-          <p className="text-gray-500 text-xs">Find us on instagram</p>
+        <p className="text-[#2F3335] text-sm inline">Find us on Instagram <Instagram color="black" size={16} className="inline ml-0.5"/></p>
         </div>
+       
       </div>
     </div>
   );
 };
 
 export default Footer;
+
+
+
 
 // rgb(218,233,249)
