@@ -1,0 +1,56 @@
+/* LcsTutoringIntro.css */
+
+.intro-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f9f9f9;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .title {
+    font-size: 3rem;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .logo-container {
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    width: 200px;
+    height: auto;
+  }
+  
+  .description {
+    font-size: 1.25rem;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto 40px;
+  }
+  
+  .become-tutor-button {
+    background-color: #00539b;
+    color: white;
+    padding: 15px 30px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .become-tutor-button:hover {
+    background-color: #003366;
+  }
+  
+  .thank-you-message {
+    font-size: 1.5rem;
+    color: green;
+    margin-top: 20px;
+  }
+  
