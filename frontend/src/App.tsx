@@ -5,8 +5,17 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 // import AnneRainierButton from "@/components/buttonAnneRainier";
 // import ArayHunterButton from "./components/buttonArayHunter";
+import Testimonials from "./components/testimonials" 
 
 function App() {
+
+  const testimonialExample = {
+    name: "Anna",
+    message: "I love 'AHA' moments. Once, I was explaining to someone how to deal with exponents in fractions, and I saw the exact moment it clicked in their brain. Knowing that I helped someone finally understand something that was plaguing them was extremely rewarding.",
+    major: "BIOCHEM & BIOPSYCH",
+    year: "2025",
+  }
+
   return (
     <Router>
       <Routes>
@@ -27,8 +36,13 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/[new name]" // TODO: Change the path name to match that of your component
-          element={<div>{/* TODO: Include your component here: */}</div>}
+          path="/testimonials" // TODO: Change the path name to match that of your component
+          element={<div><Testimonials
+            name={testimonialExample.name}
+            message={testimonialExample.message}
+            major={testimonialExample.major}
+            year={testimonialExample.year}
+            /></div>}
         ></Route>
       </Routes>
     </Router>
