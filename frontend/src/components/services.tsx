@@ -1,4 +1,4 @@
-import "../index.css";
+import "./services_styles.css";
 
 export default function ServicesBoxes() {
   return (

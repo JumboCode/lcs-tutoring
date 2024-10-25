@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Testimonials from "./components/testimonials" 
+import Testimonials from "./components/testimonials";
 import Footer from "./components/Footer";
-import LcsTutoringIntro from "./components/intro";
+import IntroPage from "./components/intro";
 import Header from "./components/header";
 import ServicesBoxes from "./components/services";
 
@@ -13,13 +13,13 @@ import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 
 function App() {
-
-  const testimonialExample = {
-    name: "Anna",
-    message: "I love 'AHA' moments. Once, I was explaining to someone how to deal with exponents in fractions, and I saw the exact moment it clicked in their brain. Knowing that I helped someone finally understand something that was plaguing them was extremely rewarding.",
-    major: "BIOCHEM & BIOPSYCH",
-    year: "2025",
-  }
+  // const testimonialExample = {
+  //   name: "Anna",
+  //   message:
+  //     "I love 'AHA' moments. Once, I was explaining to someone how to deal with exponents in fractions, and I saw the exact moment it clicked in their brain. Knowing that I helped someone finally understand something that was plaguing them was extremely rewarding.",
+  //   major: "BIOCHEM & BIOPSYCH",
+  //   year: "2025",
+  // };
 
   return (
     <Router>
@@ -41,13 +41,12 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/testimonials" // TODO: Change the path name to match that of your component
-          element={<div><Testimonials
-            name={testimonialExample.name}
-            message={testimonialExample.message}
-            major={testimonialExample.major}
-            year={testimonialExample.year}
-            /></div>}
+          path="/homepage" // TODO: Change the path name to match that of your component
+          element={
+            <div>
+              <IntroPage />
+            </div>
+          }
         ></Route>
       </Routes>
     </Router>
