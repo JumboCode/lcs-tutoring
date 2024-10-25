@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LcsTutoringIntro from "./components/intro";
 import Header from "./components/header";
-import ServicesBoxes from "./components/services";
+// import ServicesBoxes from "./components/services";
 import BrandonButton from "@/components/buttonBrandon";
 import SethRachelButton from "./components/buttonSethRachel";
 import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
@@ -30,7 +30,7 @@ function App() {
         {/* New route to display the next component! */}
         <Route
           path="/intro" // TODO: Change the path name to match that of your component
-          element={<div>{<Header />}</div>} //{<div>{/* TODO: Include your component here: */}</div>}
+          element={<div>{<LcsTutoringIntro />}</div>} //{<div>{/* TODO: Include your component here: */}</div>}
         ></Route>
       </Routes>
     </Router>
