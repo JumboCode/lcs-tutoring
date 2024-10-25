@@ -29,7 +29,13 @@ function App() {
         {/* New route to display the next component! */}
         <Route
           path="/services" // TODO: Change the path name to match that of your component
-          element={<div>{/* TODO: Include your component here: */<ServicesBoxes></ServicesBoxes>}</div>}
+          element={
+            <div>
+              {
+                /* TODO: Include your component here: */ <ServicesBoxes></ServicesBoxes>
+              }
+            </div>
+          }
         ></Route>
       </Routes>
     </Router>
