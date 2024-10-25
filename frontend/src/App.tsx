@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from './components/header'; 
 import ServicesBoxes from "./components/services";
 
 // import BrandonButton from "@/components/buttonBrandon";
@@ -28,8 +29,12 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/services" // TODO: Change the path name to match that of your component
-          element={<div>{/* TODO: Include your component here: */<ServicesBoxes></ServicesBoxes>}</div>}
+
+          path="/header"
+          element=
+          {<div>
+                <Header/>
+          </div>}
         ></Route>
       </Routes>
     </Router>
