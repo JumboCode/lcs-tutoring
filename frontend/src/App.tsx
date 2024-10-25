@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ServicesBoxes from "./components/services";
 
 import BrandonButton from "@/components/buttonBrandon";
 import SethRachelButton from "./components/buttonSethRachel";
@@ -27,8 +28,8 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/[new name]" // TODO: Change the path name to match that of your component
-          element={<div>{/* TODO: Include your component here: */}</div>}
+          path="/services" // TODO: Change the path name to match that of your component
+          element={<div>{/* TODO: Include your component here: */<ServicesBoxes></ServicesBoxes>}</div>}
         ></Route>
       </Routes>
     </Router>
