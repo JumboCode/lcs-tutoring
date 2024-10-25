@@ -1,7 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import Footer from "./components/Footer";
 import LcsTutoringIntro from "./components/intro";
 import Header from "./components/header";
 import ServicesBoxes from "./components/services";
+
 import BrandonButton from "@/components/buttonBrandon";
 import SethRachelButton from "./components/buttonSethRachel";
 import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
