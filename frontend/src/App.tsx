@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from './components/header'; 
+import ServicesBoxes from "./components/services";
 
 // import BrandonButton from "@/components/buttonBrandon";
 // import SethRachelButton from "./components/buttonSethRachel";
@@ -28,6 +29,7 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
+
           path="/header"
           element=
           {<div>
