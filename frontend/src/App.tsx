@@ -1,10 +1,13 @@
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import LcsTutoringIntro from "./components/intro";
-// // import BrandonButton from "@/components/buttonBrandon";
-// // import SethRachelButton from "./components/buttonSethRachel";
-// // import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
-// // import AnneRainierButton from "@/components/buttonAnneRainier";
-// // import ArayHunterButton from "./components/buttonArayHunter";
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LcsTutoringIntro from "./components/intro";
+import Header from './components/header'; 
+import ServicesBoxes from "./components/services";
+// import BrandonButton from "@/components/buttonBrandon";
+// import SethRachelButton from "./components/buttonSethRachel";
+// import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
+// import AnneRainierButton from "@/components/buttonAnneRainier";
+// import ArayHunterButton from "./components/buttonArayHunter";
 
 // function App() {
 //   return (
@@ -48,8 +51,11 @@ function App() {
         <Route path="/" element={<Navigate to="/intro" />} />
 
         <Route
-          path="/intro"
-          element={<LcsTutoringIntro />}
+          path="/header"
+          element=
+          {<div>
+                <Header/>
+          </div>}
         ></Route>
       </Routes>
     </Router>
