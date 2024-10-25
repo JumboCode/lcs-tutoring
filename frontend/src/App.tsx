@@ -18,10 +18,10 @@ function App() {
           element={
             <div>
               <BrandonButton />
-              {/* <SethRachelButton /> */}
-              {/* <ValentinaCharlieButton /> */}
-              {/* <AnneRainierButton /> */}
-              {/* <ArayHunterButton /> */}
+              <SethRachelButton />
+              <ValentinaCharlieButton />
+              <AnneRainierButton />
+              <ArayHunterButton />
             </div>
           }
         ></Route>
