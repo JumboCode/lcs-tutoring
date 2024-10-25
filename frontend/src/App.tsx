@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import Testimonials from "./components/testimonials" 
 import Footer from "./components/Footer";
 import LcsTutoringIntro from "./components/intro";
 import Header from "./components/header";
@@ -12,6 +13,14 @@ import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 
 function App() {
+
+  const testimonialExample = {
+    name: "Anna",
+    message: "I love 'AHA' moments. Once, I was explaining to someone how to deal with exponents in fractions, and I saw the exact moment it clicked in their brain. Knowing that I helped someone finally understand something that was plaguing them was extremely rewarding.",
+    major: "BIOCHEM & BIOPSYCH",
+    year: "2025",
+  }
+
   return (
     <Router>
       <Routes>
@@ -32,8 +41,13 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/intro" // TODO: Change the path name to match that of your component
-          element={<div>{<Footer />}</div>} //{<div>{/* TODO: Include your component here: */}</div>}
+          path="/testimonials" // TODO: Change the path name to match that of your component
+          element={<div><Testimonials
+            name={testimonialExample.name}
+            message={testimonialExample.message}
+            major={testimonialExample.major}
+            year={testimonialExample.year}
+            /></div>}
         ></Route>
       </Routes>
     </Router>
