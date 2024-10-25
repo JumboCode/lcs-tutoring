@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-// import BrandonButton from "@/components/buttonBrandon";
-// import SethRachelButton from "./components/buttonSethRachel";
-// import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
-// import AnneRainierButton from "@/components/buttonAnneRainier";
-// import ArayHunterButton from "./components/buttonArayHunter";
+import BrandonButton from "@/components/buttonBrandon";
+import SethRachelButton from "./components/buttonSethRachel";
+import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
+import AnneRainierButton from "@/components/buttonAnneRainier";
+import ArayHunterButton from "./components/buttonArayHunter";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
           path="/testbuttons"
           element={
             <div>
-              {/* <BrandonButton /> */}
+              <BrandonButton />
               {/* <SethRachelButton /> */}
               {/* <ValentinaCharlieButton /> */}
               {/* <AnneRainierButton /> */}
