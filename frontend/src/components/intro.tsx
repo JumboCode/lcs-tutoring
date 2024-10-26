@@ -1,13 +1,12 @@
-import elephantLogo from "@/assets/images/gray_logo.svg"; // Assuming you have the logo
-import "./LcsTutoringIntro.css"; // this implements the css
+import Intropage_Picture from "@/assets/images/Intropage_Picture.svg";
 
-export default function LcsTutoringIntro() {
+export default function Intro() {
   return (
     <div className="w-screen min-h-screen flex items-center justify-center bg-[#f9f9f9]">
       <div className="flex flex-row items-center justify-center">
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">
-            <span className="text-lg mr-2 text-gray-700">
+            <span className="font-interMedium text-lg mr-2 text-gray-700">
               TUFTS LCS TUTORING
             </span>
             <div
@@ -15,14 +14,18 @@ export default function LcsTutoringIntro() {
               style={{ width: "40px" }}
             ></div>
           </div>
-          <p className="text-left text-[3.5rem] w-[600px] mb-6">
+          <p className="font-interSemiBold text-left text-[3.5rem] w-[600px] mb-6">
             Leonard Carmichael Society Tutoring
           </p>
-          <button className="bg-[#BFDBF7] w-[170px] rounded-full font-semibold py-2 px-5">
+          <button className="font-interSemiBold bg-[#BFDBF7] hover:bg-blue-400 w-[170px] rounded-full font-semibold py-2 px-5">
             Become a Tutor!
           </button>
         </div>
-        <img src={elephantLogo} alt="image" className="w-[300px] h-[300px]" />
+        <img
+          src={Intropage_Picture}
+          alt="Intropage Picture"
+          className="w-[500px] h-[500px]"
+        />
       </div>
     </div>
   );

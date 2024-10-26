@@ -17,7 +17,9 @@ export default function ServicesBoxes() {
           <h2 className="font-interSemiBold header-style">
             Weekly Tutoring Sessions
           </h2>
-          <p className="font-interRegular text-style">
+          {/* Working: Black, BlackItalic, BoldItalic, MediumItalic, SemiBold, SemiBoldItalic */}
+          {/* Not working: Bold, ExtraBold, ExtraBoldItalic, ExtraLight, ExtraLightItalic, Italic, Light, LightItalic, Medium, Regular, Thin, ThinItalic */}
+          <p className="font-interItalic text-style">
             Tutoring takes place once a week for 1 hour either in person (on
             campus) or virtually.
           </p>

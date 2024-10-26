@@ -44,7 +44,7 @@ function App() {
           path="/homepage" // TODO: Change the path name to match that of your component
           element={
             <div>
-              <IntroPage />
+              <ServicesBoxes />
             </div>
           }
         ></Route>

@@ -1,73 +1,12 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
-
-.box-style {
-    background-color: #FBFAFC;
-    width: 526px;
-    height : 240px;
-}
-
-.header-style {
-    font-size: 32px; 
-    color:#1F3A68;
-    padding-left: 36px; 
-    padding-right: 36px;
-    padding-top: 20px;
-}
-
-.text-style {
-    font-size: 22px;
-    color: #555454;
-    padding-left: 36px;
-    padding-right: 36px;
-    padding-top: 20px;
-}
-
-.hr-lines:before{
-    content:" ";
-    display: block;
-    height: 1.99px;
-    width: 62.47px;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    background: #E4D1F0;
-  }
-
-  .hr-lines{
-    position: relative;
-  }
-
-  .hr-lines{
-    position: relative;
-    /*  new lines  */
-    max-width: 400px;
-    margin: 48px auto;
-    text-align: center;
-  }
-
-  .hr-lines:after{
-    content:" ";
-    height: 1.99px;
-    width: 62.47px;
-    background: #E4D1F0;
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: 0;
-  }
-  
+@tailwind utilities;  
 
 @font-face {
     font-family: "interBlack";
     src: local("Inter-Black"),
     url("./assets/fonts/Inter-Black.ttf") format("truetype");
 };
-
-.font-interBlack {
-    font-family: 'interBlack';
-  }
 
 @font-face {
     font-family: "interBlackItalic";
@@ -80,10 +19,6 @@
     src: local("Inter-Bold"),
     url("./assets/fonts/Inter-Bold.ttf") format("truetype");
 };
-
-.font-interBold {
-    font-family: 'interBold';
-  }
 
 @font-face {
     font-family: "interBoldItalic";
@@ -139,10 +74,6 @@
     url("./assets/fonts/Inter-Medium.ttf") format("truetype");
 };
 
-.font-interMedium {
-    font-family: 'interMedium';
-  }
-
 @font-face {
     font-family: "interMediumItalic";
     src: local("Inter-MediumItalic"),
@@ -155,19 +86,11 @@
     url("./assets/fonts/Inter-Regular.ttf") format("truetype");
 };
 
-.font-interRegular {
-    font-family: "interRegular";
-}
-
 @font-face {
     font-family: "interSemiBold";
     src: local("Inter-SemiBold"),
     url("./assets/fonts/Inter-SemiBold.ttf") format("truetype");
 };
-
-.font-interSemiBold {
-    font-family: 'interSemiBold', sans-serif;
-  }
 
 @font-face {
     font-family: "interSemiBoldItalic";
