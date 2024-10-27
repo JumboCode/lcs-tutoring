@@ -3,11 +3,17 @@
 @tailwind utilities;  
 
 @font-face {
-    font-family: "interBlack";
-    src: local("Inter-Black"),
-    url("./assets/fonts/Inter-Black.ttf") format("truetype");
+    font-family: "interjasMedium";
+    src: local("Inter-jasMedium"),
+    url("./assets/fonts/Inter-jasMedium.ttf") format("ttf");
 };
 
+@font-face {
+    font-family: "interBlack";
+    src: local("Inter-Black"),
+    url("./assets/fonts/Inter-Black.ttf") format("ttf");
+};
+/* 
 @font-face {
     font-family: "interBlackItalic";
     src: local("Inter-BlackItalic"),
@@ -67,13 +73,10 @@
     src: local("Inter-LightItalic"),
     url("./assets/fonts/Inter-LightItalic.ttf") format("truetype");
 };
+*/
 
-@font-face {
-    font-family: "interMedium";
-    src: local("Inter-Medium"),
-    url("./assets/fonts/Inter-Medium.ttf") format("truetype");
-};
 
+/* 
 @font-face {
     font-family: "interMediumItalic";
     src: local("Inter-MediumItalic"),
@@ -108,5 +111,4 @@
     font-family: "interThinItalic";
     src: local("Inter-ThinItalic"),
     url("./assets/fonts/Inter-ThinItalic.ttf") format("truetype");
-};
-
+}; */

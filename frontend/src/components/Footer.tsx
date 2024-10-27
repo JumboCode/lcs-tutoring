@@ -14,12 +14,18 @@ const Footer = () => {
         </div>
         <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4 items-end">
           <div className="flex flex-col space-y-2">
-            <p className="text-black text-base font-bold font-inter">Pages</p>
-            <p className="text-[#2F3335] text-base">Home</p>
-            <p className="text-[#2F3335] text-base">Team</p>
+            <p className="cursor-pointer text-black text-base font-bold font-inter border-b border-blue-100 hover:border-b hover:border-black">
+              Pages
+            </p>
+            <p className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+              Home
+            </p>
+            <p className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+              Team
+            </p>
           </div>
-          <p className="text-[#2F3335] text-sm inline">
-            Find us on Instagram{" "}
+          <p className="cursor-pointer text-[#2F3335] text-sm inline border-b border-blue-100 hover:border-b hover:border-black">
+            Find us on Instagram
             <Instagram color="black" size={16} className="inline ml-0.5" />
           </p>
         </div>

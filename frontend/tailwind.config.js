@@ -19,7 +19,7 @@ export default {
         'spin-move': 'spinMove 2s infinite linear',
       },
       fontFamily: {
-        interBlack:['interBlack'],
+        interBlack:['interBlack', 'sans-serif'],
         interBlackItalic:['interBlackItalic'],
         interBold:['interBold'],
         interBoldItalic:['interBoldItalic'],
@@ -30,7 +30,7 @@ export default {
         interItalic:['interItalic'],
         interLight:['interLight'],
         interLightItalic:['interLightItalic'],
-        interMedium:['interMedium'],
+        interjasMedium:['interjasMedium'],
         interMediumItalic:['interMediumItalic'],
         interRegular:['interRegular'],
         interSemiBold:['interSemiBold'],
