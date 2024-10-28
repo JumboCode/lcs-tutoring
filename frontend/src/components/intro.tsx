@@ -2,7 +2,7 @@ import Intropage_Picture from "@/assets/images/Intropage_Picture.svg";
 
 export default function Intro() {
   return (
-    <div className="w-screen min-h-screen flex items-center justify-center bg-[#f9f9f9]">
+    <div className="w-screen min-h-screen flex items-center justify-center bg-[#FFFFFF]">
       <div className="flex flex-row items-center justify-center">
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">

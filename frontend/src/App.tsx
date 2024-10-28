@@ -12,6 +12,10 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import Header from "./components/header";
 // import ServicesBoxes from "./components/services";
 
+import HomePage from "./components/homePage";
+
+
+
 function App() {
   return (
     <Router>
@@ -33,8 +37,8 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/" // TODO: Change the path name to match that of your component
-          element={<div></div>}
+          path="/homepage" // TODO: Change the path name to match that of your component
+          element={<div><HomePage/></div>}
         ></Route>
       </Routes>
     </Router>
