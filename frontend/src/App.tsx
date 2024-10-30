@@ -12,6 +12,7 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import Header from "./components/header";
 // import ServicesBoxes from "./components/services";
 
+import TuteeInfoBox from "./components/TuteeInfoBox";
 function App() {
   return (
     <Router>
@@ -33,8 +34,15 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/" // TODO: Change the path name to match that of your component
-          element={<div></div>}
+          path="/info_box" // TODO: Change the path name to match that of your component
+          element={<div>
+            <TuteeInfoBox
+            date="09/19/2024"
+            name= "Moya Techakalayatum"
+            email= "hello@gmail.com"
+            subject= "Math, English"
+            grade= "K-8"/>
+          </div>}
         ></Route>
       </Routes>
     </Router>
