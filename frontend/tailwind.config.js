@@ -30,7 +30,7 @@ export default {
         interItalic:['interItalic'],
         interLight:['interLight'],
         interLightItalic:['interLightItalic'],
-        interjasMedium:['interjasMedium'],
+        interMedium:['interMedium'],
         interMediumItalic:['interMediumItalic'],
         interRegular:['interRegular'],
         interSemiBold:['interSemiBold'],

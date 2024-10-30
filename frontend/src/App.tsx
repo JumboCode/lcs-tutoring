@@ -6,11 +6,11 @@ import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 
-// import Testimonials from "./components/testimonials";
-// import Footer from "./components/Footer";
-// import IntroPage from "./components/intro";
-// import Header from "./components/header";
-// import ServicesBoxes from "./components/services";
+import Testimonials from "./components/testimonials";
+import Footer from "./components/Footer";
+import IntroPage from "./components/intro";
+import Header from "./components/header";
+import ServicesBoxes from "./components/services";
 
 function App() {
   return (
@@ -33,8 +33,14 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/" // TODO: Change the path name to match that of your component
-          element={<div></div>}
+          path="/homepage" // TODO: Change the path name to match that of your component
+          element={
+            <div className="flex flex-col">
+              <Header className="sticky" />
+              <IntroPage />
+              <Footer />
+            </div>
+          }
         ></Route>
       </Routes>
     </Router>
