@@ -1,8 +1,9 @@
 "use client";
+import Pin from "../assets/images/homepage_pin.svg";
 
 const AboutUs = () => {
     return (
-        <div className="mx-auto p-24 bg-[#FBFAFC]">
+        <div className="p-24 bg-[#FBFAFC]">
             <div className="flex items-center mb-4">
             <span className="font-interMedium text-2xl mr-2 text-[#253965]">
               ABOUT US
@@ -11,6 +12,7 @@ const AboutUs = () => {
               className="border-b border-[#E0D1ED]"
               style={{ width: "40px" }}
             ></div>
+            <img src={Pin} alt="pin" className="w-14 h-14 object-right" />
             </div>
 
 

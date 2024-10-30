@@ -4,7 +4,7 @@ import { Instagram } from "lucide-react";
 import "./Footer.css";
 const Footer = () => {
   return (
-    <div className="h-screen font-inter">
+    <div className="font-inter">
       <div className="flex px-20 py-8 w-screen flex-row bg-blue-100 h-80">
         <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4">
           <img src={GrayLogo} alt="Your SVG" className="w-14 h-14" />
