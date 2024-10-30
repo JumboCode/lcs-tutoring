@@ -6,7 +6,7 @@ import Intro from "./intro.tsx";
 import ServicesBoxes from "./services.tsx";
 import AboutUs from "./aboutUs.tsx";
 import GetInvolved from "./getInvolved.tsx";
-//import PastTutors from "./pastTutors.tsx";
+import PastTutors from "./pastTutors.tsx";
 
 
 const HomePage = () => {
@@ -17,6 +17,7 @@ const HomePage = () => {
             <AboutUs/>
             <ServicesBoxes/>
             <GetInvolved/>
+            <PastTutors/>
             <Footer/>
         </div>
     );
