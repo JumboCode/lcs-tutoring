@@ -12,7 +12,7 @@ import PastTutors from "./pastTutors.tsx";
 const HomePage = () => {
     return (
         <div>
-            <div className="sticky top-0"><Header/></div>
+            <div className="sticky top-0 relative z-50"><Header/></div>
             <Intro/>
             <AboutUs/>
             <ServicesBoxes/>

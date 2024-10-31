@@ -18,7 +18,7 @@ const PastTutors = () => {
             <div className="flex flex-col">
                 <div className="flex items-center justify-center">
                     <div className=" border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>
-                    <h1 className="font-interMedium text-2xl mx-4 text-[#253965] text-center">
+                    <h1 className="font-interMedium mx-4 text-center" style={{ fontSize: "32px", color: "#1F3A68" }}>
                     PAST TUTORS
                     </h1>
                     <div className=" border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>
