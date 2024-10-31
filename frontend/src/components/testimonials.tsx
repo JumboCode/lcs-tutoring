@@ -5,7 +5,7 @@ interface boxProps {
   year: string;
 }
 
-export default function box({ name, message, major, year }: boxProps) {
+export default function Testimonial({ name, message, major, year }: boxProps) {
   return (
     <div className="w-[350px] h-[450px] font-inter bg-[#F5F5F5] flex flex-col justify-between text-left rounded-lg p-6">
       <p className="text-[#555454]">"{message}"</p>
