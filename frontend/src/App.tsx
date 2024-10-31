@@ -11,6 +11,7 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import IntroPage from "./components/intro";
 // import Header from "./components/header";
 // import ServicesBoxes from "./components/services";
+import TutorForm1 from "./components/tutorForm1";
 
 import TuteeInfoBox from "./components/TuteeInfoBox";
 function App() {
