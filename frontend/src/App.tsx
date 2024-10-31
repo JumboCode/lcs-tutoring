@@ -13,6 +13,7 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import ServicesBoxes from "./components/services";
 // import TuteeInfoBox from "./components/tuteeInfoBox";
 // import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
+import TutorForm1 from "./components/tutorForm1";
 
 function App() {
   // const tutee_data = {
@@ -51,7 +52,7 @@ function App() {
         {/* New route to display the next component! */}
         <Route
           path="/info_box" // TODO: Change the path name to match that of your component
-          element={<div>{/* <TuteeInfoBox box_props={tutee_data} /> */}</div>}
+          element={<TutorForm1 />}
         ></Route>
       </Routes>
     </Router>
