@@ -9,8 +9,10 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import Testimonials from "./components/testimonials";
 // import Footer from "./components/Footer";
 // import IntroPage from "./components/intro";
-// import Header from "./components/header";
+import Header from "./components/header";
 // import ServicesBoxes from "./components/services";
+import TeamPage from "./components/teamPage";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -33,8 +35,13 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/" // TODO: Change the path name to match that of your component
-          element={<div></div>}
+          path="/teampage"
+          element={
+          <div>
+            <Header />
+            <TeamPage />
+            {/* <Footer /> */}
+          </div>}
         ></Route>
       </Routes>
     </Router>
