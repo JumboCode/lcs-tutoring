@@ -20,20 +20,21 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { IoMdCall } from "react-icons/io";
 
-export default function TuteeInfoBox({
-  date,
-  first_name,
-  last_name,
-  email,
-  subject,
-  grade,
-  gender,
-  tutoring_mode,
-  special_needs,
-  parent_first_name,
-  parent_last_name,
-  phone,
-}: boxProps) {
+export default function TuteeInfoBox({ box_props }: { box_props: boxProps }) {
+  const {
+    date,
+    first_name,
+    last_name,
+    email,
+    subject,
+    grade,
+    gender,
+    tutoring_mode,
+    special_needs,
+    parent_first_name,
+    parent_last_name,
+    phone,
+  } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
 
