@@ -1,5 +1,6 @@
 "use client";
 
+import "./services_styles.css";
 import Studying from "../assets/images/homepage_studying.svg";
 import TutorTutee from "../assets/images/homepage_tutor_tutee_2.svg";
 
@@ -7,22 +8,23 @@ const GetInvolved = () => {
     return (
       <div className="bg-[#FBFAFC] p-24">
       <div className="max-w-6xl mx-auto space-y-15">
-        <div className="flex flex-col">
-          <h1 className="font-interMedium text-2xl mr-2 text-[#253965] text-center">
-                GET INVOLVED
-          </h1>
-
-        </div>
-      <div className="flex flex-row flex-wrap justify-center gap-12">
+      <div className="flex items-center justify-center">
+            <div className="border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>
+            <h1 className="font-interMedium text-2xl mx-4 text-[#253965] text-center">
+              GET INVOLVED
+            </h1>
+            <div className=" border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>
+          </div>
+      <div className="flex flex-row flex-wrap justify-center">
         <div className="flex flex-row justify-center">
           
-          <div className="basis-1/2 space-y-10">
-              <h1 className="text-3xl">For Tufts Students</h1>
-              <div className="text-left text-lg space-y-6">
+          <div className="basis-1/2 space-y-12 mb-24">
+              <h1 className="text-3xl font-semibold">For Tufts Students</h1>
+              <div className="text-left text-xl space-y-6 text-[#545353]">
                 <p>This is a great opportunity for students to give back to their local community and is a rewarding experience</p>
                 <p>You can sign up to be a tutor anytime through this form</p>
-
-                <button className="rounded-full bg-[#1E3B68] p-4 text-white" type="button">Become a Tutor!</button>
+                <div className="mb-6"></div>
+                <button className="rounded-full bg-[#1E3B68] p-6 text-white text-lg" type="button">Become a Tutor!</button>
               </div>
           </div>
           
@@ -37,22 +39,22 @@ const GetInvolved = () => {
           <div>
             <img src={TutorTutee} alt="Your SVG"/>
           </div>
-          <div className="basis-1/2 space-y-6">
-            <div className="space-y-10">
-              <h1 className="text-3xl">For Parents</h1>
-              <p className="text-lg">
+          <div className="basis-1/2 space-y-12">
+            <div className="space-y-12">
+              <h1 className="text-3xl font-semibold">For Parents</h1>
+              <p className="text-xl text-[#545353]">
                 Tutoring sessions take place for one hour a week in the Campus Center
                 or Library at Tufts University.
               </p>
             </div>
             
-            <p className="text-lg">
+            <p className="text-xl text-[#545353]">
               You can sign up for your child to find a tutor anytime through this
               form. Once we have this information, we will set your child up with a
               volunteer tutor from Tufts who macthes the specifications as soon as possible.
             </p>
 
-            <button className="rounded-full bg-[#1E3B68] p-4 text-white" type="button">Sign Up for a Tutor!</button>
+            <button className="rounded-full bg-[#1E3B68] p-6 text-white text-lg" type="button">Sign Up for a Tutor!</button>
 
           </div>
         </div>

@@ -1,17 +1,31 @@
 "use client";
 import Testimonial from "./testimonials.tsx";
+import Pen from "../assets/images/homepage_pen.svg";
+import Notebook from "../assets/images/homepage_notebook.svg";
 
 const PastTutors = () => {
     return(
-        <div className="m-24">
+        <div className="m-24 relative">
+
+            <div className="absolute top-0 right-16 z-0">
+            <img src={Pen} alt="Pen" style={{ width: '250px', height: 'auto' }}/>
+            </div>
+            <div className="absolute bottom-0 left-0 z-0">
+            <img src={Notebook} alt="Blue notebook" style={{ width: '250px', height: 'auto' }}/>
+            </div>
+
+
             <div className="flex flex-col">
-                {/*Edit the header below*/}
-                <h1 className="font-interMedium text-2xl mr-2 text-[#253965] text-center">
+                <div className="flex items-center justify-center">
+                    <div className=" border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>
+                    <h1 className="font-interMedium text-2xl mx-4 text-[#253965] text-center">
                     PAST TUTORS
-                </h1>
+                    </h1>
+                    <div className=" border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>
+                </div>
 
             </div>
-            <div className="flex flex-row justify-center m-10 space-x-10">
+            <div className="flex flex-row justify-center m-10 space-x-10 relative z-5">
                 <Testimonial 
                     name="Anna" 
                     message="I love “AHA” moments. Once, I was explaining to someone how to deal with exponents in fractions, and I saw the exact moment it clicked in their brain. Knowing that I helped someone finally understand something that was plaguing them was extremely rewarding." 

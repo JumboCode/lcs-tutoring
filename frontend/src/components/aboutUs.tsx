@@ -16,7 +16,7 @@ const AboutUs = () => {
             </div>
 
 
-            <p className="text-[#7D7D7D] text-3xl">
+            <p className="text-[#7D7D7D] text-5xl">
                 We are <span className="text-[#23355E]">LCS Tutoring</span>,
                 a <span className="text-[#23355E]">community service</span> organization 
                 at Tufts devoted to <span className="text-[#23355E]">
