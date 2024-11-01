@@ -44,8 +44,8 @@ export default function TuteeInfoBox({ box_props }: { box_props: boxProps }) {
   };
 
   return (
-    <div className="w-[900px] h-auto font-interBlack border bg-[#FFFFFF] flex flex-col text-left">
-      <div className="font-interBlack flex flex-row text-[black] px-8 justify-start h-[98px] items-center">
+    <div className="w-[900px] h-auto border bg-[#FFFFFF] flex flex-col text-left">
+      <div className="flex flex-row text-[black] px-8 justify-start h-[98px] items-center">
         <span className="pl-3 w-1/4">{date}</span>
         <div className="w-1/4">
           <p>
