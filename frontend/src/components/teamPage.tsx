@@ -109,8 +109,8 @@ export default function TeamPage() {
                                 <h3 className={"font-interBlack text-[#7D7D7D] text-5xl my-5"}>Email us</h3>
                         </div>
                         <div className={"flex flex-col items-left my-8"}>
-                                <h3 className={"font-interBlack text-[#1F3A68] text-5xl my-5"}>@LCSTutors</h3>
-                                <h3 className={"font-interBlack text-[#1F3A68] text-5xl my-5"}>lcs.tutors@gmail.com</h3>
+                                <a href="https://www.instagram.com/lcstutors/" className={"font-interBlack text-[#1F3A68] text-5xl my-5"}>@LCSTutors</a>
+                                <a href="mailto:lcs.tutors@gmail.com" className={"font-interBlack text-[#1F3A68] text-5xl my-5"}>lcs.tutors@gmail.com</a>
                         </div>
                     </div>
                 </div>
