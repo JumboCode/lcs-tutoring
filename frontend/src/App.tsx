@@ -15,6 +15,10 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
 import TutorForm1 from "./components/tutorForm1";
 
+import HomePage from "./components/homePage";
+
+
+
 function App() {
   // const tutee_data = {
   //   date: "10/31/2024",
@@ -51,8 +55,8 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/info_box" // TODO: Change the path name to match that of your component
-          element={<TutorForm1 />}
+          path="/homepage" // TODO: Change the path name to match that of your component
+          element={<div><HomePage/></div>}
         ></Route>
       </Routes>
     </Router>
