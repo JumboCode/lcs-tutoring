@@ -11,12 +11,30 @@ import ArayHunterButton from "./components/buttonArayHunter";
 // import IntroPage from "./components/intro";
 // import Header from "./components/header";
 // import ServicesBoxes from "./components/services";
+// import TuteeInfoBox from "./components/tuteeInfoBox";
+// import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
+import TutorForm1 from "./components/tutorForm1";
 
 import HomePage from "./components/homePage";
 
 
 
 function App() {
+  // const tutee_data = {
+  //   date: "10/31/2024",
+  //   first_name: "Moya",
+  //   last_name: "Techakalayatum",
+  //   email: "hello@gmail.com",
+  //   subject: "Math, English",
+  //   grade: "8",
+  //   special_needs: "Yes",
+  //   gender: "Female",
+  //   tutoring_mode: "Hybrid",
+  //   parent_first_name: "Alice",
+  //   parent_last_name: "Bob",
+  //   phone: "(123) 456-7890",
+  // };
+
   return (
     <Router>
       <Routes>
