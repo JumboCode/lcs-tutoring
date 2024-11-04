@@ -1,16 +1,26 @@
 import "./services_styles.css";
+import Notepad from "../assets/images/homepage_notepad.svg";
+import Ruler from "../assets/images/homepage_ruler.svg";
 
 export default function ServicesBoxes() {
   return (
-    <div className="max-w-6xl mx-auto py-8">
+    <div className="max-w-6xl mx-auto py-8 relative mb-16">
+
+        <div className="absolute bottom-[-50px] right-[-75px] z-0">
+            <img src={Ruler} alt="Triangular Ruler"/>
+        </div>
+        <div className="absolute top-15 left-[-75px] z-0">
+            <img src={Notepad} alt="Notepad"/>
+        </div>
+
       <h1
         style={{ fontSize: "32px", color: "#1F3A68" }}
-        className="font-interjasMedium text-center hr-lines"
+        className="font-inter text-center hr-lines"
       >
         OUR SERVICES
       </h1>
       <div className="flex flex-row flex-wrap justify-center gap-12">
-        <div id="box 1" className="flex flex-col rounded-lg box-style">
+        <div id="box 1" className="flex flex-col rounded-lg box-style z-10">
           <h2 className="header-style">Weekly Tutoring Sessions</h2>
           {/* Working: Black, BlackItalic, BoldItalic, MediumItalic, SemiBold, SemiBoldItalic */}
           {/* Not working: Bold, ExtraBold, ExtraBoldItalic, ExtraLight, ExtraLightItalic, Italic, Light, LightItalic, Medium, Regular, Thin, ThinItalic */}
