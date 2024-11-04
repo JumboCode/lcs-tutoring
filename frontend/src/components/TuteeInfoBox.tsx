@@ -1,26 +1,12 @@
 "use client";
 import { useState } from "react";
 
-interface boxProps {
-  date: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  subject: string;
-  grade: string;
-  gender: string;
-  tutoring_mode: string;
-  special_needs: string;
-  parent_first_name: string;
-  parent_last_name: string;
-  phone: string;
-}
-
+import { IBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { IoMdCall } from "react-icons/io";
 
-export default function TuteeInfoBox({ box_props }: { box_props: boxProps }) {
+export default function TuteeInfoBox({ box_props }: { box_props: IBoxProps }) {
   const {
     date,
     first_name,
