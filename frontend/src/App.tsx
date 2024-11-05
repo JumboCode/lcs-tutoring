@@ -6,6 +6,7 @@ import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 import TuteeTable from "./components/TuteeTable";
+import TutorForm2 from "./components/TutorForm2";
 // import Testimonials from "./components/testimonials";
 // import Footer from "./components/Footer";
 // import IntroPage from "./components/intro";
@@ -31,14 +32,6 @@ function App() {
   //   parent_last_name: "Bob",
   //   phone: "(123) 456-7890",
   // };
-
-  const tutee_data = [
-    {
-      id: 1,
-      name: "John Doe",
-    },
-  ];
-
   return (
     <Router>
       <Routes>
@@ -60,10 +53,10 @@ function App() {
         {/* New route to display the next component! */}
 
         <Route
-          path="/tuteetable"
+          path="/tutorform2"
           element={
             <div>
-              <TuteeTable />
+              <TutorForm2 />
             </div>
           }
         ></Route>
