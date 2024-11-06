@@ -65,7 +65,8 @@ function App() {
         <Route
           path="/tutorform2"
           element={
-            <div>
+            <div className="flex flex-col">
+              <TutorForm1 />
               <TutorForm2 />
             </div>
           }
