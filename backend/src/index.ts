@@ -15,4 +15,17 @@ const db = drizzle(process.env.DATABASE_URL!);
  * a correct output
  */
 async function filterTutors(gradeLevels?: number[]) {
-}
+    const query = db.select().from(tutorTable);
+  
+    if (gradeLevels && gradeLevels.length > 0) {
+        const conditions = gradeLevels.map(level => arrayContains(tutorTable.grade_level_pref, [level]));
+        query.where(or(...conditions));
+    }
+  
+    const tutors = await query;
+    return tutors;
+  }
+  
+  filterTutors([9, 10, 11]).then(tutors => {
+    console.log(tutors);
+  });
