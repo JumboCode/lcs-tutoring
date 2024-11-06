@@ -6,6 +6,7 @@ import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 
+import TuteeTable from "./components/TuteeTable";
 import Testimonials from "./components/testimonials";
 import Footer from "./components/Footer";
 import IntroPage from "./components/intro";
@@ -33,6 +34,13 @@ function App() {
     phone: "(123) 456-7890",
   };
 
+  const tutee_data = [
+    {
+      id: 1,
+      name: "John Doe",
+    },
+  ];
+
   return (
     <Router>
       <Routes>
@@ -52,6 +60,15 @@ function App() {
         ></Route>
 
         {/* New route to display the next component! */}
+
+        <Route
+          path="/tuteetable"
+          element={
+            <div>
+              <TuteeTable />
+            </div>
+          }
+        ></Route>
         <Route
           path="/homepage" // TODO: Change the path name to match that of your component
           element={
