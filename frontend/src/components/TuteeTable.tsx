@@ -54,7 +54,27 @@ export default function TuteeTable() {
   return (
     <div>
       <Header />
-      <TuteeInfoBox box_props={tutees[0]} />
+      Tutee Database
+      <table className="w-full text-left table-auto min-w-max text-slate-800 border-collapse border border-gray-200">
+        <tr className="">
+          <th className="p-4 font-interBlack">Unmatched</th>
+          <th className="p-4 font-interBlack">Matched</th>
+          <th className="p-4 font-interBlack">Inactive</th>
+        </tr>
+        {/* <tr className="border-b border-gray-200">
+          <th className="p-4 font-interBlack">Date</th>
+          <th className="p-4 font-interBlack">Name</th>
+          <th className="p-4 font-interBlack">Subjeect</th>
+          <th className="p-4 font-interBlack">Grade</th>
+        </tr> */}
+        <tbody>
+          {tutees.map((tutee) => (
+            <TuteeInfoBox box_props={tutees[0]} />
+          ))}
+          {/* <TuteeInfoBox box_props={tutees[0]} />
+          <TuteeInfoBox box_props={tutees[1]} /> */}
+        </tbody>
+      </table>
       <Footer></Footer>
     </div>
   );

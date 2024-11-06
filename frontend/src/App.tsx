@@ -7,6 +7,8 @@ import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 
 import TuteeTable from "./components/TuteeTable";
+import TutorForm1 from "./components/tutorForm1";
+import TutorForm2 from "./components/TutorForm2";
 import Testimonials from "./components/testimonials";
 import Footer from "./components/Footer";
 import IntroPage from "./components/intro";
@@ -14,7 +16,6 @@ import Header from "./components/header";
 import ServicesBoxes from "./components/services";
 import TuteeInfoBox from "./components/tuteeInfoBox";
 import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
-import TutorForm1 from "./components/tutorForm1";
 
 import HomePage from "./components/homePage";
 
@@ -62,10 +63,10 @@ function App() {
         {/* New route to display the next component! */}
 
         <Route
-          path="/tuteetable"
+          path="/tutorform2"
           element={
             <div>
-              <TuteeTable />
+              <TutorForm2 />
             </div>
           }
         ></Route>
