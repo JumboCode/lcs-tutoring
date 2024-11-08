@@ -16,7 +16,7 @@ const db = drizzle(process.env.DATABASE_URL!);
  * You can console.log all the tutors that the query returns
  * to verify a correct output
  *********************************************************/
-async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
+async function filterTutors(gradeLevels?: number[], subject_pref?: string[], tutoringMode?: boolean, disabilityPref?: string) {
     const query = db.select().from(tutorTable);
 
     const conditions: any[] = [];
@@ -26,12 +26,14 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
         conditions.push(or(...condition_subject));
     }
 
+    //refactor this >:C
     if (gradeLevels && gradeLevels.length > 0) {
         const condition_grade = gradeLevels.map(grade => arrayContains(tutorTable.grade_level_pref, [grade]));
         conditions.push(or(...condition_grade));
     }
 
     /* TODO: implement the rest of the filters (tutoring mode and disability preference) */
+    
 
     if (conditions.length > 0) {
       query.where(and(...conditions));
