@@ -1,4 +1,8 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+// import Button from 'react-bootstrap/Button';
+import { Button } from 'react-bootstrap';
 
 import BrandonButton from "@/components/buttonBrandon";
 import SethRachelButton from "./components/buttonSethRachel";
@@ -14,6 +18,9 @@ import ServicesBoxes from "./components/services";
 import TuteeInfoBox from "./components/tuteeInfoBox";
 import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
 import TutorForm1 from "./components/tutorForm1";
+
+import FilterModal from "./components/filters";
+import filtersIcon from './assets/images/filter/filter.svg';
 
 import HomePage from "./components/homePage";
 
@@ -32,6 +39,8 @@ function App() {
     parent_last_name: "Bob",
     phone: "(123) 456-7890",
   };
+
+  const [modalShow, setModalShow] = useState(false);
 
   return (
     <Router>
@@ -53,10 +62,17 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/homepage" // TODO: Change the path name to match that of your component
+          path="/filters"
           element={
             <div>
-              <TutorForm1 />
+              <button className={"flex flex-row items-center px-4 py-2 bg-[#FFFFFF] border-[#E7E7E7] rounded-lg border-1 text-[#888888]"} onClick={() => setModalShow(true)}>
+                  <img className={"mr-2"} src={filtersIcon}/>
+                  Filters
+              </button>
+              <FilterModal
+                show={modalShow}
+                onHide={() => setModalShow(false)}
+              />
             </div>
           }
         ></Route>
