@@ -14,7 +14,7 @@ import ServicesBoxes from "./components/services";
 import TuteeInfoBox from "./components/tuteeInfoBox";
 import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
 import TutorForm1 from "./components/tutorForm1";
-
+import NavigationBar from "./components/navigationBar";
 import HomePage from "./components/homePage";
 
 function App() {
@@ -53,10 +53,10 @@ function App() {
 
         {/* New route to display the next component! */}
         <Route
-          path="/homepage" // TODO: Change the path name to match that of your component
+          path="/navigationBar" // TODO: Change the path name to match that of your component
           element={
             <div>
-              <TutorForm1 />
+              <NavigationBar/>
             </div>
           }
         ></Route>
