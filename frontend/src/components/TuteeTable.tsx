@@ -77,7 +77,7 @@ export default function TuteeTable() {
   return (
     <div>
       <Header />
-      <div className="flex flex-row justify-center items-center w-full">
+      <div className="flex flex-col justify-center items-center w-full">
         <div
           className={`max-w-4xl flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
         >
