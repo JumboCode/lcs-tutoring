@@ -16,7 +16,7 @@ import Header from "./components/header";
 import ServicesBoxes from "./components/services";
 import TuteeInfoBox from "./components/TuteeInfoBox";
 import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
-
+import NavigationBar from "./components/navigationBar";
 import HomePage from "./components/homePage";
 
 function App() {
@@ -72,10 +72,10 @@ function App() {
           }
         ></Route>
         <Route
-          path="/homepage" // TODO: Change the path name to match that of your component
+          path="/navigationBar" // TODO: Change the path name to match that of your component
           element={
             <div>
-              <TutorForm1 />
+              <NavigationBar/>
             </div>
           }
         ></Route>
