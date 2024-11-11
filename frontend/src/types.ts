@@ -11,4 +11,5 @@ export type IBoxProps = {
   parent_first_name: string;
   parent_last_name: string;
   phone: string;
+  matched: boolean;
 };
