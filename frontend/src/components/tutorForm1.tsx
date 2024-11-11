@@ -51,7 +51,7 @@ export default function TutorForm1() {
             }}
           >
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="firstName" style={{ fontSize: "18px" }}>
+              <label htmlFor="firstName" style={{ fontSize: "18px" }}>
                 First Name{" "}
               </label>
               <input
@@ -70,7 +70,7 @@ export default function TutorForm1() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="lastName" style={{ fontSize: "18px" }}>
+              <label htmlFor="lastName" style={{ fontSize: "18px" }}>
                 Last Name{" "}
               </label>
               <input
@@ -88,7 +88,7 @@ export default function TutorForm1() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="pronouns" style={{ fontSize: "18px" }}>
+              <label htmlFor="pronouns" style={{ fontSize: "18px" }}>
                 Pronouns{" "}
               </label>
               <input
@@ -106,7 +106,7 @@ export default function TutorForm1() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="studentId" style={{ fontSize: "18px" }}>
+              <label htmlFor="studentId" style={{ fontSize: "18px" }}>
                 Student ID Number{" "}
               </label>
               <input
@@ -124,7 +124,7 @@ export default function TutorForm1() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="major" style={{ fontSize: "18px" }}>
+              <label htmlFor="major" style={{ fontSize: "18px" }}>
                 Major{" "}
               </label>
               <input
@@ -142,7 +142,7 @@ export default function TutorForm1() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="gradYear" style={{ fontSize: "18px" }}>
+              <label htmlFor="gradYear" style={{ fontSize: "18px" }}>
                 Year of Graduation{" "}
               </label>
               <input
@@ -160,7 +160,7 @@ export default function TutorForm1() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="number" style={{ fontSize: "18px" }}>
+              <label htmlFor="number" style={{ fontSize: "18px" }}>
                 Phone No.{" "}
               </label>
               <div style={{ display: "flex", gap: "10px" }}>
@@ -173,7 +173,8 @@ export default function TutorForm1() {
                   style={{
                     borderRadius: "8px",
                     border: "1px solid #ddd",
-                    width: "120px",
+                    padding: "10px",
+                    width: "140px",
                   }}
                 />
                 <input
@@ -186,14 +187,14 @@ export default function TutorForm1() {
                     borderRadius: "8px",
                     border: "1px solid #ddd",
                     padding: "10px",
-                    width: "300px",
+                    width: "280px",
                   }}
                 />
               </div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <label for="email" style={{ fontSize: "18px" }}>
+              <label htmlFor="email" style={{ fontSize: "18px" }}>
                 Email{" "}
               </label>
               <input
