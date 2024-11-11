@@ -106,6 +106,14 @@ function App() {
             </div>
           }
         ></Route>
+        <Route
+          path="/tuteetable" // TODO: Change the path name to match that of your component
+          element={
+            <div>
+              <TuteeTable />
+            </div>
+          }
+        ></Route>
       </Routes>
     </Router>
   );
