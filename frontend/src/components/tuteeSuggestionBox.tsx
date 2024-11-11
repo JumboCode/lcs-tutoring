@@ -28,12 +28,12 @@ export default function TuteeSuggestionBox({
   } = box_props;
 
   return (
-    <div className="w-[300px] h-auto font-interBlack border bg-[#FFFFFF] flex flex-col text-left rounded-md">
-      <span className="w-full text-center font-interBlack text-lg pt-2">
+    <div className="font-interBlack border bg-[#FFFFFF] flex flex-col text-left rounded-md w-full">
+      <span className="text-center font-interBlack text-lg pt-2">
         {first_name} {last_name}
       </span>
       <div
-        className="w-full flex items-center justify-center text-center pb-2"
+        className="flex items-center justify-center text-center pb-2"
         style={{ color: "#6B7280" }}
       >
         <BsEnvelope />

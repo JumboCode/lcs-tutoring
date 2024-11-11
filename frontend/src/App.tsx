@@ -24,6 +24,9 @@ import FilterModal from "./components/filters";
 import filtersIcon from './assets/images/filter/filter.svg';
 import NavigationBar from "./components/navigationBar";
 import HomePage from "./components/homePage";
+import MatchSuggestionBlock from "./components/matchSuggestionBlock";
+import boxProps from "./tuteeSuggestionBox";
+import tutorInfo from "./components/matchSuggestionBlock"
 
 function App() {
   // const tutee_data = {
@@ -50,6 +53,47 @@ function App() {
 
   const [modalShow, setModalShow] = useState(false);
 
+  const tutor_info: tutorInfo = {
+    first_name: "Moya",
+    last_name:  "Techakalayatum",
+    email: "hello@gmail.com",
+    phone: "(123) 456-7890",
+    subject: "Math, English",
+    grade: ["8th", "9th", "10th"],
+    open_to_disability: ["Yes"],
+    tutoring_mode: "Hybrid",
+  };
+
+  const tutee1: boxProps = {
+    first_name: "Tutee",
+    last_name: "Lastname 1",
+    email: "parent@gmail.com",
+    subject: "Math",
+    grade: "4th",
+    special_needs: "No",
+    tutoring_mode: "In-person",
+  };
+
+  const tutee2: boxProps = {
+    first_name: "Tutee",
+    last_name: "Lastname 2",
+    email: "parent@gmail.com",
+    subject: "English",
+    grade: "4th",
+    special_needs: "No",
+    tutoring_mode: "In-person",
+  };
+
+  const tutee3: boxProps = {
+    first_name: "Tutee",
+    last_name: " Lastname 3",
+    email: "parent@gmail.com",
+    subject: "English",
+    grade: "3rd",
+    special_needs: "No",
+    tutoring_mode: "In-person",
+  };
+
   return (
     <Router>
       <Routes>
@@ -71,6 +115,17 @@ function App() {
         {/* New route to display the next component! */}
 
         <Route
+          path="/matchSuggestionBlock" // TODO: Change the path name to match that of your component
+          element={
+            <div>
+              <MatchSuggestionBlock 
+                tutor_info = {tutor_info} 
+                tutee1={tutee1}
+                tutee2={tutee2}
+                tutee3={tutee3}/>
+            </div>
+            }
+         ></Route>
           path="/filters"
           element={
             <div>
