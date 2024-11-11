@@ -85,6 +85,21 @@ export default function TuteeInfoBox({ box_props }: { box_props: IBoxProps }) {
               </div>
             </div>
           </div>
+          <a
+            className={
+              "box-border h-10 w-25 cursor-pointer hover: flex flex-row items-center ml-10 mt-5"
+            }
+            href="/matchingSuggestion"
+          >
+            <img className={""} src={Matching}></img>
+            <h1
+              className={
+                "text-left ml-2 font-semibold text-[#1F3A68] hover:text-red"
+              }
+            >
+              Matching Suggestion
+            </h1>
+          </a>
         </div>
       )}
     </div>
