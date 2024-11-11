@@ -1,8 +1,7 @@
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 // import Button from 'react-bootstrap/Button';
-import { Button } from 'react-bootstrap';
+import { Button } from "react-bootstrap";
 
 import BrandonButton from "@/components/buttonBrandon";
 import SethRachelButton from "./components/buttonSethRachel";
@@ -21,7 +20,7 @@ import ServicesBoxes from "./components/services";
 import TuteeInfoBox from "./components/TuteeInfoBox";
 import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
 import FilterModal from "./components/filters";
-import filtersIcon from './assets/images/filter/filter.svg';
+import filtersIcon from "./assets/images/filter/filter.svg";
 import NavigationBar from "./components/navigationBar";
 import HomePage from "./components/homePage";
 
@@ -74,14 +73,21 @@ function App() {
           path="/filters"
           element={
             <div>
-              <button className={"flex flex-row items-center px-4 py-2 bg-[#FFFFFF] border-[#E7E7E7] rounded-lg border-1 text-[#888888]"} onClick={() => setModalShow(true)}>
-                  <img className={"mr-2"} src={filtersIcon}/>
-                  Filters
+              <button
+                className={
+                  "flex flex-row items-center px-4 py-2 bg-[#FFFFFF] border-[#E7E7E7] rounded-lg border-1 text-[#888888]"
+                }
+                onClick={() => setModalShow(true)}
+              >
+                <img className={"mr-2"} src={filtersIcon} />
+                Filters
               </button>
               <FilterModal
                 show={modalShow}
                 onHide={() => setModalShow(false)}
               />
+            </div>
+          }
         ></Route>
         <Route
           path="/tutorform2"
