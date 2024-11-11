@@ -19,7 +19,10 @@ export default function NavigationBar() {
         isCollapsed ? "w-[50px]" : "w-[250px]"
       }`}
     >
-      <div onClick={toggleCollapse} className="flex justify-end cursor-pointer p-2">
+      <div
+        onClick={toggleCollapse}
+        className="flex justify-end cursor-pointer p-2"
+      >
         <img
           className={`transition-transform duration-300 ${
             isCollapsed ? "rotate-180" : "rotate-0"
@@ -35,7 +38,12 @@ export default function NavigationBar() {
           className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
           href="/matchingSuggestion"
         >
-          <img className="ml-2" src={Matching} alt="Matching Suggestion Icon" style={{ width: "24px", height: "24px" }} />
+          <img
+            className="ml-2"
+            src={Matching}
+            alt="Matching Suggestion Icon"
+            style={{ width: "24px", height: "24px" }}
+          />
           {!isCollapsed && <span className="ml-2">Matching Suggestion</span>}
         </a>
 
@@ -43,7 +51,12 @@ export default function NavigationBar() {
           className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
           href="/approvedSuggestion"
         >
-          <img className="ml-2" src={ApprovedMatch} alt="Approved Match Icon" style={{ width: "24px", height: "24px" }} />
+          <img
+            className="ml-2"
+            src={ApprovedMatch}
+            alt="Approved Match Icon"
+            style={{ width: "24px", height: "24px" }}
+          />
           {!isCollapsed && <span className="ml-2">Approved Match</span>}
         </a>
 
@@ -51,7 +64,12 @@ export default function NavigationBar() {
           className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
           href="/tutordata"
         >
-          <img className="ml-2" src={TutorDB} alt="Tutor Database Icon" style={{ width: "24px", height: "24px" }} />
+          <img
+            className="ml-2"
+            src={TutorDB}
+            alt="Tutor Database Icon"
+            style={{ width: "24px", height: "24px" }}
+          />
           {!isCollapsed && <span className="ml-2">Tutor Database</span>}
         </a>
 
@@ -59,7 +77,12 @@ export default function NavigationBar() {
           className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
           href="/tuteedata"
         >
-          <img className="ml-2" src={TuteeDB} alt="Tutee Database Icon" style={{ width: "24px", height: "24px" }} />
+          <img
+            className="ml-2"
+            src={TuteeDB}
+            alt="Tutee Database Icon"
+            style={{ width: "24px", height: "24px" }}
+          />
           {!isCollapsed && <span className="ml-2">Tutee Database</span>}
         </a>
 
@@ -67,7 +90,12 @@ export default function NavigationBar() {
           className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
           href="/mailinglist"
         >
-          <img className="ml-2" src={Mail} alt="Mailing List Icon" style={{ width: "24px", height: "24px" }} />
+          <img
+            className="ml-2"
+            src={Mail}
+            alt="Mailing List Icon"
+            style={{ width: "24px", height: "24px" }}
+          />
           {!isCollapsed && <span className="ml-2">Mailing List</span>}
         </a>
       </div>

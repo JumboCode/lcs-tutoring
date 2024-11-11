@@ -75,7 +75,7 @@ function App() {
           path="/navigationBar" // TODO: Change the path name to match that of your component
           element={
             <div>
-              <NavigationBar/>
+              <NavigationBar />
             </div>
           }
         ></Route>
