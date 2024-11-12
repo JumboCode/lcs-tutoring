@@ -6,6 +6,7 @@ import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
 import TuteeTable from "./components/TuteeTable";
+import ApprovedMatches from "./components/ApprovedMatches";
 // import Testimonials from "./components/testimonials";
 // import Footer from "./components/Footer";
 // import IntroPage from "./components/intro";
@@ -60,10 +61,10 @@ function App() {
         {/* New route to display the next component! */}
 
         <Route
-          path="/tuteetable"
+          path="/approved-matches"
           element={
             <div>
-              <TuteeTable />
+              <ApprovedMatches />
             </div>
           }
         ></Route>
