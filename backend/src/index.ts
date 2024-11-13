@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { tutorTable } from './db/schema';
-import { or, arrayContains, and } from 'drizzle-orm';
+import { or, arrayContains, and, eq } from 'drizzle-orm';
+import { matchedTable, unmatchedTable } from './db/schema';
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -66,7 +67,19 @@ async function moveToMatched(id: string) {}
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  * 
  ******************************************************************/
-async function moveToUnmatched(id: string) {}
+async function moveToUnmatched(id: string) {
+    if (id.length == 7) {
+        const query = await db.select().from(matchedTable).where(eq(matchedTable.id, id));
+        console.log(query);
+
+        if(!query) {
+            throw new Error('${id} does not exist in matched table');
+        }
+
+        await db.insert(unmatchedTable).values(query);
+        await db.delete(matchedTable).where(eq(matchedTable.id, id));
+    }
+}
 
 /************** Make a match given tutor and tutee ids ***************
  * 
