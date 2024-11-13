@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { tutorTable } from './db/schema';
-import { or, arrayContains, and } from 'drizzle-orm';
+import { or, arrayContains, and, eq } from 'drizzle-orm';
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -16,7 +16,7 @@ const db = drizzle(process.env.DATABASE_URL!);
  * You can console.log all the tutors that the query returns
  * to verify a correct output
  *********************************************************/
-async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
+async function filterTutors(gradeLevels?: number[], subject_pref?: string[], disabilityPref?: boolean, tutoringMode?: string) {
     const query = db.select().from(tutorTable);
 
     const conditions: any[] = [];
@@ -31,8 +31,14 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
         conditions.push(or(...condition_grade));
     }
 
-    /* TODO: implement the rest of the filters (tutoring mode and disability preference) */
+    if (disabilityPref != undefined) {
+        conditions.push(or(eq(tutorTable.disability_pref, disabilityPref)));
+    }
 
+    if (tutoringMode != undefined) {
+        conditions.push(or(eq(tutorTable.tutoring_mode, tutoringMode)));
+    }
+    
     if (conditions.length > 0) {
       query.where(and(...conditions));
     }
@@ -41,7 +47,7 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
     return tutors;
 }
 
-filterTutors(undefined, ["Statistics"]).then(tutors => console.log(tutors));
+filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
 
 
 /******* Move a given tutor/tutee from unmatched to matched *******
