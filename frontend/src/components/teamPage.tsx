@@ -112,7 +112,7 @@ export default function TeamPage() {
           />
         </div>
       </div>
-      <div className={"w-screen h-400 bg-[#FBFDFE] pt-28 pb-16 px-28"}>
+      <div className={"h-400 bg-[#FBFDFE] pt-28 pb-16 px-28"}>
         <div className={"flex flex-col"}>
           <div className={"flex flex-row items-center my-16"}>
             <h3 className={"font-interBlack text-[#1F3A68] text-2xl"}>

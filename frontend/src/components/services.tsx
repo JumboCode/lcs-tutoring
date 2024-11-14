@@ -5,13 +5,12 @@ import Ruler from "../assets/images/homepage_ruler.svg";
 export default function ServicesBoxes() {
   return (
     <div className="max-w-6xl mx-auto py-8 relative mb-16">
-
-        <div className="absolute bottom-[-50px] right-[-75px] z-0">
-            <img src={Ruler} alt="Triangular Ruler"/>
-        </div>
-        <div className="absolute top-15 left-[-75px] z-0">
-            <img src={Notepad} alt="Notepad"/>
-        </div>
+      <div className="absolute bottom-[-50px] right-[-75px] z-0">
+        <img src={Ruler} alt="Triangular Ruler" />
+      </div>
+      <div className="absolute top-15 left-[-75px] z-0">
+        <img src={Notepad} alt="Notepad" />
+      </div>
 
       <h1
         style={{ fontSize: "32px", color: "#1F3A68" }}

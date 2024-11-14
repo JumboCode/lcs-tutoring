@@ -50,7 +50,7 @@ export default function TutorForm() {
               { label: "Major", id: "major" },
               { label: "Year of Graduation", id: "gradYear" },
               { label: "Phone Number", id: "phone" },
-              { label: "Email", id: "email" },
+              { label: "Tufts Email", id: "email" },
             ].map((field) => (
               <div className="flex flex-col" key={field.id}>
                 <label htmlFor={field.id} className="pb-1">
