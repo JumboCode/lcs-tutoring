@@ -24,6 +24,7 @@ import filtersIcon from "./assets/images/filter/filter.svg";
 import NavigationBar from "./components/navigationBar";
 import MatchSuggestionBlock from "./components/matchSuggestionBlock";
 import TuteeTable from "./components/TuteeTable";
+import ApprovedMatches from "./components/ApprovedMatches";
 
 /* Type definitions */
 import { tutorInfo } from "./types";
@@ -132,15 +133,10 @@ function App() {
 
         {/* Admin View WIP */}
         <Route
-          path="/matchSuggestionBlock"
+          path="/approved-matches"
           element={
             <div>
-              <MatchSuggestionBlock
-                tutor_info={tutor_info}
-                tutee1={tutee1}
-                tutee2={tutee2}
-                tutee3={tutee3}
-              />
+              <ApprovedMatches />
             </div>
           }
         ></Route>
