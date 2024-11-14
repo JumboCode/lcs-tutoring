@@ -17,7 +17,7 @@ export default function Intro() {
           <p className="font-interRegular font-bold italic text-left text-[3.5rem] w-[600px] mb-6">
             Leonard Carmichael Society Tutoring
           </p>
-          <button className="font-inter font-semibold bg-[#BFDBF7] hover:bg-blue-300 w-[170px] rounded-full font-semibold py-2 px-5">
+          <button className="font-inter bg-[#BFDBF7] hover:bg-blue-300 w-[170px] rounded-full font-semibold py-2 px-5">
             Become a Tutor!
           </button>
         </div>
