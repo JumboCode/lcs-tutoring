@@ -16,7 +16,7 @@ const db = drizzle(process.env.DATABASE_URL!);
  * You can console.log all the tutors that the query returns
  * to verify a correct output
  *********************************************************/
-async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
+async function filterTutors(gradeLevels?: number[], subject_pref?: string[], disabilityPref?: boolean, tutoringMode?: string) {
     const query = db.select().from(tutorTable);
 
     const conditions: any[] = [];
@@ -31,8 +31,14 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
         conditions.push(or(...condition_grade));
     }
 
-    /* TODO: implement the rest of the filters (tutoring mode and disability preference) */
+    if (disabilityPref != undefined) {
+        conditions.push(or(eq(tutorTable.disability_pref, disabilityPref)));
+    }
 
+    if (tutoringMode != undefined) {
+        conditions.push(or(eq(tutorTable.tutoring_mode, tutoringMode)));
+    }
+    
     if (conditions.length > 0) {
       query.where(and(...conditions));
     }
@@ -41,7 +47,8 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[]) {
     return tutors;
 }
 
-// filterTutors(undefined, ["Statistics"]).then(tutors => console.log(tutors));
+filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
+moveToMatched("1000002");
 
 /******* Move a given tutor/tutee from unmatched to matched *******
  * 
@@ -87,7 +94,19 @@ moveToMatched("1000002");
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  * 
  ******************************************************************/
-async function moveToUnmatched(id: string) {}
+async function moveToUnmatched(id: string) {
+    if (id.length == 7) {
+        const query = await db.select().from(matchedTable).where(eq(matchedTable.id, id));
+        console.log(query);
+
+        if(!query) {
+            throw new Error('${id} does not exist in matched table');
+        }
+
+        await db.insert(unmatchedTable).values(query);
+        await db.delete(matchedTable).where(eq(matchedTable.id, id));
+    }
+}
 
 /************** Make a match given tutor and tutee ids ***************
  * 

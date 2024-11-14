@@ -1,21 +1,12 @@
 "use client";
 
-interface boxProps {
-  first_name: string;
-  last_name: string;
-  email: string;
-  subject: string;
-  grade: string;
-  special_needs: string;
-  tutoring_mode: string;
-}
-
+import { tuteeInfo } from "../types";
 import { BsEnvelope } from "react-icons/bs";
 
 export default function TuteeSuggestionBox({
-  box_props,
+  tutee_info,
 }: {
-  box_props: boxProps;
+  tutee_info: tuteeInfo;
 }) {
   const {
     first_name,
@@ -25,15 +16,15 @@ export default function TuteeSuggestionBox({
     grade,
     special_needs,
     tutoring_mode,
-  } = box_props;
+  } = tutee_info;
 
   return (
-    <div className="w-[300px] h-auto font-interBlack border bg-[#FFFFFF] flex flex-col text-left rounded-md">
-      <span className="w-full text-center font-interBlack text-lg pt-2">
+    <div className="font-interBlack border bg-[#FFFFFF] flex flex-col text-left rounded-md w-full">
+      <span className="text-center font-interBlack text-lg pt-2">
         {first_name} {last_name}
       </span>
       <div
-        className="w-full flex items-center justify-center text-center pb-2"
+        className="flex items-center justify-center text-center pb-2"
         style={{ color: "#6B7280" }}
       >
         <BsEnvelope />

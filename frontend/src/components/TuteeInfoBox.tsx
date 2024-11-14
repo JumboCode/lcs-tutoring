@@ -1,12 +1,32 @@
 "use client";
 import { useState } from "react";
 
-import { IBoxProps } from "../types";
+import { tuteeBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
-import { IoMdCall } from "react-icons/io";
+import { FiPhone } from "react-icons/fi";
 
-export default function TuteeInfoBox({ box_props }: { box_props: IBoxProps }) {
+const STYLES = {
+  colors: {
+    textGray: "#888888",
+    phoneGray: "#6B7280",
+    evenBackground: "#FAFCFE",
+  },
+  transitions: {
+    arrow: "transform 0.3s",
+    colors: "transition-colors duration-150",
+  },
+} as const;
+
+type TuteeInfoBoxProps = {
+  box_props: tuteeBoxProps;
+  bgColor: string;
+};
+
+export default function TuteeInfoBox({
+  box_props,
+  bgColor,
+}: TuteeInfoBoxProps) {
   const {
     date,
     first_name,
@@ -30,63 +50,88 @@ export default function TuteeInfoBox({ box_props }: { box_props: IBoxProps }) {
   };
 
   return (
-    <div className="w-[900px] h-auto border bg-[#FFFFFF] flex flex-col text-left">
-      <div className="flex flex-row text-[black] px-8 justify-start h-[98px] items-center">
-        <span className="pl-3 w-1/4">{date}</span>
-        <div className="w-1/4">
-          <p>
-            {first_name} {last_name}
-          </p>
-          <div className="text-[#888888] flex items-center gap-x-2">
-            <BsEnvelope />
-            <p>{email}</p>
-          </div>
-        </div>
-        <span className="pl-3 w-1/4">{subject}</span>
-        <div className="w-1/4 flex flex-row justify-between">
-          <span>{grade}</span>
-          <button
-            className="flex flex-row items-center"
-            onClick={handleToggleDescription}
-          >
-            <div
-              style={{ color: "#888888", transition: "transform 0.3s" }}
-              className={`transform ${isRotated ? "rotate-90" : ""}`}
-            >
-              <IoIosArrowForward size={20} />
-            </div>
-            <span className="text-[#888888] ml-1">Details</span>
-          </button>
-        </div>
-      </div>
-
-      {showDescription && (
-        <div className="flex flex-col border-t border-gray-200">
-          <div className="px-8 flex flex-row h-[30px] items-center bg-gray-100 justify-start">
-            <span className="text-gray-500 pl-3 w-1/4">Gender</span>
-            <span className="text-gray-500 w-1/4">Tutoring Mode</span>
-            <span className="text-gray-500 pl-3 w-1/4">Special Needs</span>
-            <span className="text-gray-500 w-1/4">Parent Information</span>
-          </div>
-          <div className="px-8 flex flex-row h-[80px] justify-start items-center">
-            <span className="pl-3 w-1/4">{gender}</span>
-            <span className="w-1/4">{tutoring_mode}</span>
-            <span className="pl-3 w-1/4">{special_needs}</span>
-            <div className="w-1/4 flex flex-col">
-              <span>
-                {parent_first_name} {parent_last_name}
-              </span>
-              <div
-                className="flex flex-row gap-x-2 items-center"
-                style={{ color: "#6B7280" }}
-              >
-                <IoMdCall />
-                <span className="text-gray-500">{phone}</span>
+    <div className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}`}>
+      <table className="table-fixed w-full">
+        <thead>
+          <tr className={`h-[80px] ${bgColor} border-b`}>
+            <th className="font-normal w-1/5 px-3">{date}</th>
+            <th className="font-normal w-1/5">
+              <p className="">
+                {first_name} {last_name}
+              </p>
+              <div className="text-[#888888] flex items-center gap-x-2">
+                <div className="flex-shrink-0">
+                  <BsEnvelope />
+                </div>
+                <p className="max-w-full overflow-hidden text-ellipsis hover:text-clip hover:overflow-visible hover:whitespace-normal hover:break-words">
+                  {email}
+                </p>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </th>
+            <th className="font-normal w-1/5">{subject}</th>
+            <th className="w-1/5">
+              <div className="font-normal items-center justify-center">
+                <span>K-{grade}</span>
+              </div>
+            </th>
+            <th className="w-1/5">
+              <div className="flex items-center flex-row">
+                <button
+                  className="flex items-center text-[#888888] hover:text-gray-600"
+                  onClick={handleToggleDescription}
+                >
+                  <div
+                    style={{
+                      transition: STYLES.transitions.arrow,
+                    }}
+                    className={`transform ${isRotated ? "rotate-90" : ""}`}
+                  >
+                    <IoIosArrowForward size={20} />
+                  </div>
+                  <span className="ml-2 p-0 font-normal">Details</span>
+                </button>
+                <span
+                  style={{ color: STYLES.colors.textGray }}
+                  className="mb-2 ml-5 p-0 text-lg"
+                >
+                  {" "}
+                  ...{" "}
+                </span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        {showDescription && (
+          <tbody className="bg-inherit">
+            <tr className="h-[35px] bg-gray-100/50 border-b text-sm">
+              <td className="text-gray-400 px-3 w-1/5">Gender</td>
+              <td className="text-gray-400 w-1/5">Tutoring Mode</td>
+              <td className="text-gray-400 w-1/5">Special Needs</td>
+              <td className="text-gray-400 w-1/5">Parent Information</td>
+              <td className="text-gray-400 w-1/5"></td>
+            </tr>
+            <tr className="h-[55px] border-b text-sm">
+              <td className="px-3 w-1/5">{gender}</td>
+              <td className="w-1/5">{tutoring_mode}</td>
+              <td className="w-1/5">{special_needs}</td>
+              <td className="w-1/5">
+                <div className="flex flex-col">
+                  <span>
+                    {parent_first_name} {parent_last_name}
+                  </span>
+                  <div
+                    className="flex items-center gap-x-2"
+                    style={{ color: STYLES.colors.phoneGray }}
+                  >
+                    <FiPhone />
+                    <span>{phone}</span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        )}
+      </table>
     </div>
   );
 }
