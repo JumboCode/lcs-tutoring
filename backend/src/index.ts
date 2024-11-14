@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
 import { matchedTable, tutorTable, unmatchedTable } from './db/schema';
-import { or, arrayContains, and , eq} from 'drizzle-orm';
+import { or, arrayContains, and , eq, sql} from 'drizzle-orm';
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -61,17 +61,28 @@ moveToMatched("1000002");
  * 
  ******************************************************************/
 async function moveToMatched(id: string) {
-    if (id.length == 7) {
-        const query = await db.select().from(unmatchedTable).where(eq(unmatchedTable.id, id)).limit(1);
-        console.log(query);
-        await db.insert(matchedTable).values(query);
-        await db.delete(unmatchedTable).where(eq(unmatchedTable.id, id)).limit(1);
-        console.log(await db.select().from(matchedTable));
+    if (id.length == 7 || id.length == 8) {
+        const query = await db.select().from(unmatchedTable).where(eq(unmatchedTable.id, id)); //returns an array with only one element
+        const remain = query.length - 1;
+        if (query.length > 0) {
+            await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
+            
+            await db.delete(unmatchedTable).where(eq(unmatchedTable.id, id));
+    
+            for (let i = 0; i < query.length - 1; i++){ //adding rows back in
+                await db.insert(unmatchedTable).values(query[0]);
+            }
+        }
+        else {
+            throw new Error("ID not found in unmatched table");
+        }
     }
     else {
         throw new Error("Invalid ID");
     }
 }
+
+moveToMatched("1000002");
 
 /******* Move a given tutor/tutee from matched to unmatched *******
  * 
