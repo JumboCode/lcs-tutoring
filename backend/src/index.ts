@@ -83,7 +83,19 @@ async function moveToMatched(id: string) {
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  * 
  ******************************************************************/
-async function moveToUnmatched(id: string) {}
+async function moveToUnmatched(id: string) {
+    if (id.length == 7) {
+        const query = await db.select().from(matchedTable).where(eq(matchedTable.id, id));
+        console.log(query);
+
+        if(!query) {
+            throw new Error('${id} does not exist in matched table');
+        }
+
+        await db.insert(unmatchedTable).values(query);
+        await db.delete(matchedTable).where(eq(matchedTable.id, id));
+    }
+}
 
 /************** Make a match given tutor and tutee ids ***************
  * 
