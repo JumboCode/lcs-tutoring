@@ -10,7 +10,7 @@ import ArayHunterButton from "./components/buttonArayHunter";
 
 /* General View */
 import HomePage from "./components/homePage";
-import TutorForm from "./components/tutorForm";
+import TutorForm from "./components/TutorForm";
 import TuteeForm from "./components/TuteeForm";
 import TeamPage from "./components/teamPage";
 import Header from "./components/header";
