@@ -1,17 +1,69 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { FaChevronDown } from "react-icons/fa";
+
 import elephantLogo from "../assets/images/elephant.svg";
+
 export default function Header() {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
   return (
-    <header className="border-gray-200 border-b flex w-screen py-3 px-20 justify-between items-center bg-white sticky top-0 z-50">
+    <header className="border-gray-200 border-b flex py-3 px-20 justify-between items-center bg-white sticky top-0 z-50">
       <img className="h-12 w-12" src={elephantLogo} alt="Elephant Logo" />
       <ul className="flex flex-row space-x-8">
-        <li className="font-interBlack cursor-pointer hover:text-gray-700 border-b-2 border-white hover:border-b-2 hover:border-black">
+        <Link
+          className="cursor-pointer border-b-2 border-transparent hover:border-black"
+          to="/"
+        >
           Home
-        </li>
-        <li className="cursor-pointer hover:text-gray-700 border-b-2 border-white hover:border-b-2 hover:border-black">
+        </Link>
+
+        <Link
+          className="cursor-pointer border-b-2 border-transparent hover:border-black"
+          to="/team"
+        >
           Team
-        </li>
-        <li className="cursor-pointer flex flex-row items-center border-b-2 border-white hover:text-gray-700 hover:border-b-2 hover:border-black">
-          Forms
+        </Link>
+        <li className="relative">
+          {/* Forms dropdown button */}
+          <button
+            onClick={toggleDropdown}
+            className="flex items-center space-x-1 cursor-pointer hover:text-gray-600 border-b-2 border-transparent hover:border-black focus:outline-none"
+          >
+            <span>Forms</span>
+            <div
+              className={`transition-transform duration-300 ${
+                isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+              }`}
+            >
+              <FaChevronDown />
+            </div>
+          </button>
+
+          {isDropdownOpen && (
+            <ul className="absolute left-1/2 transform -translate-x-1/2 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+              <li className="hover:bg-gray-100">
+                <Link
+                  to="/tutor-form"
+                  className="block px-4 py-2 text-gray-700"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Tutor Form
+                </Link>
+              </li>
+              <li className="hover:bg-gray-100">
+                <Link
+                  to="/tutee-form"
+                  className="block px-4 py-2 text-gray-700"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Tutee Form
+                </Link>
+              </li>
+            </ul>
+          )}
         </li>
       </ul>
     </header>

@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { tutorTable } from './db/schema';
-import { or, arrayContains, and, eq } from 'drizzle-orm';
+import { matchedTable, tutorTable, unmatchedTable } from './db/schema';
+import { or, arrayContains, and , eq} from 'drizzle-orm';
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -48,7 +48,7 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[], dis
 }
 
 filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
-
+moveToMatched("1000002");
 
 /******* Move a given tutor/tutee from unmatched to matched *******
  * 
@@ -60,7 +60,18 @@ filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => co
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  * 
  ******************************************************************/
-async function moveToMatched(id: string) {}
+async function moveToMatched(id: string) {
+    if (id.length == 7) {
+        const query = await db.select().from(unmatchedTable).where(eq(unmatchedTable.id, id)).limit(1);
+        console.log(query);
+        await db.insert(matchedTable).values(query);
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.id, id)).limit(1);
+        console.log(await db.select().from(matchedTable));
+    }
+    else {
+        throw new Error("Invalid ID");
+    }
+}
 
 /******* Move a given tutor/tutee from matched to unmatched *******
  * 
