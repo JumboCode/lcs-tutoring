@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { tutorTable } from './db/schema';
+import { tutorTable, unmatchedTable } from './db/schema';
 import { or, arrayContains, and } from 'drizzle-orm';
+import { approvedMatchedTable } from './db/schema';
+
+import { eq } from 'drizzle-orm';
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -79,4 +82,42 @@ async function moveToUnmatched(id: string) {}
  *  - Throw an error if either the tutor or tutee don't exist in the unmatched
  *    table
  */
-async function createMatch(tutor_id: string, tutee_id: string) {}
+async function createMatch(tutor_id: string, tutee_id: string)
+{
+    // Check if both exist in unmatched table first
+    const unmatchedTutor = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.id, tutor_id))
+        .limit(1);
+
+    const unmatchedTutee = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.id, tutee_id))
+        .limit(1);
+
+    // Throw error if either doesn't exist in unmatched table
+    if (unmatchedTutor.length === 0) {
+        throw new Error(`Tutor with ID ${tutor_id} not found in unmatched table`);
+    }
+    if (unmatchedTutee.length === 0) {
+        throw new Error(`Tutee with ID ${tutee_id} not found in unmatched table`);
+    }
+
+    // Start a transaction for all operations
+    return await db.transaction(async (tx) => {
+        // Use moveToMatched for both tutor and tutee
+        await moveToMatched(tutor_id);
+        await moveToMatched(tutee_id);
+
+        // Create new row in approved_matches table
+        await tx
+            .insert(approvedMatchedTable)
+            .values({
+                tutor_id: tutor_id,
+                tutee_id: tutee_id
+            });
+    });
+}
+
