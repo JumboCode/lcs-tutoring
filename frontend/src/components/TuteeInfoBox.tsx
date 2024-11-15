@@ -31,7 +31,7 @@ export default function TuteeInfoBox({
     date,
     first_name,
     last_name,
-    email,
+    parent_email,
     subject,
     grade,
     gender,
@@ -64,7 +64,7 @@ export default function TuteeInfoBox({
                   <BsEnvelope />
                 </div>
                 <p className="max-w-full overflow-hidden text-ellipsis hover:text-clip hover:overflow-visible hover:whitespace-normal hover:break-words">
-                  {email}
+                  {parent_email}
                 </p>
               </div>
             </th>

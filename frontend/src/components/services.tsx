@@ -21,8 +21,6 @@ export default function ServicesBoxes() {
       <div className="flex flex-row flex-wrap justify-center gap-12">
         <div id="box 1" className="flex flex-col rounded-lg box-style z-10">
           <h2 className="header-style">Weekly Tutoring Sessions</h2>
-          {/* Working: Black, BlackItalic, BoldItalic, MediumItalic, SemiBold, SemiBoldItalic */}
-          {/* Not working: Bold, ExtraBold, ExtraBoldItalic, ExtraLight, ExtraLightItalic, Italic, Light, LightItalic, Medium, Regular, Thin, ThinItalic */}
           <p className="text-style">
             Tutoring takes place once a week for 1 hour either in person (on
             campus) or virtually.

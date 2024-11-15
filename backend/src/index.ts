@@ -1,9 +1,23 @@
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { matchedTable, tutorTable, unmatchedTable } from './db/schema';
-import { or, arrayContains, and , eq, sql} from 'drizzle-orm';
+import { matchedTable, tuteeTable, tutorTable, unmatchedTable } from './db/schema';
+import { or, arrayContains, and , eq } from 'drizzle-orm';
+import express, { Express, Request, Response } from "express";
+import cors from "cors";
 
 const db = drizzle(process.env.DATABASE_URL!);
+
+const app: Express = express();
+const port = 3000;
+app.use(cors());
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Express + TypeScript Server");
+});
+
+app.listen(port, () => {
+  console.log(`[server]: Server is running at http://localhost:${port}`);
+});
 
 /**** Filter Tutors by grade levels and subject prefs ****
  * 
@@ -47,8 +61,8 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[], dis
     return tutors;
 }
 
-filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
-moveToMatched("1000002");
+// filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
+// moveToMatched("1000002");
 
 /******* Move a given tutor/tutee from unmatched to matched *******
  * 
@@ -82,7 +96,7 @@ async function moveToMatched(id: string) {
     }
 }
 
-moveToMatched("1000002");
+// moveToMatched("1000002");
 
 /******* Move a given tutor/tutee from matched to unmatched *******
  * 

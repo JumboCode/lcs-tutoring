@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, varchar, text } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, varchar, text, date } from "drizzle-orm/pg-core";
 
 export const tutorTable = pgTable("tutor", {
   id: varchar({ length: 8 }).notNull().primaryKey(),
@@ -13,6 +13,8 @@ export const tutorTable = pgTable("tutor", {
   disability_pref: boolean(),
   subject_pref: varchar({ length: 50 }).array(),
   tutoring_mode: varchar({ length: 50 }).notNull(),
+  matched: boolean('matched'),
+  date: date(),
 });
 
 export const tuteeTable = pgTable("tutee", {
@@ -30,6 +32,8 @@ export const tuteeTable = pgTable("tutee", {
   subject: varchar({ length: 50 }).notNull(),
   tutoring_mode: varchar({ length: 50 }).notNull(),
   notes: text(),
+  matched: boolean('matched'),
+  date: date().notNull(),
 });
 
 export const unmatchedTable = pgTable('unmatched', {
