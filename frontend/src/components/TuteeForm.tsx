@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import Select from "react-select";
+import { useState, ChangeEvent, FormEvent } from "react";
+import Select, {ActionMeta, SingleValue} from "react-select";
 
+//lets TypeScript know what kind of data
 type FormData = {
     childFirstName: string;
     childLastName: string;
@@ -12,12 +13,12 @@ type FormData = {
     parentLastName: string;
     phone: string;
     email: string;
-    subject: string | null; // Can be string or null for select options
-    tutoringMode: string | null; // Can be string or null for select options
+    subject: string;
+    tutoringMode: string;
     additionalInfo: string;
     agreement: string;
     signature: string;
-  };
+};
 
 const subject_options = [
   { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
@@ -40,9 +41,10 @@ const tutoring_mode_options = [
 ];
 
 export default function TuteeForm() {
+    const [showTextBox, setShowTextBox] = useState(false);
 
-
-    const [formData, setFormData] = useState({
+    //variable that holds form data
+    const [formData, setFormData] = useState<FormData>({
         childFirstName: "",
         childLastName: "",
         gender: "",
@@ -53,68 +55,93 @@ export default function TuteeForm() {
         parentLastName: "",
         phone: "",
         email: "",
-        subject: null,
-        tutoringMode: null,
+        subject: "",
+        tutoringMode: "",
         additionalInfo: "",
         agreement: "",
         signature: "",
-      });
+    });  
 
-  const [showTextBox, setShowTextBox] = useState(false);
 
-  const handleRadioChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (name === "specialNeeds") {
-      setShowTextBox(value === "yes");
-    }
-  };
+    const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        }));
+        if (name === "specialNeeds") {
+        setShowTextBox(value === "yes");
+        }
+    };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        }));
+    };
 
-  const handleSelectChange = (selectedOption, { name }) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: selectedOption,
-    }));
-  };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log("Form Data Submitted:", formData);
+    const handleSelectChange = (
+        selectedOption: SingleValue<{ value: string; label: string }>, 
+        actionMeta: ActionMeta<{ value: string; label: string }> ) => {
+        const name = actionMeta?.name;
 
-    // Clear the form data
-    setFormData({
-      childFirstName: "",
-      childLastName: "",
-      gender: "",
-      grade: "",
-      specialNeeds: "",
-      specialNeedsInfo: "",
-      parentFirstName: "",
-      parentLastName: "",
-      phone: "",
-      email: "",
-      subject: null,
-      tutoringMode: null,
-      additionalInfo: "",
-      agreement: "",
-      signature: "",
-    });
-    setShowTextBox(false); // Reset the special needs text box visibility
-  };
+        if (!name) {
+        return;
+        }
+
+        setFormData((prev) => ({
+        ...prev,
+        [name]: selectedOption,
+        }));
+    };
+
+    //ensure all required fields are filled out, ensure that user agrees to waiver
+    const validateForm = (): boolean => {
+        let isValid = true;
+
+        if (formData.agreement !== "Yes") {
+        isValid = false;
+        }
+
+        return isValid;
+    };
+
+
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+    
+        console.log("Form Data Submitted:", formData);
+    
+        //reset form
+        setFormData({
+        childFirstName: "",
+        childLastName: "",
+        gender: "",
+        grade: "",
+        specialNeeds: "",
+        specialNeedsInfo: "",
+        parentFirstName: "",
+        parentLastName: "",
+        phone: "",
+        email: "",
+        subject: "",
+        tutoringMode: "",
+        additionalInfo: "",
+        agreement: "",
+        signature: "",
+        });
+        setShowTextBox(false);
+    };
+
 
   return (
-
 
     <div className="pt-10 bg-[#FAFCFE] min-h-screen">
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
@@ -130,9 +157,7 @@ export default function TuteeForm() {
               { label: "Gender", id: "gender" },
               { label: "Grade", id: "grade" },
             ].map((field) => {
-                // Store the current field id in a variable
-                const currentFieldId = field.id;
-            
+                const currentFieldId = field.id as keyof FormData;
                 return (
                   <div className="flex flex-col" key={currentFieldId}>
                     <label htmlFor={currentFieldId} className="pb-1">
@@ -142,8 +167,8 @@ export default function TuteeForm() {
                       type="text"
                       id={currentFieldId}
                       name={currentFieldId}
-                      value={currentFieldId}
                       onChange={handleChange}
+                      value={formData[currentFieldId]} 
                       placeholder="Enter a description..."
                       required
                       className="rounded-lg border border-gray-300 p-2"
@@ -185,6 +210,7 @@ export default function TuteeForm() {
                 value={formData.specialNeedsInfo}
                 onChange={handleChange}
                 className="mt-2 p-2 border border-gray-300 rounded"
+                required={formData.specialNeeds === "yes"}
               />
             )}
           </div>
@@ -200,9 +226,7 @@ export default function TuteeForm() {
               { label: "Phone Number", id: "phone" },
               { label: "Email", id: "email" },
             ].map((field) => {
-                // Store the current field id in a variable
-                const currentFieldId = field.id;
-            
+                const currentFieldId = field.id as keyof FormData;
                 return (
                   <div className="flex flex-col" key={currentFieldId}>
                     <label htmlFor={currentFieldId} className="pb-1">
@@ -213,6 +237,7 @@ export default function TuteeForm() {
                       id={currentFieldId}
                       name={currentFieldId}
                       onChange={handleChange}
+                      value={formData[currentFieldId]} 
                       placeholder="Enter a description..."
                       required
                       className="rounded-lg border border-gray-300 p-2"
@@ -228,8 +253,10 @@ export default function TuteeForm() {
           <div className="space-y-4">
             <h1 className="text-xl text-left pb-3 font-bold">Tutoring Preference</h1>
             <div className="space-y-2">
+
               <h1 className="text-base space-y-2">Subject</h1>
               <Select
+                id="small"
                 name="subject"
                 options={subject_options}
                 className="basic-single"
@@ -237,21 +264,25 @@ export default function TuteeForm() {
                 placeholder="Select one"
                 value={subject_options.find((option) => option.value === formData.subject)}
                 onChange={handleSelectChange}
+                required
               />
             </div>
+
+
             <div className="space-y-2">
               <h1 className="text-base space-y-2">
                 What are your preferences regarding in-person tutoring? (Please
                 note: students must come to Tufts campus to be tutored in person)
               </h1>
               <Select
-                name="tutoringModes"
+                name="tutoringMode"
                 options={tutoring_mode_options}
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
                 value={tutoring_mode_options.find((option) => option.value === formData.tutoringMode)}
                 onChange={handleSelectChange}
+                required
               />
             </div>
             <div className="space-y-2">
@@ -281,12 +312,13 @@ export default function TuteeForm() {
                 checked={formData.agreement === "Yes"}
                 onChange={handleRadioChange}
                 className="w-4 h-4 text-gray-400 bg-gray-100 border-gray-400"
+                required
               />
-              <span className="text-gray-400">Yes</span>
+              <span className="text-black">Yes</span>
             </label>
             <label
               htmlFor="radio-2"
-              className="text-gray-400 inline-flex items-center space-x-3"
+              className="inline-flex items-center space-x-3"
             >
               <input
                 type="radio"
@@ -297,7 +329,7 @@ export default function TuteeForm() {
                 required
                 className="w-4 h-4 text-gray-400 bg-gray-100 border-gray-400 focus:ring-gray-400"
               />
-              <span className="text-gray-400">No</span>
+              <span className="text-black">No</span>
             </label>
           </div>
           <div className="w-full border border-gray-200 rounded-lg overflow-hidden mt-2">
@@ -314,12 +346,14 @@ export default function TuteeForm() {
             </p>
             <input
               type="text"
-              name="Signature"
+              name="signature"
               value={formData.signature}
               onChange={handleChange}
               placeholder="Enter Full Name"
-              className="w-full p-2 bg-white border border-gray-300 rounded-md text-gray-400 placeholder-gray-400 focus:outline-none"
+              className="w-full p-2 bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none"
+              required
             />
+
           </div>
         </div>
 
