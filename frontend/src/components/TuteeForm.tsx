@@ -1,6 +1,24 @@
 import React, { useState } from "react";
 import Select from "react-select";
 
+type FormData = {
+    childFirstName: string;
+    childLastName: string;
+    gender: string;
+    grade: string;
+    specialNeeds: string;
+    specialNeedsInfo: string;
+    parentFirstName: string;
+    parentLastName: string;
+    phone: string;
+    email: string;
+    subject: string | null; // Can be string or null for select options
+    tutoringMode: string | null; // Can be string or null for select options
+    additionalInfo: string;
+    agreement: string;
+    signature: string;
+  };
+
 const subject_options = [
   { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
   { value: "Reading", label: "Reading (Grades 3 and up)" },
@@ -22,43 +40,118 @@ const tutoring_mode_options = [
 ];
 
 export default function TuteeForm() {
+
+
+    const [formData, setFormData] = useState({
+        childFirstName: "",
+        childLastName: "",
+        gender: "",
+        grade: "",
+        specialNeeds: "",
+        specialNeedsInfo: "",
+        parentFirstName: "",
+        parentLastName: "",
+        phone: "",
+        email: "",
+        subject: null,
+        tutoringMode: null,
+        additionalInfo: "",
+        agreement: "",
+        signature: "",
+      });
+
   const [showTextBox, setShowTextBox] = useState(false);
 
-  const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setShowTextBox(event.target.value === "yes");
+  const handleRadioChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (name === "specialNeeds") {
+      setShowTextBox(value === "yes");
+    }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSelectChange = (selectedOption, { name }) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: selectedOption,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("Form Data Submitted:", formData);
+
+    // Clear the form data
+    setFormData({
+      childFirstName: "",
+      childLastName: "",
+      gender: "",
+      grade: "",
+      specialNeeds: "",
+      specialNeedsInfo: "",
+      parentFirstName: "",
+      parentLastName: "",
+      phone: "",
+      email: "",
+      subject: null,
+      tutoringMode: null,
+      additionalInfo: "",
+      agreement: "",
+      signature: "",
+    });
+    setShowTextBox(false); // Reset the special needs text box visibility
   };
 
   return (
+
+
     <div className="pt-10 bg-[#FAFCFE] min-h-screen">
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
 
-      <div className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
+      <form onSubmit={handleSubmit} className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
+        {/* Child Information */}
         <div className="bg-white px-3">
-          <h2 className="text-xl font-bold text-left pb-3">
-            Child Information
-          </h2>
-          <form className="grid grid-cols-2 gap-3">
+          <h2 className="text-xl font-bold text-left pb-3">Child Information</h2>
+          <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "First Name", id: "firstName" },
-              { label: "Last Name", id: "lastName" },
+              { label: "First Name", id: "childFirstName" },
+              { label: "Last Name", id: "childLastName" },
               { label: "Gender", id: "gender" },
               { label: "Grade", id: "grade" },
-            ].map((field) => (
-              <div className="flex flex-col" key={field.id}>
-                <label htmlFor={field.id} className="pb-1">
-                  {field.label}
-                </label>
-                <input
-                  type="text"
-                  id={field.id}
-                  name={field.id}
-                  placeholder="Enter a description..."
-                  required
-                  className="rounded-lg border border-gray-300 p-2"
-                />
-              </div>
-            ))}
-          </form>
+            ].map((field) => {
+                // Store the current field id in a variable
+                const currentFieldId = field.id;
+            
+                return (
+                  <div className="flex flex-col" key={currentFieldId}>
+                    <label htmlFor={currentFieldId} className="pb-1">
+                      {field.label}
+                    </label>
+                    <input
+                      type="text"
+                      id={currentFieldId}
+                      name={currentFieldId}
+                      value={currentFieldId}
+                      onChange={handleChange}
+                      placeholder="Enter a description..."
+                      required
+                      className="rounded-lg border border-gray-300 p-2"
+                    />
+                  </div>
+                );
+              })}
+          </div>
           <div className="pt-3 flex flex-col">
             <label>Special Needs?</label>
             <div className="flex gap-3 pt-1">
@@ -67,6 +160,7 @@ export default function TuteeForm() {
                   type="radio"
                   name="specialNeeds"
                   value="yes"
+                  checked={formData.specialNeeds === "yes"}
                   onChange={handleRadioChange}
                   required
                 />{" "}
@@ -77,6 +171,7 @@ export default function TuteeForm() {
                   type="radio"
                   name="specialNeeds"
                   value="no"
+                  checked={formData.specialNeeds === "no"}
                   onChange={handleRadioChange}
                 />{" "}
                 No
@@ -86,122 +181,125 @@ export default function TuteeForm() {
               <input
                 type="text"
                 placeholder="Please specify"
+                name="specialNeedsInfo"
+                value={formData.specialNeedsInfo}
+                onChange={handleChange}
                 className="mt-2 p-2 border border-gray-300 rounded"
               />
             )}
           </div>
         </div>
-      </div>
 
-      <div className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
-        <div className="bg-white px-3 space-y-2">
-          <h2 className="text-xl font-bold text-left pb-3">
-            Parent Information
-          </h2>
-          <form className="grid grid-cols-2 gap-3">
+        {/* Parent Information */}
+        <div className="bg-white px-3 space-y-2 mt-8">
+          <h2 className="text-xl font-bold text-left pb-3">Parent Information</h2>
+          <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "First Name", id: "firstName" },
-              { label: "Last Name", id: "lastName" },
+              { label: "First Name", id: "parentFirstName" },
+              { label: "Last Name", id: "parentLastName" },
               { label: "Phone Number", id: "phone" },
               { label: "Email", id: "email" },
-            ].map((field) => (
-              <div className="flex flex-col" key={field.id}>
-                <label htmlFor={field.id} className="pb-1">
-                  {field.label}
-                </label>
-                <input
-                  type={field.id === "phone" ? "number" : "text"}
-                  id={field.id}
-                  name={field.id}
-                  placeholder={`Enter ${field.label.toLowerCase()}...`}
-                  required
-                  className="rounded-lg border border-gray-300 p-2"
-                />
-              </div>
-            ))}
-          </form>
+            ].map((field) => {
+                // Store the current field id in a variable
+                const currentFieldId = field.id;
+            
+                return (
+                  <div className="flex flex-col" key={currentFieldId}>
+                    <label htmlFor={currentFieldId} className="pb-1">
+                      {field.label}
+                    </label>
+                    <input
+                      type="text"
+                      id={currentFieldId}
+                      name={currentFieldId}
+                      onChange={handleChange}
+                      placeholder="Enter a description..."
+                      required
+                      className="rounded-lg border border-gray-300 p-2"
+                    />
+                  </div>
+                );
+              })}
+          </div>
         </div>
-      </div>
 
-      <div className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
-        <div className="bg-white px-3">
+        {/* Tutoring Preference */}
+        <div className="bg-white px-3 mt-8">
           <div className="space-y-4">
-            <h1 className="text-xl text-left pb-3 font-bold">
-              Tutoring Preference
-            </h1>
-
+            <h1 className="text-xl text-left pb-3 font-bold">Tutoring Preference</h1>
             <div className="space-y-2">
               <h1 className="text-base space-y-2">Subject</h1>
               <Select
-                name="Subjects"
+                name="subject"
                 options={subject_options}
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
+                value={subject_options.find((option) => option.value === formData.subject)}
+                onChange={handleSelectChange}
               />
             </div>
-
             <div className="space-y-2">
               <h1 className="text-base space-y-2">
                 What are your preferences regarding in-person tutoring? (Please
-                note: students must come to Tufts campus to be tutored in
-                person)
+                note: students must come to Tufts campus to be tutored in person)
               </h1>
               <Select
-                name="Subjects"
+                name="tutoringModes"
                 options={tutoring_mode_options}
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
+                value={tutoring_mode_options.find((option) => option.value === formData.tutoringMode)}
+                onChange={handleSelectChange}
               />
             </div>
-
             <div className="space-y-2">
-              <h1 className="text-base">
-                Anything else you would like to let us know?
-              </h1>
+              <h1 className="text-base">Anything else you would like to let us know?</h1>
               <input
                 type="text"
+                name="additionalInfo"
+                value={formData.additionalInfo}
+                onChange={handleChange}
                 placeholder="Enter a description..."
                 className="w-full p-2 bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none"
               />
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
-        <div className="bg-white px-3">
+        {/* Agreement */}
+        <div className="bg-white px-3 mt-8">
           <h1 className="text-xl text-left pb-3 font-bold">Agreement</h1>
-          <p>
-            I understand and agree to the "Tufts Campus - Minor" waiver (shown
-            below)
-          </p>
+          <p>I understand and agree to the "Tufts Campus - Minor" waiver (shown below)</p>
           <div className="flex space-x-2 py-2">
             <label className="inline-flex items-center space-x-3 text-black">
               <input
                 type="radio"
                 name="agreement"
                 value="Yes"
+                checked={formData.agreement === "Yes"}
+                onChange={handleRadioChange}
                 className="w-4 h-4 text-gray-400 bg-gray-100 border-gray-400"
               />
               <span className="text-gray-400">Yes</span>
             </label>
             <label
               htmlFor="radio-2"
-              className="text-gray-400 inline-flex items-center space-x-3 "
+              className="text-gray-400 inline-flex items-center space-x-3"
             >
               <input
                 type="radio"
                 name="agreement"
                 value="No"
+                checked={formData.agreement === "No"}
+                onChange={handleRadioChange}
                 required
                 className="w-4 h-4 text-gray-400 bg-gray-100 border-gray-400 focus:ring-gray-400"
               />
               <span className="text-gray-400">No</span>
             </label>
           </div>
-
           <div className="w-full border border-gray-200 rounded-lg overflow-hidden mt-2">
             <iframe
               src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210101201653/PDF.pdf"
@@ -209,7 +307,6 @@ export default function TuteeForm() {
               title="Tutor Code of Conduct"
             />
           </div>
-
           <div className="pt-4 space-y-2">
             <p className="text-black text-bold">
               Electronic Signature (Please note that your electronic signature
@@ -217,17 +314,24 @@ export default function TuteeForm() {
             </p>
             <input
               type="text"
+              name="Signature"
+              value={formData.signature}
+              onChange={handleChange}
               placeholder="Enter Full Name"
               className="w-full p-2 bg-white border border-gray-300 rounded-md text-gray-400 placeholder-gray-400 focus:outline-none"
             />
           </div>
         </div>
-      </div>
-      <div className="flex justify-center mt-4 mb-8">
-        <button className="bg-blue-900 text-white font-medium py-2 px-6 rounded-full hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-50">
-          Submit
-        </button>
-      </div>
+
+        <div className="flex justify-center mt-4 mb-8">
+          <button
+            type="submit"
+            className="bg-blue-900 text-white font-medium py-2 px-6 rounded-full hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-50"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
