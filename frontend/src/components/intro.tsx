@@ -2,8 +2,8 @@ import Intropage_Picture from "@/assets/images/Intropage_Picture.svg";
 
 export default function Intro() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-      <div className="flex flex-row items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#ffffff] w-full">
+      <div className="flex flex-row items-center justify-center p-16 md:p-0">
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">
             <span className="font-interBlack text-lg mr-2 text-gray-700">
@@ -14,7 +14,7 @@ export default function Intro() {
               style={{ width: "40px" }}
             ></div>
           </div>
-          <p className="font-interRegular font-bold italic text-left text-[3.5rem] w-[600px] mb-6">
+          <p className="font-interRegular font-bold italic text-left text-[3.5rem] md:w-[600px] mb-6">
             Leonard Carmichael Society Tutoring
           </p>
           <button className="font-inter bg-[#BFDBF7] hover:bg-blue-300 w-[180px] rounded-full font-semibold py-3">
@@ -24,7 +24,7 @@ export default function Intro() {
         <img
           src={Intropage_Picture}
           alt="Intropage Picture"
-          className="w-[500px] h-[500px]"
+          className="w-[500px] h-[500px] hidden xl:block"
         />
       </div>
     </div>
