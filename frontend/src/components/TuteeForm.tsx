@@ -42,6 +42,7 @@ const tutoring_mode_options = [
 
 export default function TuteeForm() {
     const [showTextBox, setShowTextBox] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     //variable that holds form data
     const [formData, setFormData] = useState<FormData>({
@@ -100,16 +101,47 @@ export default function TuteeForm() {
 
     //ensure all required fields are filled out, ensure that user agrees to waiver
     const validateForm = (): boolean => {
+      /////
+      const requiredFields = [
+        "childFirstName",
+        "childLastName",
+        "gender",
+        "grade",
+        "parentFirstName",
+        "parentLastName",
+        "phone",
+        "email",
+        "subject",
+        "tutoringMode",
+        "agreement",
+        "signature",
+      ];
+  
+      const invalidFields: string[] = [];
+      for (const field of requiredFields) {
+        if (!formData[field as keyof FormData]) {
+          invalidFields.push(field);
+        }
+      }
+  
+      if (invalidFields.length > 0) {
+        setErrorMessage(
+          `Please fill out the following fields: ${invalidFields.join(", ")}`
+        );
+        return false;
+      }
+  /////
         let isValid = true;
 
         if (formData.agreement !== "Yes") {
         isValid = false;
         }
-
+////
+        setErrorMessage(""); 
+////
         return isValid;
     };
-
-
+    
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -138,6 +170,7 @@ export default function TuteeForm() {
         signature: "",
         });
         setShowTextBox(false);
+        setErrorMessage("");
     };
 
 
@@ -147,6 +180,12 @@ export default function TuteeForm() {
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
 
       <form onSubmit={handleSubmit} className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
+        {/* Display Error Message */}
+        {errorMessage && (
+          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {errorMessage}
+          </div>
+        )}
         {/* Child Information */}
         <div className="bg-white px-3">
           <h2 className="text-xl font-bold text-left pb-3">Child Information</h2>
