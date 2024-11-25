@@ -3,7 +3,8 @@ import Intropage_Picture from "@/assets/images/Intropage_Picture.svg";
 export default function Intro() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#ffffff] w-full">
-      <div className="flex flex-row items-center justify-center p-16 md:p-0">
+      {/*there was a margin error here before, had to force just a left margin to get it working*/}
+      <div className="flex flex-row items-center justify-center pl-8 md:p-0"> 
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">
             <span className="font-interBlack text-lg mr-2 text-gray-700">

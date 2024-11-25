@@ -6,7 +6,7 @@ import TutorTutee from "../assets/images/homepage_tutor_tutee_2.svg";
 
 const GetInvolved = () => {
     return (
-      <div className="bg-[#FBFAFC] p-24">
+      <div className="bg-[#FBFAFC] p-12 md:p-24">
         <div className="max-w-6xl mx-auto space-y-15">
             <div className="flex items-center justify-center pb-10">
                 <div className="border-b-2 border-[#E0D1ED]" style={{ width: "40px" }}></div>

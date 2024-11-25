@@ -7,7 +7,7 @@ const PastTutors = () => {
     return(
         <div className="m-6 lg:m-24 relative">
 
-            <div className="absolute size-40 lg:size-60 top-10 lg:top-0 right-0 z-0">
+            <div className="absolute size-40 lg:size-60 top-20 lg:top-0 right-0 z-0">
             <img src={Pen} alt="Pen" style={{ width: '250px', height: 'auto' }}/>
             </div>
             <div className="absolute -bottom-10 left-0 z-0">
