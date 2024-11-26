@@ -1,5 +1,5 @@
 import TuteeInfoBox from "./TuteeInfoBox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { tuteeBoxProps } from "../types";
 
 // Add these constants at the top of the file, after imports
@@ -22,68 +22,21 @@ type TabType = (typeof TABS)[keyof typeof TABS];
 
 export default function TuteeTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
-  const tutees: tuteeBoxProps[] = [
-    {
-      date: "10/31/2024",
-      first_name: "Moya",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gmaiasdasdl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: true,
-    },
-    {
-      date: "10/31/2024",
-      first_name: "Bob",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: false,
-    },
-    {
-      date: "10/31/2024",
-      first_name: "Billy",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: true,
-    },
-    {
-      date: "10/31/2024",
-      first_name: "Brenda",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: true,
-    },
-  ];
+  const [tutees, setTutees] = useState<tuteeBoxProps[]>([]);
+
+  useEffect(() => {
+    const fetchTutees = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/tutees");
+        const data = await response.json();
+        setTutees(data);
+      } catch (error) {
+        console.error("Error fetching tutees:", error);
+      }
+    };
+
+    fetchTutees();
+  }, []);
 
   return (
     <div className="flex flex-col justify-center items-center w-full">

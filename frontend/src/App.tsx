@@ -7,6 +7,7 @@ import SethRachelButton from "./components/buttonSethRachel";
 import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
+import Demo from "./components/request_demo";
 
 /* General View */
 import HomePage from "./components/homePage";
@@ -176,6 +177,15 @@ function App() {
           element={
             <div>
               <TuteeTable />
+            </div>
+          }
+        ></Route>
+
+        <Route
+          path="/demo"
+          element={
+            <div>
+              <Demo />
             </div>
           }
         ></Route>

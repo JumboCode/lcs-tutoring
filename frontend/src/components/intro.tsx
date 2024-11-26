@@ -1,4 +1,5 @@
 import Intropage_Picture from "@/assets/images/Intropage_Picture.svg";
+import { Link } from "react-router-dom";
 
 export default function Intro() {
   return (
@@ -14,12 +15,16 @@ export default function Intro() {
               style={{ width: "40px" }}
             ></div>
           </div>
+
           <p className="font-interRegular font-bold italic text-left text-[3.5rem] w-[600px] mb-6">
             Leonard Carmichael Society Tutoring
           </p>
-          <button className="font-inter bg-[#BFDBF7] hover:bg-blue-300 w-[180px] rounded-full font-semibold py-3">
+          <Link
+            className="font-inter bg-[#BFDBF7] hover:bg-blue-300 w-[180px] rounded-full font-semibold py-3 text-center"
+            to="/tutor-form"
+          >
             Become a Tutor!
-          </button>
+          </Link>
         </div>
         <img
           src={Intropage_Picture}

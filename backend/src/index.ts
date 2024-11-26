@@ -15,6 +15,25 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
+app.get("/tutees", async (req: Request, res: Response) => {
+    try {
+      const tutees = await db.select().from(tuteeTable);
+      res.json(tutees);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error fetching tutees");
+    }
+  });
+
+app.get("/demo/:id", async (req: Request, res: Response) => {
+    const id = req.params.id;
+    try {
+        res.send(`Here is our message: ${id}`);
+    } catch (error) {
+        console.error(error);
+    }
+})
+
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
