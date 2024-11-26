@@ -8,7 +8,7 @@ export default function ServicesBoxes() {
       <div className="absolute bottom-[-30px] right-0 z-0">
         <img src={Ruler} alt="Triangular Ruler" />
       </div>
-      <div className="absolute top-15 left-1/6 z-0">
+      <div className="absolute top-[7vh] left-[-10vh] md:left-[10vh] lg:left-[5vh] z-0">
         <img src={Notepad} alt="Notepad" />
       </div>
 
