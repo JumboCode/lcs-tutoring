@@ -4,11 +4,11 @@ import Ruler from "../assets/images/homepage_ruler.svg";
 
 export default function ServicesBoxes() {
   return (
-    <div className="max-w-6xl mx-auto py-8 relative mb-16">
-      <div className="absolute bottom-[-50px] right-[-75px] z-0">
-        <img src={Ruler} alt="Triangular Ruler" />
+    <div className="w-full max-w-6xl mx-auto py-8 relative mb-16">
+      <div className="absolute bottom-[-30px] right-0 z-0">
+      <img src={Ruler} alt="Triangular Ruler" />
       </div>
-      <div className="absolute top-15 left-[-75px] z-0">
+      <div className="absolute top-15 left-1/6 z-0">
         <img src={Notepad} alt="Notepad" />
       </div>
 
@@ -18,7 +18,7 @@ export default function ServicesBoxes() {
       >
         OUR SERVICES
       </h1>
-      <div className="flex flex-row flex-wrap justify-center gap-12">
+      <div className="flex flex-row flex-wrap justify-center gap-12 m-6">
         <div id="box 1" className="flex flex-col rounded-lg box-style z-10">
           <h2 className="header-style">Weekly Tutoring Sessions</h2>
           <p className="text-style">

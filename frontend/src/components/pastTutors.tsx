@@ -5,12 +5,12 @@ import Notebook from "../assets/images/homepage_notebook.svg";
 
 const PastTutors = () => {
     return(
-        <div className="m-24 relative">
+        <div className="m-6 lg:m-24 relative">
 
-            <div className="absolute top-0 right-16 z-0">
+            <div className="absolute size-40 lg:size-60 top-20 lg:top-0 right-0 z-0">
             <img src={Pen} alt="Pen" style={{ width: '250px', height: 'auto' }}/>
             </div>
-            <div className="absolute bottom-0 left-0 z-0">
+            <div className="absolute -bottom-10 left-0 z-0">
             <img src={Notebook} alt="Blue notebook" style={{ width: '250px', height: 'auto' }}/>
             </div>
 
@@ -25,7 +25,7 @@ const PastTutors = () => {
                 </div>
 
             </div>
-            <div className="flex flex-row justify-center m-10 space-x-10 relative z-5">
+            <div className="flex flex-col lg:flex-row justify-center m-10 space-y-10 lg:space-y-0 lg:space-x-10 relative z-5">
                 <Testimonial 
                     name="Anna" 
                     message="I love “AHA” moments. Once, I was explaining to someone how to deal with exponents in fractions, and I saw the exact moment it clicked in their brain. Knowing that I helped someone finally understand something that was plaguing them was extremely rewarding." 
