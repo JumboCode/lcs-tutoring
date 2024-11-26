@@ -20,22 +20,20 @@ const COLORS = {
 
 type TabType = (typeof TABS)[keyof typeof TABS];
 
+const getTutees = async () => {
+  const response = (await fetch("http://localhost:3000/tutees")).json();
+  return response;
+};
+
 export default function TuteeTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
   const [tutees, setTutees] = useState<tuteeBoxProps[]>([]);
 
   useEffect(() => {
-    const fetchTutees = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/tutees");
-        const data = await response.json();
-        setTutees(data);
-      } catch (error) {
-        console.error("Error fetching tutees:", error);
-      }
-    };
-
-    fetchTutees();
+    getTutees().then((tutees) => {
+      console.log(tutees);
+      setTutees(tutees);
+    });
   }, []);
 
   return (
