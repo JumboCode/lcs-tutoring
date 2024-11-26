@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 
 export default function Intro() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FFFFFF]">
-      <div className="flex flex-row items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-[#ffffff] w-full">
+      {/*there was a margin error here before, had to force just a left margin to get it working*/}
+      <div className="flex flex-row items-center justify-center pl-8 md:p-0">
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">
             <span className="font-interBlack text-lg mr-2 text-gray-700">
@@ -15,8 +16,7 @@ export default function Intro() {
               style={{ width: "40px" }}
             ></div>
           </div>
-
-          <p className="font-interRegular font-bold italic text-left text-[3.5rem] w-[600px] mb-6">
+          <p className="font-interRegular font-bold italic text-left text-[3.5rem] md:w-[600px] mb-6">
             Leonard Carmichael Society Tutoring
           </p>
           <Link
@@ -29,7 +29,7 @@ export default function Intro() {
         <img
           src={Intropage_Picture}
           alt="Intropage Picture"
-          className="w-[500px] h-[500px]"
+          className="w-[500px] h-[500px] hidden xl:block"
         />
       </div>
     </div>
