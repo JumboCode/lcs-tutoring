@@ -1,5 +1,5 @@
 import TuteeInfoBox from "./TuteeInfoBox";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { tuteeBoxProps } from "../types";
 
 // Add these constants at the top of the file, after imports
@@ -20,70 +20,82 @@ const COLORS = {
 
 type TabType = (typeof TABS)[keyof typeof TABS];
 
+const getTutees = async () => {
+  const response = (await fetch("http://localhost:3000/tutees")).json();
+  return response;
+};
+
 export default function TuteeTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
-  const tutees: tuteeBoxProps[] = [
-    {
-      date: "10/31/2024",
-      first_name: "Moya",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gmaiasdasdl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: true,
-    },
-    {
-      date: "10/31/2024",
-      first_name: "Bob",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: false,
-    },
-    {
-      date: "10/31/2024",
-      first_name: "Billy",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: true,
-    },
-    {
-      date: "10/31/2024",
-      first_name: "Brenda",
-      last_name: "Techakalayatum",
-      parent_email: "hello@gl.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      phone: "(123) 456-7890",
-      matched: true,
-    },
-  ];
+  const [tutees, setTutees] = useState<tuteeBoxProps[]>([]);
+  useEffect(() => {
+    getTutees().then((tutees) => {
+      console.log(tutees);
+      setTutees(tutees);
+    });
+  }, []);
+  // const tutees: tuteeBoxProps[] = [
+  //   {
+  //     date: "10/31/2024",
+  //     first_name: "Moya",
+  //     last_name: "Techakalayatum",
+  //     parent_email: "hello@gmaiasdasdl.com",
+  //     subject: "Math, English",
+  //     grade: "8",
+  //     special_needs: "Yes",
+  //     gender: "Female",
+  //     tutoring_mode: "Hybrid",
+  //     parent_first_name: "Alice",
+  //     parent_last_name: "Bob",
+  //     phone: "(123) 456-7890",
+  //     matched: true,
+  //   },
+  //   {
+  //     date: "10/31/2024",
+  //     first_name: "Bob",
+  //     last_name: "Techakalayatum",
+  //     parent_email: "hello@gl.com",
+  //     subject: "Math, English",
+  //     grade: "8",
+  //     special_needs: "Yes",
+  //     gender: "Female",
+  //     tutoring_mode: "Hybrid",
+  //     parent_first_name: "Alice",
+  //     parent_last_name: "Bob",
+  //     phone: "(123) 456-7890",
+  //     matched: false,
+  //   },
+  //   {
+  //     date: "10/31/2024",
+  //     first_name: "Billy",
+  //     last_name: "Techakalayatum",
+  //     parent_email: "hello@gl.com",
+  //     subject: "Math, English",
+  //     grade: "8",
+  //     special_needs: "Yes",
+  //     gender: "Female",
+  //     tutoring_mode: "Hybrid",
+  //     parent_first_name: "Alice",
+  //     parent_last_name: "Bob",
+  //     phone: "(123) 456-7890",
+  //     matched: true,
+  //   },
+  //   {
+  //     date: "10/31/2024",
+  //     first_name: "Brenda",
+  //     last_name: "Techakalayatum",
+  //     parent_email: "hello@gl.com",
+  //     subject: "Math, English",
+  //     grade: "8",
+  //     special_needs: "Yes",
+  //     gender: "Female",
+  //     tutoring_mode: "Hybrid",
+  //     parent_first_name: "Alice",
+  //     parent_last_name: "Bob",
+  //     phone: "(123) 456-7890",
+  //     matched: true,
+  //   },
+  // ];
 
   return (
     <div className="flex flex-col justify-center items-center w-full">
