@@ -18,61 +18,50 @@ import Header from "./components/header";
 import Footer from "./components/Footer";
 
 /* Admin View */
-import TuteeInfoBox from "./components/TuteeInfoBox";
-import TuteeSuggestionBox from "./components/tuteeSuggestionBox";
 import FilterModal from "./components/filters";
 import filtersIcon from "./assets/images/filter/filter.svg";
 import NavigationBar from "./components/navigationBar";
-import MatchSuggestionBlock from "./components/matchSuggestionBlock";
 import TuteeTable from "./components/TuteeTable";
+import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 
 /* Type definitions */
-import { tutorInfo } from "./types";
-import { tuteeInfo } from "./types";
+import { tutorBoxProps, tuteeBoxProps } from "./types";
 
 function App() {
   const [modalShow, setModalShow] = useState(false);
 
-  const tutor_info: tutorInfo = {
-    first_name: "Moya",
-    last_name: "Techakalayatum",
-    email: "hello@gmail.com",
-    phone: "(123) 456-7890",
-    subject: ["Math", "English"],
-    grade: ["8th", "9th", "10th"],
-    open_to_disability: true,
+  const tutor_info: tutorBoxProps = {
+    id: "1234567",
+    date: "2024-11-26",
+    first_name: "John",
+    last_name: "Doe",
+    email: "john.doe@example.com",
+    subject_pref: ["Math", "Science", "English"],
+    pronouns: "he/him",
+    major: "Computer Science",
+    year_grad: "2025",
+    phone: "123-456-7890",
+    previous_tutee: false,
+    grade_level_pref: ["7", "8", "9"],
+    num_tutees: 2,
+    disability_pref: true,
+    tutoring_mode: "In-person",
+  };
+
+  const tutee_info: tuteeBoxProps = {
+    date: "10/31/2024",
+    tutee_first_name: "Moya",
+    tutee_last_name: "Techakalayatum",
+    parent_email: "hello@gmaiasdasdl.com",
+    subject: "Math, English",
+    grade: "8",
+    special_needs: "Yes",
+    gender: "Female",
     tutoring_mode: "Hybrid",
-  };
-
-  const tutee1: tuteeInfo = {
-    first_name: "Tutee",
-    last_name: "Lastname 1",
-    email: "parent@gmail.com",
-    subject: "Math",
-    grade: "4th",
-    special_needs: "No",
-    tutoring_mode: "In-person",
-  };
-
-  const tutee2: tuteeInfo = {
-    first_name: "Tutee",
-    last_name: "Lastname 2",
-    email: "parent@gmail.com",
-    subject: "English",
-    grade: "4th",
-    special_needs: "No",
-    tutoring_mode: "In-person",
-  };
-
-  const tutee3: tuteeInfo = {
-    first_name: "Tutee",
-    last_name: " Lastname 3",
-    email: "parent@gmail.com",
-    subject: "English",
-    grade: "3rd",
-    special_needs: "No",
-    tutoring_mode: "In-person",
+    parent_first_name: "Alice",
+    parent_last_name: "Bob",
+    parent_phone: "(123) 456-7890",
   };
 
   return (
@@ -177,6 +166,24 @@ function App() {
           element={
             <div>
               <TuteeTable />
+            </div>
+          }
+        ></Route>
+
+        <Route
+          path="/approvedmatchestable"
+          element={
+            <div>
+              <ApprovedMatches />
+            </div>
+          }
+        ></Route>
+
+        <Route
+          path="/tutortable"
+          element={
+            <div>
+              <TutorTable />
             </div>
           }
         ></Route>

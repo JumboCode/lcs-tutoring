@@ -5,6 +5,7 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
+  approvedMatchesTable
 } from "./db/schema";
 import { or, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
@@ -29,15 +30,52 @@ app.get("/demo/:id", async (req: Request, res: Response) => {
     }
 })
 
+/* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/tutees", async (req: Request, res: Response) => {
   try {
-    const tutees = await fetchAllTutees();
-    res.send(tutees);
+    const matchedTutees = await db
+      .select()
+      .from(tuteeTable)
+      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_or_tutor_id));
+
+    const unmatchedTutees = await db
+      .select()
+      .from(tuteeTable)
+      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_or_tutor_id));
+
+    res.send({
+      matchedTutees: matchedTutees.map((row) => row.tutee),
+      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching tutees");
   }
 });
+
+/* GET endpoint -- returns all the matched and unmatched tutors */
+app.get("/tutors", async (req: Request, res: Response) => {
+    try {
+      const matchedTutors = await db
+        .select()
+        .from(tutorTable)
+        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutee_or_tutor_id));
+  
+      const unmatchedTutors = await db
+        .select()
+        .from(tutorTable)
+        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
+  
+      res.send({
+        matchedTutors: matchedTutors.map((row) => row.tutor),
+        unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error fetching tutors");
+    }
+  });
+
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
@@ -112,12 +150,12 @@ async function moveToMatched(id: string) {
     const query = await db
       .select()
       .from(unmatchedTable)
-      .where(eq(unmatchedTable.id, id)); //returns an array with only one element
+      .where(eq(unmatchedTable.tutee_or_tutor_id, id)); //returns an array with only one element
     const remain = query.length - 1;
     if (query.length > 0) {
       await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
 
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.id, id));
+      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_or_tutor_id, id));
 
       for (let i = 0; i < query.length - 1; i++) {
         //adding rows back in
@@ -148,7 +186,7 @@ async function moveToUnmatched(id: string) {
     const query = await db
       .select()
       .from(matchedTable)
-      .where(eq(matchedTable.id, id));
+      .where(eq(matchedTable.tutee_or_tutor_id, id));
     console.log(query);
 
     if (!query) {
@@ -156,7 +194,7 @@ async function moveToUnmatched(id: string) {
     }
 
     await db.insert(unmatchedTable).values(query);
-    await db.delete(matchedTable).where(eq(matchedTable.id, id));
+    await db.delete(matchedTable).where(eq(matchedTable.tutee_or_tutor_id, id));
   }
 }
 

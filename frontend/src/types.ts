@@ -1,7 +1,7 @@
 export type tuteeBoxProps = {
   date: string;
-  first_name: string;
-  last_name: string;
+  tutee_first_name: string;
+  tutee_last_name: string;
   parent_email: string;
   subject: string;
   grade: string;
@@ -10,8 +10,25 @@ export type tuteeBoxProps = {
   tutoring_mode: string;
   parent_first_name: string;
   parent_last_name: string;
+  parent_phone: string;
+};
+
+export type tutorBoxProps = {
+  id: string;
+  date: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  subject_pref: string[];
+  pronouns: string;
+  major: string;
+  year_grad: string;
   phone: string;
-  matched: boolean;
+  grade_level_pref: string[];
+  disability_pref: boolean;
+  tutoring_mode: string;
+  previous_tutee: boolean;
+  num_tutees: number;
 };
 
 export interface tutorInfo {
@@ -19,7 +36,7 @@ export interface tutorInfo {
   last_name: string;
   email: string;
   phone: string;
-  subject: string[]
+  subject: string[];
   grade: string[];
   open_to_disability: boolean;
   tutoring_mode: string;

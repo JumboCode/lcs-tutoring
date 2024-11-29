@@ -1,7 +1,7 @@
 // Footer.tsx
 import GrayLogo from "../assets/images/gray_logo.svg";
 import { Instagram } from "lucide-react";
-import "./Footer.css";
+
 export default function Footer() {
   return (
     <div className="flex px-20 py-8 flex-row bg-blue-100 h-80">

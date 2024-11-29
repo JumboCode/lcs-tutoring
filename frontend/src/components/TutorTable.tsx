@@ -1,6 +1,6 @@
-import TuteeInfoBox from "./TuteeInfoBox";
+import TutorInfoBox from "./TutorInfoBox";
 import { useState, useEffect } from "react";
-import { tuteeBoxProps } from "../types";
+import { tutorBoxProps } from "../types";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -20,25 +20,25 @@ const COLORS = {
 
 type TabType = (typeof TABS)[keyof typeof TABS];
 
-export default function TuteeTable() {
+export default function TutorTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
-  const [unmatchedTutees, setUnmatchedTutees] = useState<tuteeBoxProps[]>([]);
-  const [matchedTutees, setMatchedTutees] = useState<tuteeBoxProps[]>([]);
+  const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
+  const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
 
   useEffect(() => {
-    const fetchTutees = async () => {
+    const fetchTutors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/tutees");
+        const response = await fetch("http://localhost:3000/tutors");
         const data = await response.json();
-        const { matchedTutees, unmatchedTutees } = data;
-        setMatchedTutees(matchedTutees);
-        setUnmatchedTutees(unmatchedTutees);
+        const { matchedTutors, unmatchedTutors } = data;
+        setMatchedTutors(matchedTutors);
+        setUnmatchedTutors(unmatchedTutors);
       } catch (error) {
-        console.error("Error fetching tutees:", error);
+        console.error("Error fetching tutors:", error);
       }
     };
 
-    fetchTutees();
+    fetchTutors();
   }, []);
 
   return (
@@ -69,7 +69,7 @@ export default function TuteeTable() {
                     : COLORS.INACTIVE_BG)
                 }
               >
-                {unmatchedTutees.length}
+                {unmatchedTutors.length}
               </div>
             </div>
             <div
@@ -93,7 +93,7 @@ export default function TuteeTable() {
                     : COLORS.INACTIVE_BG)
                 }
               >
-                {matchedTutees.length}
+                {matchedTutors.length}
               </div>
             </div>
             <div
@@ -124,7 +124,7 @@ export default function TuteeTable() {
         </div>
         <table className="w-full">
           <thead>
-            <tr className="h-[35px] bg-gray-100/50">
+            <tr className="h-[35px] bg-gray-200">
               <td className="px-3 w-1/5">
                 <h1 className="text-gray-500 text-lg">Date</h1>
               </td>
@@ -132,10 +132,10 @@ export default function TuteeTable() {
                 <h1 className="text-gray-500 text-lg ">Name</h1>
               </td>
               <td className="w-1/5">
-                <h1 className="text-gray-500 text-lg ">Subject</h1>
+                <h1 className="text-gray-500 text-lg ">Tufts ID</h1>
               </td>
               <td className="w-1/5">
-                <h1 className="text-gray-500 text-lg ">Grade</h1>
+                <h1 className="text-gray-500 text-lg ">Subjects</h1>
               </td>
               <td className="w-1/5"></td>
             </tr>
@@ -143,8 +143,8 @@ export default function TuteeTable() {
         </table>
         {isActive === TABS.UNMATCHED && (
           <div>
-            {unmatchedTutees.map((box_props, index) => (
-              <TuteeInfoBox
+            {unmatchedTutors.map((box_props, index) => (
+              <TutorInfoBox
                 box_props={box_props}
                 key={index}
                 bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
@@ -154,8 +154,8 @@ export default function TuteeTable() {
         )}
         {isActive === TABS.MATCHED && (
           <div>
-            {matchedTutees.map((box_props, index) => (
-              <TuteeInfoBox
+            {matchedTutors.map((box_props, index) => (
+              <TutorInfoBox
                 box_props={box_props}
                 key={index}
                 bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
