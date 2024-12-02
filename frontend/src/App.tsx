@@ -11,7 +11,7 @@ import Demo from "./components/request_demo";
 
 /* General View */
 import HomePage from "./components/homePage";
-import TutorForm from "./components/TutorForm";
+import TutorForm from "./components/tutorForm";
 import TuteeForm from "./components/TuteeForm";
 import TeamPage from "./components/teamPage";
 import Header from "./components/header";
