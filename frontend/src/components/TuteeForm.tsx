@@ -123,7 +123,7 @@ export default function TuteeForm() {
 
         setFormData((prev) => ({
         ...prev,
-        [name]: selectedOption,
+        [name]: selectedOption ? selectedOption.value : '',
         }));
 
         setErrors((prev) => ({
@@ -339,7 +339,7 @@ export default function TuteeForm() {
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
-                value={subject_options.find((option) => option.value === formData.subject)}
+                value={subject_options.find((option) => option.value === formData.subject) || null}
                 onChange={handleSelectChange}
                 //required
               />
@@ -360,7 +360,7 @@ export default function TuteeForm() {
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
-                value={tutoring_mode_options.find((option) => option.value === formData.tutoringMode)}
+                value={tutoring_mode_options.find((option) => option.value === formData.tutoringMode)|| null}
                 onChange={handleSelectChange}
                 //required
               />
