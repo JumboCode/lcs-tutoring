@@ -2,7 +2,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import Select, {ActionMeta, SingleValue} from "react-select";
 
 //lets TypeScript know what kind of data
-type FormData = {
+interface FormData {
     childFirstName: string;
     childLastName: string;
     gender: string;
@@ -19,6 +19,8 @@ type FormData = {
     agreement: string;
     signature: string;
 };
+
+
 
 const subject_options = [
   { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
@@ -60,7 +62,10 @@ export default function TuteeForm() {
         additionalInfo: "",
         agreement: "",
         signature: "",
-    });  
+    }); 
+
+    
+     
 
 
     const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +77,10 @@ export default function TuteeForm() {
         if (name === "specialNeeds") {
         setShowTextBox(value === "yes");
         }
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "", // Clear error when user selects an option
+          }));
     };
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +89,11 @@ export default function TuteeForm() {
         ...prev,
         [name]: value,
         }));
+
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "", // Clear error when user starts typing
+          }));
     };
 
 
@@ -98,52 +112,73 @@ export default function TuteeForm() {
         }));
     };
 
-    //ensure all required fields are filled out, ensure that user agrees to waiver
-    const validateForm = (): boolean => {
-        let isValid = true;
+    const [errors, setErrors] = useState<Partial<FormData>>({
+        childFirstName: "",
+        childLastName: "",
+        gender: "",
+        grade: "",
 
-        if (formData.agreement !== "Yes") {
-        isValid = false;
-        }
+        agreement: "",
+      });
 
-        return isValid;
-    };
 
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!validateForm()) {
-            return;
+
+        const newErrors: Partial<FormData> = {};
+
+        // Check for empty fields
+        Object.keys(formData).forEach((key) => {
+        if (!formData[key as keyof typeof formData]) {
+            newErrors[key as keyof FormData] = "This is required.";
         }
-    
-        console.log("Form Data Submitted:", formData);
-    
-        //reset form
-        setFormData({
-        childFirstName: "",
-        childLastName: "",
-        gender: "",
-        grade: "",
-        specialNeeds: "",
-        specialNeedsInfo: "",
-        parentFirstName: "",
-        parentLastName: "",
-        phone: "",
-        email: "",
-        subject: "",
-        tutoringMode: "",
-        additionalInfo: "",
-        agreement: "",
-        signature: "",
         });
-        setShowTextBox(false);
+
+        if (formData.agreement !== "Yes" ) {
+            newErrors.agreement = "You must agree to proceed.";
+        }
+        
+
+
+        setErrors(newErrors);
+
+        // If no errors, process the form
+        if (Object.keys(newErrors).length === 0) {
+        console.log("Form submitted successfully:", formData);
+
+                //reset form
+                setFormData({
+                    childFirstName: "",
+                    childLastName: "",
+                    gender: "",
+                    grade: "",
+                    specialNeeds: "",
+                    specialNeedsInfo: "",
+                    parentFirstName: "",
+                    parentLastName: "",
+                    phone: "",
+                    email: "",
+                    subject: "",
+                    tutoringMode: "",
+                    additionalInfo: "",
+                    agreement: "",
+                    signature: "",
+                    });
+                    setShowTextBox(false);
+        }
+
+
+    
+
     };
 
 
   return (
 
     <div className="pt-10 bg-[#FAFCFE] min-h-screen">
+
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
 
       <form onSubmit={handleSubmit} className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
@@ -151,31 +186,35 @@ export default function TuteeForm() {
         <div className="bg-white px-3">
           <h2 className="text-xl font-bold text-left pb-3">Child Information</h2>
           <div className="grid grid-cols-2 gap-3">
+
             {[
               { label: "First Name", id: "childFirstName" },
               { label: "Last Name", id: "childLastName" },
               { label: "Gender", id: "gender" },
               { label: "Grade", id: "grade" },
-            ].map((field) => {
-                const currentFieldId = field.id as keyof FormData;
-                return (
-                  <div className="flex flex-col" key={currentFieldId}>
-                    <label htmlFor={currentFieldId} className="pb-1">
-                      {field.label}
-                    </label>
-                    <input
-                      type="text"
-                      id={currentFieldId}
-                      name={currentFieldId}
-                      onChange={handleChange}
-                      value={formData[currentFieldId]} 
-                      placeholder="Enter a description..."
-                      required
-                      className="rounded-lg border border-gray-300 p-2"
-                    />
-                  </div>
-                );
-              })}
+            ].map((field) => (
+                <div className="flex flex-col" key={field.id}>
+                <label htmlFor={field.id} className="pb-1">
+                  {field.label}
+                </label>
+                <input
+                  type="text"
+                  id={field.id}
+                  name={field.id}
+                  onChange={handleChange}
+                  value={formData[field.id as keyof FormData]} 
+                  placeholder="Enter a description..."
+                  className={`rounded-lg border p-2 ${
+                    errors[field.id as keyof FormData] ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                {errors[field.id as keyof FormData] && (
+                  <span className="text-red-500 text-sm">
+                    {errors[field.id as keyof FormData]}
+                  </span>
+                )}
+              </div>
+            ))}
           </div>
           <div className="pt-3 flex flex-col">
             <label>Special Needs?</label>
@@ -187,7 +226,7 @@ export default function TuteeForm() {
                   value="yes"
                   checked={formData.specialNeeds === "yes"}
                   onChange={handleRadioChange}
-                  required
+                  //required
                 />{" "}
                 Yes
               </label>
@@ -210,7 +249,7 @@ export default function TuteeForm() {
                 value={formData.specialNeedsInfo}
                 onChange={handleChange}
                 className="mt-2 p-2 border border-gray-300 rounded"
-                required={formData.specialNeeds === "yes"}
+                //required={formData.specialNeeds === "yes"}
               />
             )}
           </div>
@@ -225,26 +264,23 @@ export default function TuteeForm() {
               { label: "Last Name", id: "parentLastName" },
               { label: "Phone Number", id: "phone" },
               { label: "Email", id: "email" },
-            ].map((field) => {
-                const currentFieldId = field.id as keyof FormData;
-                return (
-                  <div className="flex flex-col" key={currentFieldId}>
-                    <label htmlFor={currentFieldId} className="pb-1">
-                      {field.label}
-                    </label>
-                    <input
-                      type="text"
-                      id={currentFieldId}
-                      name={currentFieldId}
-                      onChange={handleChange}
-                      value={formData[currentFieldId]} 
-                      placeholder="Enter a description..."
-                      required
-                      className="rounded-lg border border-gray-300 p-2"
-                    />
-                  </div>
-                );
-              })}
+            ].map((field) => (
+                <div className="flex flex-col" key={field.id}>
+                  <label htmlFor={field.id} className="pb-1">
+                    {field.label}
+                  </label>
+                  <input
+                    type="text"
+                    id={field.id}
+                    name={field.id}
+                    onChange={handleChange}
+                    value={formData[field.id as keyof FormData]} 
+                    placeholder="Enter a description..."
+                    className="rounded-lg border border-gray-300 p-2"
+                    //required
+                  />
+                </div>
+              ))}
           </div>
         </div>
 
@@ -264,7 +300,7 @@ export default function TuteeForm() {
                 placeholder="Select one"
                 value={subject_options.find((option) => option.value === formData.subject)}
                 onChange={handleSelectChange}
-                required
+                //required
               />
             </div>
 
@@ -282,7 +318,7 @@ export default function TuteeForm() {
                 placeholder="Select one"
                 value={tutoring_mode_options.find((option) => option.value === formData.tutoringMode)}
                 onChange={handleSelectChange}
-                required
+                //required
               />
             </div>
             <div className="space-y-2">
@@ -312,7 +348,7 @@ export default function TuteeForm() {
                 checked={formData.agreement === "Yes"}
                 onChange={handleRadioChange}
                 className="w-4 h-4 text-gray-400 bg-gray-100 border-gray-400"
-                required
+                //required
               />
               <span className="text-black">Yes</span>
             </label>
@@ -326,11 +362,14 @@ export default function TuteeForm() {
                 value="No"
                 checked={formData.agreement === "No"}
                 onChange={handleRadioChange}
-                required
+                //required
                 className="w-4 h-4 text-gray-400 bg-gray-100 border-gray-400 focus:ring-gray-400"
               />
               <span className="text-black">No</span>
             </label>
+            {errors.agreement && (
+                <span className="text-red-500 text-sm">{errors.agreement}</span>
+            )}
           </div>
           <div className="w-full border border-gray-200 rounded-lg overflow-hidden mt-2">
             <iframe
@@ -351,7 +390,7 @@ export default function TuteeForm() {
               onChange={handleChange}
               placeholder="Enter Full Name"
               className="w-full p-2 bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none"
-              required
+              //required
             />
 
           </div>
