@@ -67,23 +67,21 @@ export default function TuteeForm() {
         childLastName: "",
         gender: "",
         grade: "",
-        //specialNeeds: "",
-        //specialNeedsInfo: "",
+        specialNeeds: "",
+        specialNeedsInfo: "",
         parentFirstName: "",
         parentLastName: "",
         phone: "",
         email: "",
-        //subject: "",
-        //tutoringMode: "",
-        //additionalInfo: "",
+        subject: "",
+        tutoringMode: "",
+        additionalInfo: "",
         agreement: "",
         signature: "",
     });
 
     //for Special Needs Desc.
     const [showTextBox, setShowTextBox] = useState(false);
-
-
 
 
     const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +125,14 @@ export default function TuteeForm() {
         ...prev,
         [name]: selectedOption,
         }));
+
+        setErrors((prev) => ({
+            ...prev,
+            [name]: "",
+          }));
     };
+
+
 
     //submit function with data validation
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -138,28 +143,35 @@ export default function TuteeForm() {
 
         // check for empty fields
         Object.keys(formData).forEach((key) => {
-        if (!formData[key as keyof typeof formData]) {
-            newErrors[key as keyof FormData] = "This is required.";
+            if (
+                // Check required fields, excluding optional ones or empty optional fields
+                (formData[key as keyof typeof formData] === "" &&
+                  (key !== "specialNeedsInfo" || formData.specialNeeds === "yes") && 
+                  key !== "additionalInfo")
+              ) {
+            newErrors[key as keyof FormData] = "Field needs to be filled out.";
         }
         });
+
+        if (formData.specialNeeds === "" ) {
+            newErrors.specialNeeds = "Please select";
+        }
+        if (formData.specialNeeds === "yes" && !formData.specialNeedsInfo) {
+            newErrors.specialNeedsInfo = "Please specify.";
+        }
 
         //check that Yes has been selected for waiver agreement
         if (formData.agreement !== "Yes" ) {
             newErrors.agreement = "You must agree to proceed.";
         }
 
-        if (formData.signature === "" ) {
-            newErrors.signature = "You must enter your full name.";
-        }
-
-
 
         setErrors(newErrors);
 
+
         // if no errors, process the form
         if (Object.keys(newErrors).length === 0) {
-        console.log("Form submitted successfully:", formData);
-
+            console.log("Form submitted successfully:", formData);
                 //reset form
                 setFormData({
                     childFirstName: "",
@@ -177,10 +189,10 @@ export default function TuteeForm() {
                     additionalInfo: "",
                     agreement: "",
                     signature: "",
-                    });
-                    setShowTextBox(false);
+                });
+            setShowTextBox(false);
+            alert("Form submitted successfully!");
         }
-
     };
 
 
@@ -190,12 +202,16 @@ export default function TuteeForm() {
 
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
 
-      <form onSubmit={handleSubmit} className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
+      <form 
+        onSubmit={handleSubmit} 
+        className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300"
+      >
         {/* Child Information */}
         <div className="bg-white px-3">
-          <h2 className="text-xl font-bold text-left pb-3">Child Information</h2>
+          <h2 className="text-xl font-bold text-left pb-3">
+            Child Information
+          </h2>
           <div className="grid grid-cols-2 gap-3">
-
             {[
               { label: "First Name", id: "childFirstName" },
               { label: "Last Name", id: "childLastName" },
@@ -249,6 +265,9 @@ export default function TuteeForm() {
                 />{" "}
                 No
               </label>
+              {errors.specialNeeds && (
+                <span className="text-red-500 text-sm">{errors.specialNeeds}</span>
+            )}
             </div>
             {showTextBox && (
               <input
@@ -261,12 +280,17 @@ export default function TuteeForm() {
                 //required={formData.specialNeeds === "yes"}
               />
             )}
+            {errors.specialNeedsInfo && (
+                <span className="text-red-500 text-sm">{errors.specialNeedsInfo}</span>
+            )}
           </div>
         </div>
 
         {/* Parent Information */}
         <div className="bg-white px-3 space-y-2 mt-8">
-          <h2 className="text-xl font-bold text-left pb-3">Parent Information</h2>
+          <h2 className="text-xl font-bold text-left pb-3">
+            Parent Information
+          </h2>
           <div className="grid grid-cols-2 gap-3">
             {[
               { label: "First Name", id: "parentFirstName" },
@@ -302,7 +326,9 @@ export default function TuteeForm() {
         {/* Tutoring Preference */}
         <div className="bg-white px-3 mt-8">
           <div className="space-y-4">
-            <h1 className="text-xl text-left pb-3 font-bold">Tutoring Preference</h1>
+            <h1 className="text-xl text-left pb-3 font-bold">
+                Tutoring Preference
+            </h1>
             <div className="space-y-2">
 
               <h1 className="text-base space-y-2">Subject</h1>
@@ -317,6 +343,9 @@ export default function TuteeForm() {
                 onChange={handleSelectChange}
                 //required
               />
+              {errors.subject && (
+                <span className="text-red-500 text-sm">{errors.subject}</span>
+            )}
             </div>
 
 
@@ -335,6 +364,9 @@ export default function TuteeForm() {
                 onChange={handleSelectChange}
                 //required
               />
+              {errors.tutoringMode && (
+                <span className="text-red-500 text-sm">{errors.tutoringMode}</span>
+            )}
             </div>
             <div className="space-y-2">
               <h1 className="text-base">Anything else you would like to let us know?</h1>
@@ -352,7 +384,9 @@ export default function TuteeForm() {
 
         {/* Agreement */}
         <div className="bg-white px-3 mt-8">
-          <h1 className="text-xl text-left pb-3 font-bold">Agreement</h1>
+          <h1 className="text-xl text-left pb-3 font-bold">
+            Agreement
+          </h1>
           <p>I understand and agree to the "Tufts Campus - Minor" waiver (shown below)</p>
           <div className="flex space-x-2 py-2">
             <label className="inline-flex items-center space-x-3 text-black">
