@@ -20,8 +20,6 @@ interface FormData {
     signature: string;
 };
 
-
-
 const subject_options = [
   { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
   { value: "Reading", label: "Reading (Grades 3 and up)" },
@@ -43,7 +41,6 @@ const tutoring_mode_options = [
 ];
 
 export default function TuteeForm() {
-    const [showTextBox, setShowTextBox] = useState(false);
 
     //variable that holds form data
     const [formData, setFormData] = useState<FormData>({
@@ -64,8 +61,29 @@ export default function TuteeForm() {
         signature: "",
     }); 
 
-    
-     
+    //errors
+    const [errors, setErrors] = useState<Partial<FormData>>({
+        childFirstName: "",
+        childLastName: "",
+        gender: "",
+        grade: "",
+        //specialNeeds: "",
+        //specialNeedsInfo: "",
+        parentFirstName: "",
+        parentLastName: "",
+        phone: "",
+        email: "",
+        //subject: "",
+        //tutoringMode: "",
+        //additionalInfo: "",
+        agreement: "",
+        signature: "",
+    });
+
+    //for Special Needs Desc.
+    const [showTextBox, setShowTextBox] = useState(false);
+
+
 
 
     const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +97,7 @@ export default function TuteeForm() {
         }
         setErrors((prev) => ({
             ...prev,
-            [name]: "", // Clear error when user selects an option
+            [name]: "", // clear error when user selects an option
           }));
     };
 
@@ -92,10 +110,9 @@ export default function TuteeForm() {
 
         setErrors((prev) => ({
             ...prev,
-            [name]: "", // Clear error when user starts typing
+            [name]: "",
           }));
     };
-
 
     const handleSelectChange = (
         selectedOption: SingleValue<{ value: string; label: string }>, 
@@ -112,39 +129,34 @@ export default function TuteeForm() {
         }));
     };
 
-    const [errors, setErrors] = useState<Partial<FormData>>({
-        childFirstName: "",
-        childLastName: "",
-        gender: "",
-        grade: "",
-
-        agreement: "",
-      });
-
-
-
+    //submit function with data validation
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
 
         const newErrors: Partial<FormData> = {};
 
-        // Check for empty fields
+        // check for empty fields
         Object.keys(formData).forEach((key) => {
         if (!formData[key as keyof typeof formData]) {
             newErrors[key as keyof FormData] = "This is required.";
         }
         });
 
+        //check that Yes has been selected for waiver agreement
         if (formData.agreement !== "Yes" ) {
             newErrors.agreement = "You must agree to proceed.";
         }
-        
+
+        if (formData.signature === "" ) {
+            newErrors.signature = "You must enter your full name.";
+        }
+
 
 
         setErrors(newErrors);
 
-        // If no errors, process the form
+        // if no errors, process the form
         if (Object.keys(newErrors).length === 0) {
         console.log("Form submitted successfully:", formData);
 
@@ -168,9 +180,6 @@ export default function TuteeForm() {
                     });
                     setShowTextBox(false);
         }
-
-
-    
 
     };
 
@@ -270,15 +279,21 @@ export default function TuteeForm() {
                     {field.label}
                   </label>
                   <input
-                    type="text"
-                    id={field.id}
-                    name={field.id}
-                    onChange={handleChange}
-                    value={formData[field.id as keyof FormData]} 
-                    placeholder="Enter a description..."
-                    className="rounded-lg border border-gray-300 p-2"
-                    //required
-                  />
+                  type="text"
+                  id={field.id}
+                  name={field.id}
+                  onChange={handleChange}
+                  value={formData[field.id as keyof FormData]} 
+                  placeholder="Enter a description..."
+                  className={`rounded-lg border p-2 ${
+                    errors[field.id as keyof FormData] ? "border-red-500" : "border-gray-300"
+                  }`}
+                />
+                  {errors[field.id as keyof FormData] && (
+                  <span className="text-red-500 text-sm">
+                    {errors[field.id as keyof FormData]}
+                  </span>
+                )}
                 </div>
               ))}
           </div>
@@ -392,7 +407,9 @@ export default function TuteeForm() {
               className="w-full p-2 bg-white border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none"
               //required
             />
-
+            {errors.signature && (
+                <span className="text-red-500 text-sm">{errors.signature}</span>
+            )}
           </div>
         </div>
 
