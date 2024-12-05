@@ -16,6 +16,7 @@ const db = drizzle(process.env.DATABASE_URL!);
 const app: Express = express();
 const port = 3000;
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
@@ -75,8 +76,37 @@ app.get("/tutors", async (req: Request, res: Response) => {
       res.status(500).send("Error fetching tutors");
     }
   });
-
-
+app.post("/tuteesubmission", async (req: Request, res: Response) => {
+  try {
+    console.log(req.body);
+    const request = req.body;
+    const { childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subject, tutoringMode, additionalInfo, agreement, signature } = request;
+    // bad practice, prefer to submit number directly
+    const gradeNum = Number(grade);
+    console.log(gradeNum);
+    await db.insert(tuteeTable).values({
+      id : crypto.randomUUID().slice(0, 7),
+      tutee_first_name: childFirstName,
+      tutee_last_name: childLastName,
+      gender,
+      grade: gradeNum,
+      has_special_needs: specialNeeds === "yes",
+      special_needs: specialNeedsInfo,
+      parent_first_name: parentFirstName,
+      parent_last_name: parentLastName,
+      parent_phone: phone,
+      parent_email: email,
+      subject,
+      tutoring_mode: tutoringMode,
+      notes: additionalInfo,
+      date: new Date().toISOString().split("T")[0],
+    });
+    console.log("Tutee submitted:", req.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to matched");
+  }
+});
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
