@@ -7,7 +7,7 @@ import {
   unmatchedTable,
   approvedMatchesTable
 } from "./db/schema";
-import { or, arrayContains, and, eq } from "drizzle-orm";
+import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 
@@ -56,19 +56,27 @@ app.get("/tutees", async (req: Request, res: Response) => {
 /* GET endpoint -- returns all the matched and unmatched tutors */
 app.get("/tutors", async (req: Request, res: Response) => {
     try {
+      const filteredTutors = await filterTutors([11,12], undefined, true, undefined);
+      const tutorIds = filteredTutors.map((tutor) => tutor.id).filter((id) => id !== undefined);
+
       const matchedTutors = await db
         .select()
-        .from(tutorTable)
-        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutee_or_tutor_id));
+        .from(tutorTable) //Getting all tutors but instead want to just get filtered
+        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutee_or_tutor_id))
+        .where(inArray(tutorTable.id, tutorIds));
   
       const unmatchedTutors = await db
+        // .select()
+        // .from(tutorTable)
+        // .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
         .select()
-        .from(tutorTable)
-        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
+        .from(tutorTable) //Getting all tutors but instead want to just get filtered
+        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id))
+        .where(inArray(tutorTable.id, tutorIds));
   
       res.send({
         matchedTutors: matchedTutors.map((row) => row.tutor),
-        unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+        unmatchedTutors: unmatchedTutors.map((row) => row.tutor)
       });
     } catch (error) {
       console.error(error);
@@ -129,6 +137,9 @@ async function filterTutors(
   }
 
   const tutors = await query;
+
+  console.log("Filtered Tutors:", tutors);
+
   return tutors;
 }
 

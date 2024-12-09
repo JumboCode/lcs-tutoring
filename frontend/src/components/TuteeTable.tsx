@@ -28,7 +28,7 @@ export default function TuteeTable() {
   useEffect(() => {
     const fetchTutees = async () => {
       try {
-        const response = await fetch("http://localhost:3000/tutees");
+        const response = await fetch("http://localhost:3000/tutors");
         const data = await response.json();
         const { matchedTutees, unmatchedTutees } = data;
         setMatchedTutees(matchedTutees);

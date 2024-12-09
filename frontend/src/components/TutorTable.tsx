@@ -22,8 +22,8 @@ type TabType = (typeof TABS)[keyof typeof TABS];
 
 export default function TutorTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
-  const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
   const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
+  const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
 
   useEffect(() => {
     const fetchTutors = async () => {
@@ -31,6 +31,8 @@ export default function TutorTable() {
         const response = await fetch("http://localhost:3000/tutors");
         const data = await response.json();
         const { matchedTutors, unmatchedTutors } = data;
+        console.log("Matched filtered Tutors: ", matchedTutors);
+        console.log("Unmatched filtered Tutors: ", unmatchedTutors);
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
       } catch (error) {
