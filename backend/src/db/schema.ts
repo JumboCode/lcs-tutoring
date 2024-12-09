@@ -1,7 +1,7 @@
 import { boolean, integer, pgTable, varchar, text, date, serial } from "drizzle-orm/pg-core";
 
 export const tutorTable = pgTable("tutor", {
-  id: varchar({ length: 8 }).notNull().primaryKey(),
+  id: varchar({ length: 7 }).notNull().primaryKey(),
   first_name: varchar({ length: 100 }).notNull(),
   last_name: varchar({ length: 100 }).notNull(),
   pronouns: varchar({ length: 50 }).notNull(),
@@ -19,7 +19,7 @@ export const tutorTable = pgTable("tutor", {
 });
 
 export const tuteeTable = pgTable("tutee", {
-  id: varchar({ length: 8 }).notNull().primaryKey(),
+  id: serial('id').primaryKey(),
   tutee_first_name: varchar({ length: 100 }).notNull(),
   tutee_last_name: varchar({ length: 100 }).notNull(),
   gender: varchar({ length: 50 }).notNull(),
@@ -38,16 +38,19 @@ export const tuteeTable = pgTable("tutee", {
 
 export const unmatchedTable = pgTable('unmatched', {
   id: serial('id').primaryKey(),
-  tutee_or_tutor_id: varchar({ length: 8 }).notNull(),
+  tutee_id: integer().references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
 });
 
 export const matchedTable = pgTable('matched', {
   id: serial('id').primaryKey(),
-  tutee_or_tutor_id: varchar({ length: 8 }).notNull(),
+  tutee_id: integer().references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
 });
 
 export const approvedMatchesTable = pgTable('approved_matches', {
   id: serial('id').primaryKey(),
-  tutor_id: varchar({ length: 8 }).notNull(),
-  tutee_id: varchar({ length: 8 }).notNull(),
+  tutee_id: integer().notNull().references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
 });
+

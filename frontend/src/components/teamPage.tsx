@@ -1,4 +1,4 @@
-import anaDiaz from "../assets/images/eboard_headshots/AnaDias_scaled.png";
+import anaDias from "../assets/images/eboard_headshots/AnaDias_scaled.png";
 import christinaZheng from "../assets/images/eboard_headshots/ChristinaZheng_scaled.png";
 import mollySikma from "../assets/images/eboard_headshots/MollySikma_scaled.png";
 import aoifeDeClercq from "../assets/images/eboard_headshots/AoifeDeClercq_scaled.png";
@@ -11,17 +11,17 @@ import BoardBox from "./boardBox";
 export default function TeamPage() {
   return (
     <>
-      <div className={"flex flex-row items-center ml-28 mt-32 mb-8"}>
+      <div className={"flex flex-row items-center w-[90%] mx-auto mt-32 mb-8"}>
         <h3 className={"font-interBlack text-[#1F3A68] text-3xl"}>
           MEET OUR TEAM
         </h3>
         <hr className={"w-10 h-0.5 mx-3 rounded border-0 bg-[#E4D1F0]"} />
       </div>
-      <div className={"flex flex-col mx-20"}>
-        <div className={"flex flex-row justify-between my-8"}>
+      <div className={"flex flex-col xl:mx-20"}>
+        <div className={"flex flex-col lg:flex-row justify-center my-8"}>
           <BoardBox
-            photo={anaDiaz}
-            name={"Ana Diaz"}
+            photo={anaDias}
+            name={"Ana Dias"}
             title={"CO-PRESIDENT"}
             year={"2025"}
             bio={
@@ -115,30 +115,28 @@ export default function TeamPage() {
       <div className={"h-400 bg-[#FBFDFE] pt-28 pb-16 px-28"}>
         <div className={"flex flex-col"}>
           <div className={"flex flex-row items-center my-16"}>
-            <h3 className={"font-interBlack text-[#1F3A68] text-2xl"}>
+            <h3 className={"font-interBlack text-[#1F3A68] text-3xl"}>
               CONTACT US
             </h3>
             <hr className={"w-10 h-0.5 mx-3 rounded border-0 bg-[#E4D1F0]"} />
           </div>
           <div className={"flex flex-row justify-between"}>
             <div className={"flex flex-col items-left my-8"}>
-              <h3 className={"font-interBlack text-[#7D7D7D] text-5xl my-5"}>
+              <h3 className={"text-[#7D7D7D] text-4xl"}>
                 Find us on Instagram
               </h3>
-              <h3 className={"font-interBlack text-[#7D7D7D] text-5xl my-5"}>
-                Email us
-              </h3>
+              <h3 className={"text-[#7D7D7D] text-4xl my-5"}>Email us</h3>
             </div>
             <div className={"flex flex-col items-left my-8"}>
               <a
                 href="https://www.instagram.com/lcstutors/"
-                className={"font-interBlack text-[#1F3A68] text-5xl my-5"}
+                className={"text-[#1F3A68] text-4xl"}
               >
                 @LCSTutors
               </a>
               <a
                 href="mailto:lcs.tutors@gmail.com"
-                className={"font-interBlack text-[#1F3A68] text-5xl my-5"}
+                className={"text-[#1F3A68] text-4xl my-5"}
               >
                 lcs.tutors@gmail.com
               </a>

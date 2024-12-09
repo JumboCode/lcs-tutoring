@@ -10,6 +10,7 @@ import {
 import { or, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
+import fs from 'fs';
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -36,12 +37,12 @@ app.get("/tutees", async (req: Request, res: Response) => {
     const matchedTutees = await db
       .select()
       .from(tuteeTable)
-      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_or_tutor_id));
+      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id));
 
     const unmatchedTutees = await db
       .select()
       .from(tuteeTable)
-      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_or_tutor_id));
+      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
 
     res.send({
       matchedTutees: matchedTutees.map((row) => row.tutee),
@@ -59,12 +60,12 @@ app.get("/tutors", async (req: Request, res: Response) => {
       const matchedTutors = await db
         .select()
         .from(tutorTable)
-        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutee_or_tutor_id));
+        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id));
   
       const unmatchedTutors = await db
         .select()
         .from(tutorTable)
-        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
+        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id));
   
       res.send({
         matchedTutors: matchedTutors.map((row) => row.tutor),
@@ -79,6 +80,38 @@ app.get("/tutors", async (req: Request, res: Response) => {
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
+});
+
+const importUnmatchedData = async () => {
+  const jsonData = JSON.parse(fs.readFileSync("src/unmatched.json", "utf-8"));
+
+  for (const record of jsonData) {
+    await db.insert(unmatchedTable).values({
+      tutee_id: record.tutee_id,
+      tutor_id: record.tutor_id,
+    });
+  }
+};
+
+const importMatchedData = async () => {
+  const jsonData = JSON.parse(fs.readFileSync("src/matched.json", "utf-8"));
+
+  for (const record of jsonData) {
+    await db.insert(matchedTable).values({
+      tutee_id: record.tutee_id,
+      tutor_id: record.tutor_id,
+    });
+  }
+};
+
+// Execute both functions
+const importData = async () => {
+  await importUnmatchedData();
+  await importMatchedData();
+};
+
+importData().catch((err) => {
+  console.error("Error importing data:", err);
 });
 
 /**** Filter Tutors by grade levels and subject prefs ****
@@ -145,17 +178,17 @@ async function filterTutors(
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  *
  ******************************************************************/
-async function moveToMatched(id: string) {
-  if (id.length == 7 || id.length == 8) {
+async function moveTutorToMatched(tutor_id: string) {
+  if (tutor_id.length == 7 || tutor_id.length == 8) {
     const query = await db
       .select()
       .from(unmatchedTable)
-      .where(eq(unmatchedTable.tutee_or_tutor_id, id)); //returns an array with only one element
+      .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
     const remain = query.length - 1;
     if (query.length > 0) {
       await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
 
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_or_tutor_id, id));
+      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
 
       for (let i = 0; i < query.length - 1; i++) {
         //adding rows back in
@@ -169,7 +202,7 @@ async function moveToMatched(id: string) {
   }
 }
 
-// moveToMatched("1000002");
+// moveTutorToMatched("1000002");
 
 /******* Move a given tutor/tutee from matched to unmatched *******
  *
@@ -181,12 +214,12 @@ async function moveToMatched(id: string) {
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  *
  ******************************************************************/
-async function moveToUnmatched(id: string) {
-  if (id.length == 7) {
+async function moveTutorToUnmatched(tutor_id: string) {
+  if (tutor_id.length == 7) {
     const query = await db
       .select()
       .from(matchedTable)
-      .where(eq(matchedTable.tutee_or_tutor_id, id));
+      .where(eq(matchedTable.tutor_id, tutor_id));
     console.log(query);
 
     if (!query) {
@@ -194,7 +227,7 @@ async function moveToUnmatched(id: string) {
     }
 
     await db.insert(unmatchedTable).values(query);
-    await db.delete(matchedTable).where(eq(matchedTable.tutee_or_tutor_id, id));
+    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
 
