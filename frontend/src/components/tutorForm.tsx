@@ -585,11 +585,32 @@ export default function TutorForm() {
     return Object.keys(validationErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateFields()) {
       console.log("Collected Data:", formData);
+
+      try {
+        const response = await fetch('http://localhost:3000/tutorsubmission', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData), // Send the form data as JSON
+        });
+  
+        if (response.ok) {
+          console.log("Form submitted successfully!");
+          alert("Form submitted successfully!");
+        } else {
+          console.error("Failed to submit the form");
+          alert("Form submission failed. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during form submission:", error);
+        alert("An error occurred during submission.");
+      }
       setFormData({
         firstName: "",
         lastName: "",

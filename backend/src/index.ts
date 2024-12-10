@@ -17,6 +17,89 @@ const app: Express = express();
 const port = 3000;
 app.use(cors());
 
+app.use(express.json());
+
+interface TutorSubmission {
+  firstName: string;
+  lastName: string;
+  pronouns: string;
+  studentId: string;
+  major: string;
+  gradYear: string;
+  phone: string;
+  email: string;
+  pairedLastSemester: string;
+  studentNames: string;
+  studentCount: string;
+  gradeLevels: string[];
+  subjects: string[];
+  specialNeeds: string;
+  language: string;
+  tutoringMode: string;
+  platforms: string;
+  agreement: string;
+  signature: string;
+}
+
+app.post("/tutorsubmission", async (req: Request, res: Response) => {
+  // Log the request body to verify the data
+  console.log("Received form data:", req.body);
+
+  const {
+    firstName,
+    lastName,
+    pronouns,
+    studentId,
+    major,
+    gradYear,
+    phone,
+    email,
+    pairedLastSemester,
+    studentNames,
+    studentCount,
+    gradeLevels,
+    subjects,
+    specialNeeds,
+    language,
+    tutoringMode,
+    platforms,
+    agreement,
+    signature,
+  } = req.body;
+
+  try {
+    // Insert the data into the tutorTable
+    await db.insert(tutorTable).values({
+      firstName,
+      lastName,
+      pronouns,
+      studentId,
+      major,
+      gradYear,
+      phone,
+      email,
+      pairedLastSemester,
+      studentNames,
+      studentCount,
+      gradeLevels,
+      subjects,
+      specialNeeds,
+      language,
+      tutoringMode,
+      platforms,
+      agreement,
+      signature,
+    });
+
+    // Respond with success
+    res.status(200).send({ message: "Data submitted successfully" });
+  } catch (error) {
+    console.error("Error inserting data:", error);
+    res.status(500).send({ message: "Failed to submit data" });
+  }
+});
+
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
