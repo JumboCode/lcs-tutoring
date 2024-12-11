@@ -54,3 +54,7 @@ export const approvedMatchesTable = pgTable('approved_matches', {
   tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
 });
 
+export const adminTable = pgTable("admin", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 100 }).notNull().unique(),
+});

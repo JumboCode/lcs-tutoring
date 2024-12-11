@@ -26,43 +26,43 @@ import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 
 /* Type definitions */
-import { tutorBoxProps, tuteeBoxProps } from "./types";
+// import { tutorBoxProps, tuteeBoxProps } from "./types";
 
 function App() {
   const [modalShow, setModalShow] = useState(false);
 
-  const tutor_info: tutorBoxProps = {
-    id: "1234567",
-    date: "2024-11-26",
-    first_name: "John",
-    last_name: "Doe",
-    email: "john.doe@example.com",
-    subject_pref: ["Math", "Science", "English"],
-    pronouns: "he/him",
-    major: "Computer Science",
-    year_grad: "2025",
-    phone: "123-456-7890",
-    previous_tutee: false,
-    grade_level_pref: ["7", "8", "9"],
-    num_tutees: 2,
-    disability_pref: true,
-    tutoring_mode: "In-person",
-  };
+  // const tutor_info: tutorBoxProps = {
+  //   id: "1234567",
+  //   date: "2024-11-26",
+  //   first_name: "John",
+  //   last_name: "Doe",
+  //   email: "john.doe@example.com",
+  //   subject_pref: ["Math", "Science", "English"],
+  //   pronouns: "he/him",
+  //   major: "Computer Science",
+  //   year_grad: "2025",
+  //   phone: "123-456-7890",
+  //   previous_tutee: false,
+  //   grade_level_pref: ["7", "8", "9"],
+  //   num_tutees: 2,
+  //   disability_pref: true,
+  //   tutoring_mode: "In-person",
+  // };
 
-  const tutee_info: tuteeBoxProps = {
-    date: "10/31/2024",
-    tutee_first_name: "Moya",
-    tutee_last_name: "Techakalayatum",
-    parent_email: "hello@gmaiasdasdl.com",
-    subject: "Math, English",
-    grade: "8",
-    special_needs: "Yes",
-    gender: "Female",
-    tutoring_mode: "Hybrid",
-    parent_first_name: "Alice",
-    parent_last_name: "Bob",
-    parent_phone: "(123) 456-7890",
-  };
+  // const tutee_info: tuteeBoxProps = {
+  //   date: "10/31/2024",
+  //   tutee_first_name: "Moya",
+  //   tutee_last_name: "Techakalayatum",
+  //   parent_email: "hello@gmaiasdasdl.com",
+  //   subject: "Math, English",
+  //   grade: "8",
+  //   special_needs: "Yes",
+  //   gender: "Female",
+  //   tutoring_mode: "Hybrid",
+  //   parent_first_name: "Alice",
+  //   parent_last_name: "Bob",
+  //   parent_phone: "(123) 456-7890",
+  // };
 
   return (
     <Router>
