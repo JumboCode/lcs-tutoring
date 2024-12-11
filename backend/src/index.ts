@@ -5,9 +5,8 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
-  approvedMatchesTable
 } from "./db/schema";
-import { or, arrayContains, and, eq } from "drizzle-orm";
+import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from 'fs';
@@ -17,6 +16,7 @@ const db = drizzle(process.env.DATABASE_URL!);
 const app: Express = express();
 const port = 3000;
 app.use(cors());
+app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
@@ -57,19 +57,27 @@ app.get("/tutees", async (req: Request, res: Response) => {
 /* GET endpoint -- returns all the matched and unmatched tutors */
 app.get("/tutors", async (req: Request, res: Response) => {
     try {
+      const filteredTutors = await filterTutors([11,12], undefined, true, undefined);
+      const tutorIds = filteredTutors.map((tutor) => tutor.id).filter((id) => id !== undefined);
+
       const matchedTutors = await db
         .select()
-        .from(tutorTable)
-        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id));
+        .from(tutorTable) //Getting all tutors but instead want to just get filtered
+        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id))
+        .where(inArray(tutorTable.id, tutorIds));
   
       const unmatchedTutors = await db
+        // .select()
+        // .from(tutorTable)
+        // .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
         .select()
-        .from(tutorTable)
-        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id));
+        .from(tutorTable) //Getting all tutors but instead want to just get filtered
+        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
+        .where(inArray(tutorTable.id, tutorIds));
   
       res.send({
         matchedTutors: matchedTutors.map((row) => row.tutor),
-        unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+        unmatchedTutors: unmatchedTutors.map((row) => row.tutor)
       });
     } catch (error) {
       console.error(error);
@@ -77,7 +85,36 @@ app.get("/tutors", async (req: Request, res: Response) => {
     }
   });
 
-
+app.post("/tuteesubmission", async (req: Request, res: Response) => {
+  try {
+    console.log(req.body);
+    const request = req.body;
+    const { childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subject, tutoringMode, additionalInfo, agreement, signature } = request;
+    // bad practice, prefer to submit number directly
+    const gradeNum = Number(grade);
+    console.log(gradeNum);
+    await db.insert(tuteeTable).values({
+      tutee_first_name: childFirstName,
+      tutee_last_name: childLastName,
+      gender,
+      grade: gradeNum,
+      has_special_needs: specialNeeds === "yes",
+      special_needs: specialNeedsInfo,
+      parent_first_name: parentFirstName,
+      parent_last_name: parentLastName,
+      parent_phone: phone,
+      parent_email: email,
+      subject,
+      tutoring_mode: tutoringMode,
+      notes: additionalInfo,
+      date: new Date().toISOString().split("T")[0],
+    });
+    console.log("Tutee submitted:", req.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to matched");
+  }
+});
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
@@ -162,6 +199,9 @@ async function filterTutors(
   }
 
   const tutors = await query;
+
+  console.log("Filtered Tutors:", tutors);
+
   return tutors;
 }
 

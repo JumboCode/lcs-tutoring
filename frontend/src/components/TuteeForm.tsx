@@ -34,6 +34,22 @@ const subject_options = [
   { value: "Science", label: "Science (1-8)" },
 ];
 
+const grade_options = [
+  { value: "K", label: "Kindergarten" },
+  { value: "1", label: "1st" },
+  { value: "2", label: "2nd" },
+  { value: "3", label: "3rd" },
+  { value: "4", label: "4th" },
+  { value: "5", label: "5th" },
+  { value: "6", label: "6th" },
+  { value: "7", label: "7th" },
+  { value: "8", label: "8th" },
+  { value: "9", label: "9th" },
+  { value: "10", label: "10th" },
+  { value: "11", label: "11th" },
+  { value: "12", label: "12th" },
+];
+
 const tutoring_mode_options = [
   { value: "Virtual only", label: "Virtual only" },
   { value: "In-person only", label: "In-person only" },
@@ -163,27 +179,39 @@ export default function TuteeForm() {
 
     setErrors(newErrors);
 
+    console.log(JSON.stringify(formData));
+
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
+      fetch("http://localhost:3000/tuteesubmission", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error(error));
       console.log("Form submitted successfully:", formData);
       //reset form
-      setFormData({
-        childFirstName: "",
-        childLastName: "",
-        gender: "",
-        grade: "",
-        specialNeeds: "",
-        specialNeedsInfo: "",
-        parentFirstName: "",
-        parentLastName: "",
-        phone: "",
-        email: "",
-        subject: "",
-        tutoringMode: "",
-        additionalInfo: "",
-        agreement: "",
-        signature: "",
-      });
+      // setFormData({
+      //   childFirstName: "",
+      //   childLastName: "",
+      //   gender: "",
+      //   grade: "",
+      //   specialNeeds: "",
+      //   specialNeedsInfo: "",
+      //   parentFirstName: "",
+      //   parentLastName: "",
+      //   phone: "",
+      //   email: "",
+      //   subject: "",
+      //   tutoringMode: "",
+      //   additionalInfo: "",
+      //   agreement: "",
+      //   signature: "",
+      // });
       setShowTextBox(false);
       alert("Form submitted successfully!");
     }
@@ -197,6 +225,7 @@ export default function TuteeForm() {
         onSubmit={handleSubmit}
         className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300"
       >
+        {/* We need to insert dropdown for grade instead of mapping the text*/}
         {/* Child Information */}
         <div className="bg-white px-3">
           <h2 className="text-xl font-bold text-left pb-3">
