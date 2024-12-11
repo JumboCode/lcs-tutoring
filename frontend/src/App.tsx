@@ -24,45 +24,87 @@ import NavigationBar from "./components/navigationBar";
 import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
+import MatchSuggestions from "./components/matchSuggestionBlock";
 
 /* Type definitions */
-// import { tutorBoxProps, tuteeBoxProps } from "./types";
+import { tutorBoxProps, tuteeBoxProps, tutorInfo, tuteeInfo } from "./types";
 
 function App() {
   const [modalShow, setModalShow] = useState(false);
 
-  // const tutor_info: tutorBoxProps = {
-  //   id: "1234567",
-  //   date: "2024-11-26",
-  //   first_name: "John",
-  //   last_name: "Doe",
-  //   email: "john.doe@example.com",
-  //   subject_pref: ["Math", "Science", "English"],
-  //   pronouns: "he/him",
-  //   major: "Computer Science",
-  //   year_grad: "2025",
-  //   phone: "123-456-7890",
-  //   previous_tutee: false,
-  //   grade_level_pref: ["7", "8", "9"],
-  //   num_tutees: 2,
-  //   disability_pref: true,
-  //   tutoring_mode: "In-person",
-  // };
+  const tutor_info: tutorBoxProps = {
+    id: "1234567",
+    date: "2024-11-26",
+    first_name: "John",
+    last_name: "Doe",
+    email: "john.doe@example.com",
+    subject_pref: ["Math", "Science", "English"],
+    pronouns: "he/him",
+    major: "Computer Science",
+    year_grad: "2025",
+    phone: "123-456-7890",
+    previous_tutee: false,
+    grade_level_pref: ["7", "8", "9"],
+    num_tutees: 2,
+    disability_pref: true,
+    tutoring_mode: "In-person",
+  };
 
-  // const tutee_info: tuteeBoxProps = {
-  //   date: "10/31/2024",
-  //   tutee_first_name: "Moya",
-  //   tutee_last_name: "Techakalayatum",
-  //   parent_email: "hello@gmaiasdasdl.com",
-  //   subject: "Math, English",
-  //   grade: "8",
-  //   special_needs: "Yes",
-  //   gender: "Female",
-  //   tutoring_mode: "Hybrid",
-  //   parent_first_name: "Alice",
-  //   parent_last_name: "Bob",
-  //   parent_phone: "(123) 456-7890",
-  // };
+  const tutee_info: tuteeBoxProps = {
+    date: "10/31/2024",
+    tutee_first_name: "Moya",
+    tutee_last_name: "Techakalayatum",
+    parent_email: "hello@gmaiasdasdl.com",
+    subject: "Math, English",
+    grade: "8",
+    special_needs: "Yes",
+    gender: "Female",
+    tutoring_mode: "Hybrid",
+    parent_first_name: "Alice",
+    parent_last_name: "Bob",
+    parent_phone: "(123) 456-7890",
+  };
+
+  const tutor1: tutorInfo = {
+    first_name: "Brandon",
+    last_name: "Dionisio",
+    email: "brandon.dionisio@tufts.edu",
+    phone: "8454204946",
+    subject: ["Math", "Science"],
+    grade: ["9", "10"],
+    open_to_disability: true,
+    tutoring_mode: "Hybrid",
+  };
+
+  const tutee1: tuteeInfo = {
+    first_name: "Bill",
+    last_name: "Smith",
+    email: "bill.smith@hi.com",
+    subject: "Math",
+    grade: "8",
+    special_needs: "No",
+    tutoring_mode: "Hybrid",
+  };
+
+  const tutee2: tuteeInfo = {
+    first_name: "Bob",
+    last_name: "Jones",
+    email: "bob.jones@hi.com",
+    subject: "Science",
+    grade: "10",
+    special_needs: "Dyslexia",
+    tutoring_mode: "In-Person",
+  };
+
+  const tutee3: tuteeInfo = {
+    first_name: "Ana",
+    last_name: "Todd",
+    email: "ana.todd@hi.com",
+    subject: "English",
+    grade: "9",
+    special_needs: "No",
+    tutoring_mode: "Hybrid",
+  };
 
   return (
     <Router>
@@ -161,6 +203,21 @@ function App() {
             </div>
           }
         ></Route>
+
+        <Route
+          path="/matchsuggestions"
+          element={
+            <div>
+              <MatchSuggestions
+                tutee1={tutee1}
+                tutee2={tutee2}
+                tutee3={tutee3}
+                tutor_info={tutor1}
+              />
+            </div>
+          }
+        ></Route>
+
         <Route
           path="/tuteetable"
           element={

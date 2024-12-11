@@ -28,9 +28,7 @@ export default function TuteeTable() {
   useEffect(() => {
     const fetchTutees = async () => {
       try {
-        const response = await fetch(
-          "https://jumbocodegpt.onrender.com/api/tutors"
-        );
+        const response = await fetch("http://localhost:3000/tutees");
         const data = await response.json();
         const { matchedTutees, unmatchedTutees } = data;
         setMatchedTutees(matchedTutees);

@@ -28,9 +28,7 @@ export default function TutorTable() {
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        const response = await fetch(
-          "https://jumbocodegpt.onrender.com/api/tutors"
-        );
+        const response = await fetch("http://localhost:3000/tutors");
         const data = await response.json();
         const { matchedTutors, unmatchedTutors } = data;
         console.log("Matched filtered Tutors: ", matchedTutors);

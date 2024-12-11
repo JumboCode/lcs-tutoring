@@ -14,7 +14,6 @@ import fs from 'fs';
 const db = drizzle(process.env.DATABASE_URL!);
 
 const app: Express = express();
-const port = 3000;
 app.use(cors());
 app.use(express.json());
 
@@ -114,9 +113,6 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send("Error moving to matched");
   }
-});
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
 });
 
 const importUnmatchedData = async () => {
