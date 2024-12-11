@@ -1,24 +1,24 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import Select, {ActionMeta, SingleValue} from "react-select";
+import Select, { ActionMeta, SingleValue } from "react-select";
 
 //lets TypeScript know what kind of data
 interface FormData {
-    childFirstName: string;
-    childLastName: string;
-    gender: string;
-    grade: string;
-    specialNeeds: string;
-    specialNeedsInfo: string;
-    parentFirstName: string;
-    parentLastName: string;
-    phone: string;
-    email: string;
-    subject: string;
-    tutoringMode: string;
-    additionalInfo: string;
-    agreement: string;
-    signature: string;
-};
+  childFirstName: string;
+  childLastName: string;
+  gender: string;
+  grade: string;
+  specialNeeds: string;
+  specialNeedsInfo: string;
+  parentFirstName: string;
+  parentLastName: string;
+  phone: string;
+  email: string;
+  subject: string;
+  tutoringMode: string;
+  additionalInfo: string;
+  agreement: string;
+  signature: string;
+}
 
 const subject_options = [
   { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
@@ -34,6 +34,22 @@ const subject_options = [
   { value: "Science", label: "Science (1-8)" },
 ];
 
+ const grade_options = [
+  { value: "K", label: "Kindergarten" },
+  { value: "1", label: "1st" },
+  { value: "2", label: "2nd" },
+  { value: "3", label: "3rd" },
+  { value: "4", label: "4th" },
+  { value: "5", label: "5th" },
+  { value: "6", label: "6th" },
+  { value: "7", label: "7th" },
+  { value: "8", label: "8th" },
+  { value: "9", label: "9th" },
+  { value: "10", label: "10th" },
+  { value: "11", label: "11th" },
+  { value: "12", label: "12th" },
+];
+
 const tutoring_mode_options = [
   { value: "Virtual only", label: "Virtual only" },
   { value: "In-person only", label: "In-person only" },
@@ -41,160 +57,165 @@ const tutoring_mode_options = [
 ];
 
 export default function TuteeForm() {
+  //variable that holds form data
+  const [formData, setFormData] = useState<FormData>({
+    childFirstName: "",
+    childLastName: "",
+    gender: "",
+    grade: "",
+    specialNeeds: "",
+    specialNeedsInfo: "",
+    parentFirstName: "",
+    parentLastName: "",
+    phone: "",
+    email: "",
+    subject: "",
+    tutoringMode: "",
+    additionalInfo: "",
+    agreement: "",
+    signature: "",
+  });
 
-    //variable that holds form data
-    const [formData, setFormData] = useState<FormData>({
-        childFirstName: "",
-        childLastName: "",
-        gender: "",
-        grade: "",
-        specialNeeds: "",
-        specialNeedsInfo: "",
-        parentFirstName: "",
-        parentLastName: "",
-        phone: "",
-        email: "",
-        subject: "",
-        tutoringMode: "",
-        additionalInfo: "",
-        agreement: "",
-        signature: "",
-    }); 
+  //errors
+  const [errors, setErrors] = useState<Partial<FormData>>({
+    childFirstName: "",
+    childLastName: "",
+    gender: "",
+    grade: "",
+    specialNeeds: "",
+    specialNeedsInfo: "",
+    parentFirstName: "",
+    parentLastName: "",
+    phone: "",
+    email: "",
+    subject: "",
+    tutoringMode: "",
+    additionalInfo: "",
+    agreement: "",
+    signature: "",
+  });
 
-    //errors
-    const [errors, setErrors] = useState<Partial<FormData>>({
-        childFirstName: "",
-        childLastName: "",
-        gender: "",
-        grade: "",
-        specialNeeds: "",
-        specialNeedsInfo: "",
-        parentFirstName: "",
-        parentLastName: "",
-        phone: "",
-        email: "",
-        subject: "",
-        tutoringMode: "",
-        additionalInfo: "",
-        agreement: "",
-        signature: "",
+  //for Special Needs Desc.
+  const [showTextBox, setShowTextBox] = useState(false);
+
+  const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (name === "specialNeeds") {
+      setShowTextBox(value === "yes");
+    }
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "", // clear error when user selects an option
+    }));
+  };
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  const handleSelectChange = (
+    selectedOption: SingleValue<{ value: string; label: string }>,
+    actionMeta: ActionMeta<{ value: string; label: string }>
+  ) => {
+    const name = actionMeta?.name;
+
+    if (!name) {
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: selectedOption ? selectedOption.value : "",
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
+  //submit function with data validation
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const newErrors: Partial<FormData> = {};
+
+    // check for empty fields
+    Object.keys(formData).forEach((key) => {
+      if (
+        // Check required fields, excluding optional ones or empty optional fields
+        formData[key as keyof typeof formData] === "" &&
+        (key !== "specialNeedsInfo" || formData.specialNeeds === "yes") &&
+        key !== "additionalInfo"
+      ) {
+        newErrors[key as keyof FormData] = "Field needs to be filled out.";
+      }
     });
 
-    //for Special Needs Desc.
-    const [showTextBox, setShowTextBox] = useState(false);
+    if (formData.specialNeeds === "") {
+      newErrors.specialNeeds = "Please select";
+    }
+    if (formData.specialNeeds === "yes" && !formData.specialNeedsInfo) {
+      newErrors.specialNeedsInfo = "Please specify.";
+    }
 
+    //check that Yes has been selected for waiver agreement
+    if (formData.agreement !== "Yes") {
+      newErrors.agreement = "You must agree to proceed.";
+    }
 
-    const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-        }));
-        if (name === "specialNeeds") {
-        setShowTextBox(value === "yes");
-        }
-        setErrors((prev) => ({
-            ...prev,
-            [name]: "", // clear error when user selects an option
-          }));
-    };
+    setErrors(newErrors);
 
-    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-        }));
+    console.log(JSON.stringify(formData));
 
-        setErrors((prev) => ({
-            ...prev,
-            [name]: "",
-          }));
-    };
-
-    const handleSelectChange = (
-        selectedOption: SingleValue<{ value: string; label: string }>, 
-        actionMeta: ActionMeta<{ value: string; label: string }> ) => {
-        const name = actionMeta?.name;
-
-        if (!name) {
-        return;
-        }
-
-        setFormData((prev) => ({
-        ...prev,
-        [name]: selectedOption ? selectedOption.value : '',
-        }));
-
-        setErrors((prev) => ({
-            ...prev,
-            [name]: "",
-          }));
-    };
-
-
-
-    //submit function with data validation
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-
-        const newErrors: Partial<FormData> = {};
-
-        // check for empty fields
-        Object.keys(formData).forEach((key) => {
-            if (
-                // Check required fields, excluding optional ones or empty optional fields
-                (formData[key as keyof typeof formData] === "" &&
-                  (key !== "specialNeedsInfo" || formData.specialNeeds === "yes") && 
-                  key !== "additionalInfo")
-              ) {
-            newErrors[key as keyof FormData] = "Field needs to be filled out.";
-        }
-        });
-
-        if (formData.specialNeeds === "" ) {
-            newErrors.specialNeeds = "Please select";
-        }
-        if (formData.specialNeeds === "yes" && !formData.specialNeedsInfo) {
-            newErrors.specialNeedsInfo = "Please specify.";
-        }
-
-        //check that Yes has been selected for waiver agreement
-        if (formData.agreement !== "Yes" ) {
-            newErrors.agreement = "You must agree to proceed.";
-        }
-
-
-        setErrors(newErrors);
-
-
-        // if no errors, process the form
-        if (Object.keys(newErrors).length === 0) {
-            console.log("Form submitted successfully:", formData);
-                //reset form
-                setFormData({
-                    childFirstName: "",
-                    childLastName: "",
-                    gender: "",
-                    grade: "",
-                    specialNeeds: "",
-                    specialNeedsInfo: "",
-                    parentFirstName: "",
-                    parentLastName: "",
-                    phone: "",
-                    email: "",
-                    subject: "",
-                    tutoringMode: "",
-                    additionalInfo: "",
-                    agreement: "",
-                    signature: "",
-                });
-            setShowTextBox(false);
-            alert("Form submitted successfully!");
-        }
-    };
-
+    // if no errors, process the form
+    if (Object.keys(newErrors).length === 0) {
+      fetch("http://localhost:3000/tuteesubmission", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => response.json())
+        .then((data) => console.log(data))
+        .catch((error) => console.error(error));
+      console.log("Form submitted successfully:", formData);
+      //reset form
+      // setFormData({
+      //   childFirstName: "",
+      //   childLastName: "",
+      //   gender: "",
+      //   grade: "",
+      //   specialNeeds: "",
+      //   specialNeedsInfo: "",
+      //   parentFirstName: "",
+      //   parentLastName: "",
+      //   phone: "",
+      //   email: "",
+      //   subject: "",
+      //   tutoringMode: "",
+      //   additionalInfo: "",
+      //   agreement: "",
+      //   signature: "",
+      // });
+      setShowTextBox(false);
+      alert("Form submitted successfully!");
+    }
+  };
 
   return (
 
@@ -202,10 +223,12 @@ export default function TuteeForm() {
 
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
 
-      <form 
-        onSubmit={handleSubmit} 
+      <form
+        onSubmit={handleSubmit}
         className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300"
       >
+
+        {/* We need to insert dropdown for grade instead of mapping the text*/}
         {/* Child Information */}
         <div className="bg-white px-3">
           <h2 className="text-xl font-bold text-left pb-3">
@@ -227,10 +250,12 @@ export default function TuteeForm() {
                   id={field.id}
                   name={field.id}
                   onChange={handleChange}
-                  value={formData[field.id as keyof FormData]} 
+                  value={formData[field.id as keyof FormData]}
                   placeholder="Enter a description..."
                   className={`rounded-lg border p-2 ${
-                    errors[field.id as keyof FormData] ? "border-red-500" : "border-gray-300"
+                    errors[field.id as keyof FormData]
+                      ? "border-red-500"
+                      : "border-gray-300"
                   }`}
                 />
                 {errors[field.id as keyof FormData] && (
@@ -266,8 +291,10 @@ export default function TuteeForm() {
                 No
               </label>
               {errors.specialNeeds && (
-                <span className="text-red-500 text-sm">{errors.specialNeeds}</span>
-            )}
+                <span className="text-red-500 text-sm">
+                  {errors.specialNeeds}
+                </span>
+              )}
             </div>
             {showTextBox && (
               <input
@@ -281,7 +308,9 @@ export default function TuteeForm() {
               />
             )}
             {errors.specialNeedsInfo && (
-                <span className="text-red-500 text-sm">{errors.specialNeedsInfo}</span>
+              <span className="text-red-500 text-sm">
+                {errors.specialNeedsInfo}
+              </span>
             )}
           </div>
         </div>
@@ -298,28 +327,30 @@ export default function TuteeForm() {
               { label: "Phone Number", id: "phone" },
               { label: "Email", id: "email" },
             ].map((field) => (
-                <div className="flex flex-col" key={field.id}>
-                  <label htmlFor={field.id} className="pb-1">
-                    {field.label}
-                  </label>
-                  <input
+              <div className="flex flex-col" key={field.id}>
+                <label htmlFor={field.id} className="pb-1">
+                  {field.label}
+                </label>
+                <input
                   type="text"
                   id={field.id}
                   name={field.id}
                   onChange={handleChange}
-                  value={formData[field.id as keyof FormData]} 
+                  value={formData[field.id as keyof FormData]}
                   placeholder="Enter a description..."
                   className={`rounded-lg border p-2 ${
-                    errors[field.id as keyof FormData] ? "border-red-500" : "border-gray-300"
+                    errors[field.id as keyof FormData]
+                      ? "border-red-500"
+                      : "border-gray-300"
                   }`}
                 />
-                  {errors[field.id as keyof FormData] && (
+                {errors[field.id as keyof FormData] && (
                   <span className="text-red-500 text-sm">
                     {errors[field.id as keyof FormData]}
                   </span>
                 )}
-                </div>
-              ))}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -339,13 +370,17 @@ export default function TuteeForm() {
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
-                value={subject_options.find((option) => option.value === formData.subject) || null}
+                value={
+                  subject_options.find(
+                    (option) => option.value === formData.subject
+                  ) || null
+                }
                 onChange={handleSelectChange}
                 //required
               />
               {errors.subject && (
                 <span className="text-red-500 text-sm">{errors.subject}</span>
-            )}
+              )}
             </div>
 
 
@@ -360,13 +395,19 @@ export default function TuteeForm() {
                 className="basic-single"
                 classNamePrefix="select"
                 placeholder="Select one"
-                value={tutoring_mode_options.find((option) => option.value === formData.tutoringMode)|| null}
+                value={
+                  tutoring_mode_options.find(
+                    (option) => option.value === formData.tutoringMode
+                  ) || null
+                }
                 onChange={handleSelectChange}
                 //required
               />
               {errors.tutoringMode && (
-                <span className="text-red-500 text-sm">{errors.tutoringMode}</span>
-            )}
+                <span className="text-red-500 text-sm">
+                  {errors.tutoringMode}
+                </span>
+              )}
             </div>
             <div className="space-y-2">
               <h1 className="text-base">Anything else you would like to let us know?</h1>
@@ -384,10 +425,11 @@ export default function TuteeForm() {
 
         {/* Agreement */}
         <div className="bg-white px-3 mt-8">
-          <h1 className="text-xl text-left pb-3 font-bold">
-            Agreement
-          </h1>
-          <p>I understand and agree to the "Tufts Campus - Minor" waiver (shown below)</p>
+          <h1 className="text-xl text-left pb-3 font-bold">Agreement</h1>
+          <p>
+            I understand and agree to the "Tufts Campus - Minor" waiver (shown
+            below)
+          </p>
           <div className="flex space-x-2 py-2">
             <label className="inline-flex items-center space-x-3 text-black">
               <input
@@ -417,7 +459,7 @@ export default function TuteeForm() {
               <span className="text-black">No</span>
             </label>
             {errors.agreement && (
-                <span className="text-red-500 text-sm">{errors.agreement}</span>
+              <span className="text-red-500 text-sm">{errors.agreement}</span>
             )}
           </div>
           <div className="w-full border border-gray-200 rounded-lg overflow-hidden mt-2">
@@ -442,7 +484,7 @@ export default function TuteeForm() {
               //required
             />
             {errors.signature && (
-                <span className="text-red-500 text-sm">{errors.signature}</span>
+              <span className="text-red-500 text-sm">{errors.signature}</span>
             )}
           </div>
         </div>
