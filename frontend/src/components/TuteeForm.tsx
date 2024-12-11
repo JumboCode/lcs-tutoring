@@ -218,7 +218,9 @@ export default function TuteeForm() {
   };
 
   return (
+
     <div className="pt-10 bg-[#FAFCFE] min-h-screen">
+
       <h1 className="text-center text-2xl font-bold">Tutee Survey</h1>
 
       <form
@@ -239,7 +241,7 @@ export default function TuteeForm() {
               { label: "Gender", id: "gender" },
               { label: "Grade", id: "grade" },
             ].map((field) => (
-              <div className="flex flex-col" key={field.id}>
+                <div className="flex flex-col" key={field.id}>
                 <label htmlFor={field.id} className="pb-1">
                   {field.label}
                 </label>
@@ -356,9 +358,10 @@ export default function TuteeForm() {
         <div className="bg-white px-3 mt-8">
           <div className="space-y-4">
             <h1 className="text-xl text-left pb-3 font-bold">
-              Tutoring Preference
+                Tutoring Preference
             </h1>
             <div className="space-y-2">
+
               <h1 className="text-base space-y-2">Subject</h1>
               <Select
                 id="small"
@@ -380,11 +383,11 @@ export default function TuteeForm() {
               )}
             </div>
 
+
             <div className="space-y-2">
               <h1 className="text-base space-y-2">
                 What are your preferences regarding in-person tutoring? (Please
-                note: students must come to Tufts campus to be tutored in
-                person)
+                note: students must come to Tufts campus to be tutored in person)
               </h1>
               <Select
                 name="tutoringMode"
@@ -407,9 +410,7 @@ export default function TuteeForm() {
               )}
             </div>
             <div className="space-y-2">
-              <h1 className="text-base">
-                Anything else you would like to let us know?
-              </h1>
+              <h1 className="text-base">Anything else you would like to let us know?</h1>
               <input
                 type="text"
                 name="additionalInfo"
