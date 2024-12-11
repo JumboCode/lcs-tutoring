@@ -54,7 +54,7 @@ export default function MatchedInfoBoxbox_props({
 
   return (
     <div
-      className={`odd:bg-white even:bg-[${STYLES.colors.evenBackground}] w-100 h-auto rounded-lg border-b-1 text-left ${STYLES.transitions.colors} my-2`}
+      className={`odd:bg-[${bgColor}] even:bg-[${STYLES.colors.evenBackground}] w-100 h-auto rounded-lg border-b-1 text-left ${STYLES.transitions.colors} my-2`}
     >
       <table className="table-fixed w-full">
         <thead>

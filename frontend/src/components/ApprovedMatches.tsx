@@ -25,10 +25,10 @@ export default function TuteeTable() {
   const date = "11/27/2024";
 
   // Add state to track which emails have been sent
-  const handleEmailSend = (index: number) => {
-    // Here you would typically implement the actual email sending logic
-    console.log(`Sending email for index ${index}`);
-  };
+  // const handleEmailSend = (index: number) => {
+  //   // Here you would typically implement the actual email sending logic
+  //   console.log(`Sending email for index ${index}`);
+  // };
 
   const tutors = [
     {
