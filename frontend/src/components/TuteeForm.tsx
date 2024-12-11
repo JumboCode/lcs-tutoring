@@ -183,7 +183,7 @@ export default function TuteeForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      fetch("http://localhost:3000/tuteesubmission", {
+      fetch("https://jumbocodegpt.onrender.com/api/tuteesubmission", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
