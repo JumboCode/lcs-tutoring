@@ -5,7 +5,8 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
-  approvedMatchesTable
+  approvedMatchesTable,
+  adminTable
 } from "./db/schema";
 import { or, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
@@ -76,6 +77,14 @@ app.get("/tutors", async (req: Request, res: Response) => {
     }
   });
 
+  app.post("/admin/:email", async (req: Request, res: Response) => {
+    try {
+      const email = req.params.email;
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error adding new admin");
+    }
+  });
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
@@ -131,6 +140,7 @@ async function filterTutors(
   const tutors = await query;
   return tutors;
 }
+
 
 // filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
 // moveToMatched("1000002");

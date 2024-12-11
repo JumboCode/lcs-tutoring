@@ -24,6 +24,7 @@ import NavigationBar from "./components/navigationBar";
 import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
+import AddAdmin from "./components/addAdmin";
 
 /* Type definitions */
 import { tutorBoxProps, tuteeBoxProps } from "./types";
@@ -193,6 +194,14 @@ function App() {
           element={
             <div>
               <Demo />
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/admin"
+          element={
+            <div>
+              <AddAdmin />
             </div>
           }
         ></Route>
