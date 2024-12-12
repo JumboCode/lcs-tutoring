@@ -31,7 +31,7 @@ export default function TuteeTable() {
         // https://jumbocodegpt.onrender.com/api/add-prompt
         // http://localhost:3000/tutees
         const response = await fetch(
-          "https://jumbocodegpt.onrender.com/api/tutees"
+          "https://lcs-tutoring.onrender.com/tutees"
         );
         const data = await response.json();
         const { matchedTutees, unmatchedTutees } = data;
