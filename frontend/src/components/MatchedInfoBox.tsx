@@ -103,7 +103,7 @@ export default function MatchedInfoBoxbox_props({
                     <BsEnvelope size={20} />
                   )}
 
-                  <p className="font-thin ml-2">
+                  <p className="font-medium ml-2">
                     {emailSent ? "Sent Email" : "Send Email"}
                   </p>
                 </button>

@@ -1,6 +1,7 @@
 // Footer.tsx
 import GrayLogo from "../assets/images/gray_logo.svg";
 import { Instagram } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -11,15 +12,21 @@ export default function Footer() {
       </div>
       <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4 items-end">
         <div className="flex flex-col space-y-2">
-          <p className="cursor-pointer text-black text-base font-bold font-inter border-b border-blue-100 hover:border-b hover:border-black">
+          <span className="cursor-pointer text-black text-base font-bold font-inter border-b border-blue-100">
             Pages
-          </p>
-          <p className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+          </span>
+          <Link
+            className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
+            to="/"
+          >
             Home
-          </p>
-          <p className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+          </Link>
+          <Link
+            className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
+            to="/team"
+          >
             Team
-          </p>
+          </Link>
         </div>
         <p className="cursor-pointer text-[#2F3335] text-sm inline border-b border-blue-100 hover:border-b hover:border-black">
           Find us on Instagram

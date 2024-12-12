@@ -33,6 +33,7 @@ app.get("/demo/:id", async (req: Request, res: Response) => {
 /* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/tutees", async (req: Request, res: Response) => {
   try {
+    console.log("Inside tutees endpoint");
     const matchedTutees = await db
       .select()
       .from(tuteeTable)

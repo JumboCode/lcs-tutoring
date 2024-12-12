@@ -6,98 +6,80 @@ import ApprovedMatch from "../assets/images/nav_icons/approved_match.svg";
 import TutorDB from "../assets/images/nav_icons/tutor_db.svg";
 import Collapse from "../assets/images/nav_icons/collapse.svg";
 
+import TuteeTable from "./TuteeTable";
+import TutorTable from "./TutorTable";
+import ApprovedMatches from "./ApprovedMatches";
+
 export default function NavigationBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [currentPage, setCurrentPage] = useState("Match Suggestions");
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
   };
 
+  const menuItems = [
+    { name: "Match Suggestions", icon: Matching },
+    { name: "Approved Matches", icon: ApprovedMatch },
+    { name: "Tutor Database", icon: TutorDB },
+    { name: "Tutee Database", icon: TuteeDB },
+    { name: "Mailing List", icon: Mail },
+  ];
+
   return (
-    <div
-      className={`flex flex-col bg-[#FFFFFF] h-screen transition-all duration-300 border-r-2 ${
-        isCollapsed ? "w-[50px]" : "w-[250px]"
-      }`}
-    >
+    <div className="flex flex-row">
       <div
-        onClick={toggleCollapse}
-        className="flex justify-end cursor-pointer p-2"
+        className={`flex flex-col bg-[#FFFFFF] min-h-screen transition-all duration-300 border-r-2 ${
+          isCollapsed ? "w-[50px]" : "w-[250px]"
+        }`}
       >
-        <img
-          className={`transition-transform duration-300 ${
-            isCollapsed ? "rotate-180" : "rotate-0"
-          }`}
-          src={Collapse}
-          alt="Collapse Icon"
-          style={{ width: "15px", height: "15px" }}
-        />
+        <div
+          onClick={toggleCollapse}
+          className="flex justify-end cursor-pointer p-2"
+        >
+          <img
+            className={`transition-transform duration-300 ${
+              isCollapsed ? "rotate-180" : "rotate-0"
+            }`}
+            src={Collapse}
+            alt="Collapse Icon"
+            style={{ width: "15px", height: "15px" }}
+          />
+        </div>
+
+        <div className="flex flex-col mt-5 space-y-4">
+          {menuItems.map((item) => (
+            <div
+              key={item.name}
+              className={`rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold cursor-pointer text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68] ${
+                currentPage === item.name ? "bg-[#E3EFFB] text-[#1F3A68]" : ""
+              }`}
+              onClick={() => setCurrentPage(item.name)}
+            >
+              <img
+                className="ml-2"
+                src={item.icon}
+                alt={`${item.name} Icon`}
+                style={{ width: "24px", height: "24px" }}
+              />
+              {!isCollapsed && <span className="ml-2">{item.name}</span>}
+            </div>
+          ))}
+        </div>
       </div>
-
-      <div className="flex flex-col mt-5 space-y-4">
-        <a
-          className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
-          href="/matchingSuggestion"
-        >
-          <img
-            className="ml-2"
-            src={Matching}
-            alt="Matching Suggestion Icon"
-            style={{ width: "24px", height: "24px" }}
-          />
-          {!isCollapsed && <span className="ml-2">Matching Suggestion</span>}
-        </a>
-
-        <a
-          className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
-          href="/approvedSuggestion"
-        >
-          <img
-            className="ml-2"
-            src={ApprovedMatch}
-            alt="Approved Match Icon"
-            style={{ width: "24px", height: "24px" }}
-          />
-          {!isCollapsed && <span className="ml-2">Approved Match</span>}
-        </a>
-
-        <a
-          className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
-          href="/tutordata"
-        >
-          <img
-            className="ml-2"
-            src={TutorDB}
-            alt="Tutor Database Icon"
-            style={{ width: "24px", height: "24px" }}
-          />
-          {!isCollapsed && <span className="ml-2">Tutor Database</span>}
-        </a>
-
-        <a
-          className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
-          href="/tuteedata"
-        >
-          <img
-            className="ml-2"
-            src={TuteeDB}
-            alt="Tutee Database Icon"
-            style={{ width: "24px", height: "24px" }}
-          />
-          {!isCollapsed && <span className="ml-2">Tutee Database</span>}
-        </a>
-
-        <a
-          className="rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68]"
-          href="/mailinglist"
-        >
-          <img
-            className="ml-2"
-            src={Mail}
-            alt="Mailing List Icon"
-            style={{ width: "24px", height: "24px" }}
-          />
-          {!isCollapsed && <span className="ml-2">Mailing List</span>}
-        </a>
+      <div className="flex-grow p-4 bg-gray-100/50">
+        <div className="mt-4">
+          {currentPage === "Match Suggestions" && (
+            <span>No functionality yet :(((((</span>
+          )}
+          {currentPage === "Tutor Database" && <TutorTable />}
+          {currentPage === "Tutee Database" && <TuteeTable />}
+          {currentPage === "Approved Matches" && <ApprovedMatches />}
+          {currentPage === "Mailing List" && (
+            <span>No functionality yet :(((((</span>
+          )}
+          {/* TODO: other pages when finished */}
+        </div>
       </div>
     </div>
   );

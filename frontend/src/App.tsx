@@ -10,6 +10,7 @@ import ArayHunterButton from "./components/buttonArayHunter";
 import Demo from "./components/request_demo";
 
 /* General View */
+import ScrollToTop from "./components/ScrollToTop";
 import HomePage from "./components/homePage";
 import TutorForm from "./components/TutorForm";
 import TuteeForm from "./components/TuteeForm";
@@ -25,6 +26,7 @@ import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 import MatchSuggestions from "./components/matchSuggestionBlock";
+import AdminHeader from "./components/HeaderAdmin";
 
 /* Type definitions */
 // import { tutorBoxProps, tuteeBoxProps } from "./types";
@@ -115,6 +117,7 @@ function App() {
           path="/"
           element={
             <div className="flex flex-col">
+              <ScrollToTop />
               <Header />
               <HomePage />
               <Footer />
@@ -137,6 +140,7 @@ function App() {
           path="/team"
           element={
             <div className="flex flex-col">
+              <ScrollToTop />
               <Header />
               <TeamPage />
               <Footer />
@@ -147,6 +151,7 @@ function App() {
           path="/tutor-form"
           element={
             <div className="flex flex-col">
+              <ScrollToTop />
               <Header />
               <TutorForm />
               <Footer />
@@ -157,6 +162,7 @@ function App() {
           path="/tutee-form"
           element={
             <div className="flex flex-col">
+              <ScrollToTop />
               <Header />
               <TuteeForm />
               <Footer />
@@ -200,6 +206,7 @@ function App() {
           path="/navigationBar"
           element={
             <div>
+              <AdminHeader />
               <NavigationBar />
             </div>
           }

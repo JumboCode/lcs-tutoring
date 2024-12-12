@@ -146,18 +146,18 @@ export default function TuteeTable() {
 
   return (
     <div>
-      <div className="w-full items-center flex justify-center">
-        <div className="w-full py-4 items-center justify-center flex flex-col max-w-4xl">
+      <div className="w-[70vw] items-center flex justify-center">
+        <div className="w-full items-center justify-center flex flex-col">
           <div className="flex flex-row w-full justify-between">
             <h1 className="text-3xl font-bold">Approved Matches</h1>
             <div className="gap-x-2 flex flex-row items-center">
-              <button className="px-6 py-2 border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
+              <button className="px-6 py-2 bg-white border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
                 <div className="flex flex-row gap-x-2 items-center justify-center ">
                   <BsPlusLg color="gray" size={20} />
                   <p>Filters</p>
                 </div>
               </button>
-              <button className="px-6 py-2 border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
+              <button className="px-6 py-2 bg-white border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
                 <div className="flex flex-row gap-x-2 items-center justify-center ">
                   <BsPlusLg color="gray" size={20} />
                   <p>Add</p>
