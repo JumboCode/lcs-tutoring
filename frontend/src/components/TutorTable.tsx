@@ -45,7 +45,7 @@ export default function TutorTable() {
 
   return (
     <div className="flex flex-col justify-center items-center w-[70vw]">
-      <h1 className="w-full text-3xl font-bold text-left">Tutee Database</h1>
+      <h1 className="w-full text-3xl font-bold text-left">Tutor Database</h1>
       <div
         className={`w-full flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
       >

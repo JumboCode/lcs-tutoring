@@ -257,9 +257,9 @@ export default function TutorForm() {
 
           <div className="w-full border border-gray-200 rounded-lg overflow-hidden mt-2">
             <iframe
-              src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210101201653/PDF.pdf"
+              src="/Tufts Tutor Waiver.pdf"
               className="w-full h-[500px]"
-              title="Tutor Code of Conduct"
+              title="Tutor Waiver"
             />
           </div>
 

@@ -45,7 +45,6 @@ export default function MatchedInfoBoxbox_props({
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  console.log(emailSent);
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
