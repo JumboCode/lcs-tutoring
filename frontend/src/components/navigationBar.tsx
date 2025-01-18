@@ -9,6 +9,9 @@ import Collapse from "../assets/images/nav_icons/collapse.svg";
 import TuteeTable from "./TuteeTable";
 import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
+import MatchSuggestionBlock from "./matchSuggestionBlock";
+
+import { tutorInfo, tuteeInfo } from "../types";
 
 export default function NavigationBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -16,6 +19,47 @@ export default function NavigationBar() {
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
+  };
+
+  const tutor1: tutorInfo = {
+    first_name: "Brandon",
+    last_name: "Dionisio",
+    email: "brandon.dionisio@tufts.edu",
+    phone: "8454204946",
+    subject: ["Math", "Science"],
+    grade: ["9", "10"],
+    open_to_disability: true,
+    tutoring_mode: "Hybrid",
+  };
+
+  const tutee1: tuteeInfo = {
+    first_name: "Bill",
+    last_name: "Smith",
+    email: "bill.smith@hi.com",
+    subject: "Math",
+    grade: "8",
+    special_needs: "No",
+    tutoring_mode: "Hybrid",
+  };
+
+  const tutee2: tuteeInfo = {
+    first_name: "Bob",
+    last_name: "Jones",
+    email: "bob.jones@hi.com",
+    subject: "Science",
+    grade: "10",
+    special_needs: "Dyslexia",
+    tutoring_mode: "In-Person",
+  };
+
+  const tutee3: tuteeInfo = {
+    first_name: "Ana",
+    last_name: "Todd",
+    email: "ana.todd@hi.com",
+    subject: "English",
+    grade: "9",
+    special_needs: "No",
+    tutoring_mode: "Hybrid",
   };
 
   const menuItems = [
@@ -70,7 +114,12 @@ export default function NavigationBar() {
       <div className="flex-grow p-4 bg-gray-100/50">
         <div className="mt-4">
           {currentPage === "Match Suggestions" && (
-            <span>No functionality yet :(((((</span>
+            <MatchSuggestionBlock
+              tutee1={tutee1}
+              tutee2={tutee2}
+              tutee3={tutee3}
+              tutor_info={tutor1}
+            />
           )}
           {currentPage === "Tutor Database" && <TutorTable />}
           {currentPage === "Tutee Database" && <TuteeTable />}

@@ -11,14 +11,22 @@ import BoardBox from "./boardBox";
 export default function TeamPage() {
   return (
     <>
-      <div className={"flex flex-row items-center w-[90%] mx-auto mt-32 mb-8"}>
+      <div
+        className={
+          "flex flex-row items-center w-[90%] lg:w-[90%] mx-auto mt-32 mb-8"
+        }
+      >
         <h3 className={"font-interBlack text-[#1F3A68] text-3xl"}>
           MEET OUR TEAM
         </h3>
         <hr className={"w-10 h-0.5 mx-3 rounded border-0 bg-[#E4D1F0]"} />
       </div>
-      <div className={"flex flex-col xl:mx-20"}>
-        <div className={"flex flex-col lg:flex-row justify-center my-8"}>
+      <div className={"flex flex-col lg:w-[90%] mx-auto"}>
+        <div
+          className={
+            "flex flex-col lg:flex-row items-center justify-center my-3 lg:my-8 gap-y-8 lg:gap-x-8"
+          }
+        >
           <BoardBox
             photo={anaDias}
             name={"Ana Dias"}
@@ -26,9 +34,9 @@ export default function TeamPage() {
             year={"2025"}
             bio={
               "I am a rising senior double majoring in biology and \
-                            biotechnology at Tufts University! I also am \
-                            studying DNA repair and damage tolerance in \
-                            Drosophila melanogaster in the McVey Lab at Tufts."
+              biotechnology at Tufts University! I also am \
+              studying DNA repair and damage tolerance in \
+              Drosophila melanogaster in the McVey Lab at Tufts."
             }
           />
           <BoardBox
@@ -38,12 +46,16 @@ export default function TeamPage() {
             year={"2025"}
             bio={
               "I've been tutoring since my freshman year, and now \
-                            as a senior, it's still one of the highlights of my \
-                            week!"
+              as a senior, it's still one of the highlights of my \
+              week!"
             }
           />
         </div>
-        <div className={"flex flex-row justify-between my-8"}>
+        <div
+          className={
+            "flex flex-col lg:flex-row items-center justify-center my-3 lg:my-8 lg:gap-y-0 gap-y-8 lg:gap-x-8"
+          }
+        >
           <BoardBox
             photo={mollySikma}
             name={"Molly Sikma"}
@@ -51,11 +63,11 @@ export default function TeamPage() {
             year={"2026"}
             bio={
               "I am a junior at Tufts University, majoring in \
-                              Biopsychology and minoring in Medical Anthropology \
-                              on the pre-medical track. I have been a part of \
-                              LCS Tutoring for the past three years, and I love \
-                              working with kids. I enjoys swimming, reading, and \
-                              is learning how to draw with oil pastels in my free time!"
+              Biopsychology and minoring in Medical Anthropology \
+              on the pre-medical track. I have been a part of \
+              LCS Tutoring for the past three years, and I love \
+              working with kids. I enjoys swimming, reading, and \
+              is learning how to draw with oil pastels in my free time!"
             }
           />
           <BoardBox
@@ -65,12 +77,16 @@ export default function TeamPage() {
             year={"2027"}
             bio={
               "I’m a sophomore majoring in biomedical engineering \
-                              on a pre-med track, and I'm currently tutoring a high \
-                              schooler with a focus on math and science."
+              on a pre-med track, and I'm currently tutoring a high \
+              schooler with a focus on math and science."
             }
           />
         </div>
-        <div className={"flex flex-row justify-between my-8"}>
+        <div
+          className={
+            "flex flex-col lg:flex-row items-center justify-center my-3 lg:my-8 gap-y-8 lg:gap-x-8"
+          }
+        >
           <BoardBox
             photo={nikkiYip}
             name={"Nikki Yip"}
@@ -78,10 +94,10 @@ export default function TeamPage() {
             year={"2025"}
             bio={
               "Hii! My name is Nikki and I'm currently a senior \
-                              double majoring in Biology and Child Study/Human Development. \
-                              I'm from Los Angeles, California and some things I enjoy \
-                              doing in my free time are running, swimming, and \
-                              exploring new places!"
+              double majoring in Biology and Child Study/Human Development. \
+              I'm from Los Angeles, California and some things I enjoy \
+              doing in my free time are running, swimming, and \
+              exploring new places!"
             }
           />
           <BoardBox
@@ -91,11 +107,11 @@ export default function TeamPage() {
             year={"2027"}
             bio={
               "I am majoring in biopsychology. Ask me about movie \
-                              recs and Filipino culture!"
+              recs and Filipino culture!"
             }
           />
         </div>
-        <div className={"flex flex-row justify-center mt-8 mb-28"}>
+        <div className={"flex flex-row justify-center mb-28 my-3"}>
           <BoardBox
             photo={aatiqahAziz}
             name={"Aatiqah Aziz"}
@@ -103,11 +119,11 @@ export default function TeamPage() {
             year={"2026"}
             bio={
               "I am a junior at Tufts University majoring in Community \
-                              Health and minoring in Asian American studies. I have \
-                              been a part of LCS Tutoring for 3 years and I  handle \
-                              the communication between tutors and families. I enjoy \
-                              traveling, trying new restaurants, and painting in my \
-                              free time!"
+              Health and minoring in Asian American studies. I have \
+              been a part of LCS Tutoring for 3 years and I  handle \
+              the communication between tutors and families. I enjoy \
+              traveling, trying new restaurants, and painting in my \
+              free time!"
             }
           />
         </div>

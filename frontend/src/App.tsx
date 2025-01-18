@@ -203,7 +203,7 @@ function App() {
           }
         ></Route>
         <Route
-          path="/navigationBar"
+          path="/adminview"
           element={
             <div>
               <AdminHeader />
