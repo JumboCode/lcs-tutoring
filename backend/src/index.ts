@@ -93,12 +93,12 @@ app.get("/tutors", async (req: Request, res: Response) => {
 
 app.post("/tuteesubmission", async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
+    console.log("This the req body: ", req.body);
     const request = req.body;
     const { childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subject, tutoringMode, additionalInfo, agreement, signature } = request;
     // bad practice, prefer to submit number directly
     const gradeNum = Number(grade);
-    console.log(gradeNum);
+    console.log("This the grade num: ", gradeNum);
     await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
@@ -115,7 +115,7 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
     });
-    console.log("Tutee submitted:", req.body);
+    console.log("Tutee submitted: ", req.body);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to matched");
