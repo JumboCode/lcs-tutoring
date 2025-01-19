@@ -123,25 +123,6 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
 });
 
 app.post("/tutorsubmission", async (req: Request, res: Response) => {
-  // firstName: string;
-  // lastName: string;
-  // pronouns: string;
-  // id: string;
-  // major: string;
-  // yearGrad: string;
-  // phone: string;
-  // email: string;
-  // pairedWithTutee: string;
-  // pairedTutee: string;
-  // numTutees: string;
-  // gradeLevels: string;
-  // comfortableSpecialNeeds: string;
-  // subjects: string;
-  // languageProficiencies: string;
-  // tutoringMode: string;
-  // notes: string;
-  // agreement: string;
-  // signature: string;
   try {
     console.log("This the req body: ", req.body);
     const request = req.body;
@@ -162,7 +143,8 @@ app.post("/tutorsubmission", async (req: Request, res: Response) => {
       subject_pref: subjects,
       tutoring_mode: tutoringMode,
       date: new Date().toISOString().split("T")[0],
-      previous_tutee: pairedTutee,
+      previous_tutee: pairedWithTutee,
+      continuing_tutee_name: pairedTutee,
       num_tutees: numTutees,
     });
     console.log("Tutee submitted: ", req.body);

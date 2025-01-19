@@ -15,6 +15,7 @@ export const tutorTable = pgTable("tutor", {
   tutoring_mode: varchar({ length: 50 }).notNull(),
   date: date().notNull(),
   previous_tutee: boolean('previous_tutee').default(false).notNull(),
+  continuing_tutee_name: varchar({ length: 50 }),
   num_tutees: integer().default(0).notNull(),
 });
 
