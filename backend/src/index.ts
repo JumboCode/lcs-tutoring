@@ -122,6 +122,56 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
   }
 });
 
+app.post("/tutorsubmission", async (req: Request, res: Response) => {
+  // firstName: string;
+  // lastName: string;
+  // pronouns: string;
+  // id: string;
+  // major: string;
+  // yearGrad: string;
+  // phone: string;
+  // email: string;
+  // pairedWithTutee: string;
+  // pairedTutee: string;
+  // numTutees: string;
+  // gradeLevels: string;
+  // comfortableSpecialNeeds: string;
+  // subjects: string;
+  // languageProficiencies: string;
+  // tutoringMode: string;
+  // notes: string;
+  // agreement: string;
+  // signature: string;
+  try {
+    console.log("This the req body: ", req.body);
+    const request = req.body;
+    const { firstName, lastName, pronouns, id, major, yearGrad, phone, email, pairedWithTutee, pairedTutee, numTutees, gradeLevels, comfortableSpecialNeeds, subjects, languageProficiencies, tutoringMode, notes, agreement, signature } = request;
+    // bad practice, prefer to submit number directly
+    const gradeLevel = Number(gradeLevels);
+    await db.insert(tutorTable).values({
+      id: id,
+      first_name: firstName,
+      last_name: lastName,
+      pronouns: pronouns,
+      major: major,
+      year_grad: yearGrad,
+      phone: phone,
+      email: email,
+      grade_level_pref: gradeLevels,
+      disability_pref: comfortableSpecialNeeds,
+      subject_pref: subjects,
+      tutoring_mode: tutoringMode,
+      date: new Date().toISOString().split("T")[0],
+      previous_tutee: pairedTutee,
+      num_tutees: numTutees,
+    });
+    console.log("Tutee submitted: ", req.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to matched");
+  }
+});
+
 const importUnmatchedData = async () => {
   const jsonData = JSON.parse(fs.readFileSync("src/unmatched.json", "utf-8"));
 

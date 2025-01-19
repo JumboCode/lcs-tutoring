@@ -34,21 +34,29 @@ const subject_options = [
   { value: "Science", label: "Science (1-8)" },
 ];
 
-// const grade_options = [
-//   { value: "K", label: "Kindergarten" },
-//   { value: "1", label: "1st" },
-//   { value: "2", label: "2nd" },
-//   { value: "3", label: "3rd" },
-//   { value: "4", label: "4th" },
-//   { value: "5", label: "5th" },
-//   { value: "6", label: "6th" },
-//   { value: "7", label: "7th" },
-//   { value: "8", label: "8th" },
-//   { value: "9", label: "9th" },
-//   { value: "10", label: "10th" },
-//   { value: "11", label: "11th" },
-//   { value: "12", label: "12th" },
-// ];
+const gender_options = [
+  { value: "Female", label: "Female" },
+  { value: "Male", label: "Male" },
+  { value: "Nonbinary", label: "Nonbinary" },
+  { value: "Prefer", label: "Prefer to self-describe" },
+  { value: "Decline", label: "Decline to state" },
+];
+
+const grade_options = [
+  { value: "K", label: "Kindergarten" },
+  { value: "1", label: "1st" },
+  { value: "2", label: "2nd" },
+  { value: "3", label: "3rd" },
+  { value: "4", label: "4th" },
+  { value: "5", label: "5th" },
+  { value: "6", label: "6th" },
+  { value: "7", label: "7th" },
+  { value: "8", label: "8th" },
+  { value: "9", label: "9th" },
+  { value: "10", label: "10th" },
+  { value: "11", label: "11th" },
+  { value: "12", label: "12th" },
+];
 
 const tutoring_mode_options = [
   { value: "Virtual only", label: "Virtual only" },
@@ -223,7 +231,6 @@ export default function TuteeForm() {
 
       <form onSubmit={handleSubmit} className="">
         <div className="bg-white p-5 rounded-lg max-w-5xl mx-auto my-8 shadow-md border border-gray-300">
-          {/* We need to insert dropdown for grade instead of mapping the text*/}
           {/* Child Information */}
           <div className="bg-white px-3">
             <h2 className="text-xl font-bold text-left pb-3">
@@ -233,8 +240,6 @@ export default function TuteeForm() {
               {[
                 { label: "First Name", id: "childFirstName" },
                 { label: "Last Name", id: "childLastName" },
-                { label: "Gender", id: "gender" },
-                { label: "Grade", id: "grade" },
               ].map((field) => (
                 <div className="flex flex-col" key={field.id}>
                   <label htmlFor={field.id} className="pb-1">
@@ -260,6 +265,48 @@ export default function TuteeForm() {
                   )}
                 </div>
               ))}
+            </div>
+            <div className="flex space-x-4 pt-3">
+              <div className="w-1/2 space-y-2">
+                <h1 className="text-base space-y-2">Gender</h1>
+                <Select
+                  id="small"
+                  name="gender"
+                  options={gender_options}
+                  className="basic-single"
+                  classNamePrefix="select"
+                  placeholder="Select one"
+                  value={
+                    gender_options.find(
+                      (option) => option.value === formData.gender
+                    ) || null
+                  }
+                  onChange={handleSelectChange}
+                />
+                {errors.gender && (
+                  <span className="text-red-500 text-sm">{errors.gender}</span>
+                )}
+              </div>
+              <div className="w-1/2 space-y-2">
+                <h1 className="text-base space-y-2">Grade</h1>
+                <Select
+                  id="small"
+                  name="grade"
+                  options={grade_options}
+                  className="basic-single"
+                  classNamePrefix="select"
+                  placeholder="Select one"
+                  value={
+                    grade_options.find(
+                      (option) => option.value === formData.grade
+                    ) || null
+                  }
+                  onChange={handleSelectChange}
+                />
+                {errors.grade && (
+                  <span className="text-red-500 text-sm">{errors.grade}</span>
+                )}
+              </div>
             </div>
             <div className="pt-3 flex flex-col">
               <label>Special Needs?</label>
@@ -432,8 +479,8 @@ export default function TuteeForm() {
               I understand and agree to the "Tufts Campus - Minor" waiver (shown
               below)
             </p>
-            <div className="flex space-x-2 py-2">
-              <label className="inline-flex items-center space-x-3 text-black">
+            <div className="flex space-x-3 py-2">
+              <label className="inline-flex items-center space-x-2 text-black">
                 <input
                   type="radio"
                   name="agreement"
@@ -447,7 +494,7 @@ export default function TuteeForm() {
               </label>
               <label
                 htmlFor="radio-2"
-                className="inline-flex items-center space-x-3"
+                className="inline-flex items-center space-x-2"
               >
                 <input
                   type="radio"
