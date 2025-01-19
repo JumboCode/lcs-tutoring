@@ -25,6 +25,7 @@ import NavigationBar from "./components/navigationBar";
 import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
+import AddAdmin from "./components/addAdmin";
 import MatchSuggestions from "./components/matchSuggestionBlock";
 import AdminHeader from "./components/HeaderAdmin";
 
@@ -258,6 +259,14 @@ function App() {
           element={
             <div>
               <Demo />
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/admin"
+          element={
+            <div>
+              <AddAdmin />
             </div>
           }
         ></Route>

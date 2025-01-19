@@ -5,6 +5,8 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
+  approvedMatchesTable,
+  adminTable
 } from "./db/schema";
 import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
@@ -88,6 +90,15 @@ app.get("/tutors", async (req: Request, res: Response) => {
     } catch (error) {
       console.error(error);
       res.status(500).send("Error fetching tutors");
+    }
+  });
+
+  app.post("/admin/:email", async (req: Request, res: Response) => {
+    try {
+      const email = req.params.email;
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error adding new admin");
     }
   });
 
@@ -239,6 +250,7 @@ async function filterTutors(
 
   return tutors;
 }
+
 
 // filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
 // moveToMatched("1000002");
