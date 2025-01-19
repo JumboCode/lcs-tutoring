@@ -46,28 +46,28 @@ const subject_options = [
 ];
 
 const grade_options = [
-  { value: 0, label: "Kindergarten" },
-  { value: 1, label: "1st" },
-  { value: 2, label: "2nd" },
-  { value: 3, label: "3rd" },
-  { value: 4, label: "4th" },
-  { value: 5, label: "5th" },
-  { value: 6, label: "6th" },
-  { value: 7, label: "7th" },
-  { value: 8, label: "8th" },
-  { value: 9, label: "9th" },
-  { value: 10, label: "10th" },
-  { value: 11, label: "11th" },
-  { value: 12, label: "12th" },
+  { value: "0", label: "Kindergarten" },
+  { value: "1", label: "1st" },
+  { value: "2", label: "2nd" },
+  { value: "3", label: "3rd" },
+  { value: "4", label: "4th" },
+  { value: "5", label: "5th" },
+  { value: "6", label: "6th" },
+  { value: "7", label: "7th" },
+  { value: "8", label: "8th" },
+  { value: "9", label: "9th" },
+  { value: "10", label: "10th" },
+  { value: "11", label: "11th" },
+  { value: "12", label: "12th" },
 ];
 
 const num_tutees_options = [
-  { value: 1, label: "1" },
-  { value: 2, label: "2" },
-  { value: 3, label: "3" },
-  { value: 4, label: "4" },
-  { value: 5, label: "5" },
-  { value: 6, label: "6" },
+  { value: "1", label: "1" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
 ];
 
 const tutoring_mode_options = [
@@ -287,11 +287,12 @@ export default function TutorForm() {
                     {field.label}
                   </label>
                   <input
-                    type={field.id === "phone" ? "number" : "text"}
+                    type="text"
                     id={field.id}
                     name={field.id}
+                    onChange={handleChange}
+                    value={formData[field.id as keyof FormData] as string}
                     placeholder="Enter a description..."
-                    required
                     className={`rounded-lg border border-gray-300 p-2 ${
                       errors[field.id as keyof FormData]
                         ? "border-red-500"
@@ -395,7 +396,7 @@ export default function TutorForm() {
                   classNamePrefix="select"
                   placeholder="Select as many as you like"
                   value={grade_options.filter((option) =>
-                    formData.gradeLevels.includes(option.value)
+                    formData.gradeLevels.includes(Number(option.value))
                   )}
                   onChange={handleMultiSelectChange}
                   //required
