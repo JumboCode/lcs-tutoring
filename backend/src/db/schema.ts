@@ -59,8 +59,3 @@ export const adminTable = pgTable("admin", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 100 }).notNull().unique(),
 });
-
-export const adminTable = pgTable("admin", {
-  id: serial("id").primaryKey(),
-  email: varchar("email", { length: 100 }).notNull().unique(),
-});
