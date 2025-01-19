@@ -14,7 +14,7 @@ interface FormData {
   pairedTutee: string;
   numTutees: string;
   gradeLevels: number[];
-  comfortableSpecialNeeds: boolean;
+  comfortableSpecialNeeds: boolean | null;
   subjects: string[];
   languageProficiencies: string;
   tutoringMode: string;
@@ -92,7 +92,7 @@ export default function TutorForm() {
     pairedTutee: "",
     numTutees: "",
     gradeLevels: [],
-    comfortableSpecialNeeds: false,
+    comfortableSpecialNeeds: null,
     subjects: [],
     languageProficiencies: "",
     tutoringMode: "",
@@ -129,13 +129,16 @@ export default function TutorForm() {
 
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "comfortableSpecialNeeds" ? Boolean(value) : value,
     }));
+
     if (name === "pairedWithTutee") {
       setShowTextBox(value === "yes");
     }
+
     setErrors((prev) => ({
       ...prev,
       [name]: "", // clear error when user selects an option
@@ -189,7 +192,9 @@ export default function TutorForm() {
     setFormData((prev) => ({
       ...prev,
       [name]: selectedOption
-        ? selectedOption.map((option) => option.value)
+        ? selectedOption.map((option) =>
+            name === "gradeLevels" ? Number(option.value) : option.value
+          )
         : [],
     }));
 
@@ -431,7 +436,7 @@ export default function TutorForm() {
                     <input
                       type="radio"
                       name="comfortableSpecialNeeds"
-                      value="no"
+                      value=""
                       checked={formData.comfortableSpecialNeeds === false}
                       onChange={handleRadioChange}
                     />
