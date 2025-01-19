@@ -96,6 +96,10 @@ app.get("/tutors", async (req: Request, res: Response) => {
   app.post("/admin/:email", async (req: Request, res: Response) => {
     try {
       const email = req.params.email;
+      await db.insert(adminTable).values({
+        email: email
+      });
+      console.log("Email submitted: ", req.body);
     } catch (error) {
       console.error(error);
       res.status(500).send("Error adding new admin");
@@ -113,7 +117,7 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
     await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
-      gender,
+      gender: gender,
       grade: gradeNum,
       has_special_needs: specialNeeds === "yes",
       special_needs: specialNeedsInfo,
@@ -121,7 +125,7 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
       parent_last_name: parentLastName,
       parent_phone: phone,
       parent_email: email,
-      subject,
+      subject: subject,
       tutoring_mode: tutoringMode,
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
