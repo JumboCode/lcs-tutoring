@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import Select, { ActionMeta, SingleValue } from "react-select";
+import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 
 //lets TypeScript know what kind of data
 interface FormData {
@@ -13,12 +13,16 @@ interface FormData {
   parentLastName: string;
   phone: string;
   email: string;
-  subject: string;
+  subjects: string[];
   tutoringMode: string;
   additionalInfo: string;
   agreement: string;
   signature: string;
 }
+
+type FormErrors = {
+  [key in keyof FormData]?: string;
+};
 
 const subject_options = [
   { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
@@ -77,7 +81,7 @@ export default function TuteeForm() {
     parentLastName: "",
     phone: "",
     email: "",
-    subject: "",
+    subjects: [],
     tutoringMode: "",
     additionalInfo: "",
     agreement: "",
@@ -85,7 +89,7 @@ export default function TuteeForm() {
   });
 
   //errors
-  const [errors, setErrors] = useState<Partial<FormData>>({
+  const [errors, setErrors] = useState<FormErrors>({
     childFirstName: "",
     childLastName: "",
     gender: "",
@@ -96,7 +100,7 @@ export default function TuteeForm() {
     parentLastName: "",
     phone: "",
     email: "",
-    subject: "",
+    subjects: "",
     tutoringMode: "",
     additionalInfo: "",
     agreement: "",
@@ -134,6 +138,29 @@ export default function TuteeForm() {
     }));
   };
 
+  const handleMultiSelectChange = (
+    selectedOption: MultiValue<{ value: string; label: string }>,
+    actionMeta: ActionMeta<{ value: string; label: string }>
+  ) => {
+    const name = actionMeta?.name;
+
+    if (!name) {
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: selectedOption
+        ? selectedOption.map((option) => option.value)
+        : [],
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+    }));
+  };
+
   const handleSelectChange = (
     selectedOption: SingleValue<{ value: string; label: string }>,
     actionMeta: ActionMeta<{ value: string; label: string }>
@@ -159,7 +186,7 @@ export default function TuteeForm() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const newErrors: Partial<FormData> = {};
+    const newErrors: FormErrors = {};
 
     // check for empty fields
     Object.keys(formData).forEach((key) => {
@@ -407,24 +434,24 @@ export default function TuteeForm() {
                 Tutoring Preference
               </h1>
               <div className="space-y-2">
-                <h1 className="text-base space-y-2">Subject</h1>
+                <h1 className="text-base space-y-2">Subjects</h1>
                 <Select
-                  id="small"
-                  name="subject"
+                  isMulti
+                  name="subjects"
                   options={subject_options}
-                  className="basic-single"
+                  className="basic-multi-select"
                   classNamePrefix="select"
-                  placeholder="Select one"
-                  value={
-                    subject_options.find(
-                      (option) => option.value === formData.subject
-                    ) || null
-                  }
-                  onChange={handleSelectChange}
+                  placeholder="Select as many as you like"
+                  value={subject_options.filter((option) =>
+                    formData.subjects.includes(option.value)
+                  )}
+                  onChange={handleMultiSelectChange}
                   //required
                 />
-                {errors.subject && (
-                  <span className="text-red-500 text-sm">{errors.subject}</span>
+                {errors.subjects && (
+                  <span className="text-red-500 text-sm">
+                    {errors.subjects}
+                  </span>
                 )}
               </div>
 

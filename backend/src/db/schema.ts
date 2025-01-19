@@ -31,7 +31,7 @@ export const tuteeTable = pgTable("tutee", {
   parent_last_name: varchar({ length: 100 }).notNull(),
   parent_phone: varchar({ length: 10 }).notNull(),
   parent_email: varchar({ length: 100 }).notNull(),
-  subject: varchar({ length: 50 }).notNull(),
+  subjects: varchar({ length: 50 }).array(),
   tutoring_mode: varchar({ length: 50 }).notNull(),
   notes: text(),
   date: date().notNull(),
