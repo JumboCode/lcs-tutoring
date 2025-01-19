@@ -6,14 +6,14 @@ import { tutorBoxProps } from "../types";
 const TABS = {
   UNMATCHED: 0,
   MATCHED: 1,
-  INACTIVE: 2,
+  HISTORY: 2,
 } as const;
 
 const COLORS = {
   ACTIVE: "text-[#8DAADD]",
-  INACTIVE: "text-gray-500",
+  HISTORY: "text-gray-500",
   ACTIVE_BG: "bg-[#8DAADD] text-white",
-  INACTIVE_BG: "bg-[#F1F7FD] text-gray-500",
+  HISTORY_BG: "bg-[#F1F7FD] text-gray-500",
   TABLE_BG: "bg-[#FAFCFE]",
   BORDER: "border-[#F5F5F3]",
 } as const;
@@ -22,15 +22,19 @@ type TabType = (typeof TABS)[keyof typeof TABS];
 
 export default function TutorTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
-  const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
   const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
+  const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
 
   useEffect(() => {
     const fetchTutors = async () => {
       try {
-        const response = await fetch("http://localhost:3000/tutors");
+        const response = await fetch(
+          "https://lcs-tutoring.onrender.com/tutors"
+        );
         const data = await response.json();
         const { matchedTutors, unmatchedTutors } = data;
+        console.log("Matched filtered Tutors: ", matchedTutors);
+        console.log("Unmatched filtered Tutors: ", unmatchedTutors);
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
       } catch (error) {
@@ -42,9 +46,10 @@ export default function TutorTable() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center w-full">
+    <div className="flex flex-col justify-center items-center w-[70vw]">
+      <h1 className="w-full text-3xl font-bold text-left">Tutor Database</h1>
       <div
-        className={`w-[95%] md:w-[80%] flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+        className={`w-full flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
       >
         <div className="flex flex-col">
           <div className="flex flex-row justify-start space-x-8 py-4 px-4">
@@ -56,7 +61,7 @@ export default function TutorTable() {
             >
               <h1
                 className={
-                  isActive === TABS.UNMATCHED ? COLORS.ACTIVE : COLORS.INACTIVE
+                  isActive === TABS.UNMATCHED ? COLORS.ACTIVE : COLORS.HISTORY
                 }
               >
                 Unmatched
@@ -66,7 +71,7 @@ export default function TutorTable() {
                   "flex w-8 h-8 rounded-full  items-center justify-center " +
                   (isActive === TABS.UNMATCHED
                     ? COLORS.ACTIVE_BG
-                    : COLORS.INACTIVE_BG)
+                    : COLORS.HISTORY_BG)
                 }
               >
                 {unmatchedTutors.length}
@@ -80,7 +85,7 @@ export default function TutorTable() {
             >
               <h1
                 className={
-                  isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.INACTIVE
+                  isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY
                 }
               >
                 Matched
@@ -90,7 +95,7 @@ export default function TutorTable() {
                   "flex w-8 h-8 rounded-full  items-center justify-center " +
                   (isActive === TABS.MATCHED
                     ? COLORS.ACTIVE_BG
-                    : COLORS.INACTIVE_BG)
+                    : COLORS.HISTORY_BG)
                 }
               >
                 {matchedTutors.length}
@@ -100,21 +105,21 @@ export default function TutorTable() {
               className={
                 "flex flex-row space-x-2 items-center cursor-pointer text-lg"
               }
-              onClick={() => setIsActive(TABS.INACTIVE)}
+              onClick={() => setIsActive(TABS.HISTORY)}
             >
               <h1
                 className={
-                  isActive === TABS.INACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE
+                  isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY
                 }
               >
-                Inactive
+                History
               </h1>
               <div
                 className={
                   "flex w-8 h-8 rounded-full  items-center justify-center " +
-                  (isActive === TABS.INACTIVE
+                  (isActive === TABS.HISTORY
                     ? COLORS.ACTIVE_BG
-                    : COLORS.INACTIVE_BG)
+                    : COLORS.HISTORY_BG)
                 }
               >
                 0
@@ -124,7 +129,7 @@ export default function TutorTable() {
         </div>
         <table className="w-full">
           <thead>
-            <tr className="h-[35px] bg-gray-200">
+            <tr className="h-[35px] bg-gray-100/50">
               <td className="px-3 w-1/5">
                 <h1 className="text-gray-500 text-lg">Date</h1>
               </td>

@@ -43,6 +43,7 @@ export default function TuteeInfoBox({
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
@@ -59,13 +60,22 @@ export default function TuteeInfoBox({
               <p className="">
                 {tutee_first_name} {tutee_last_name}
               </p>
-              <div className="text-[#888888] flex items-center gap-x-2">
+              <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />
                 </div>
-                <p className="max-w-full overflow-hidden text-ellipsis hover:text-clip hover:overflow-visible hover:whitespace-normal hover:break-words">
+                <p
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                  onMouseEnter={() => setShowPopup(true)}
+                  onMouseLeave={() => setShowPopup(false)}
+                >
                   {parent_email}
                 </p>
+                {showPopup && (
+                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
+                    {parent_email}
+                  </div>
+                )}
               </div>
             </th>
             <th className="font-normal w-1/5">{subject}</th>

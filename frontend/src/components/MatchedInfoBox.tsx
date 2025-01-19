@@ -45,7 +45,8 @@ export default function MatchedInfoBoxbox_props({
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  console.log(emailSent);
+  const [showStudentPopup, setShowStudentPopup] = useState(false);
+  const [showParentPopup, setShowParentPopup] = useState(false);
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
@@ -54,7 +55,7 @@ export default function MatchedInfoBoxbox_props({
 
   return (
     <div
-      className={`odd:bg-white even:bg-[${STYLES.colors.evenBackground}] w-100 h-auto rounded-lg border-b-1 text-left ${STYLES.transitions.colors} my-2`}
+      className={`odd:bg-[${bgColor}] even:bg-[${STYLES.colors.evenBackground}] w-100 h-auto rounded-lg border-b-1 text-left ${STYLES.transitions.colors} my-2`}
     >
       <table className="table-fixed w-full">
         <thead>
@@ -64,26 +65,44 @@ export default function MatchedInfoBoxbox_props({
               <p>
                 {first_name} {last_name}
               </p>
-              <div className="text-[#888888] flex items-center gap-x-2">
+              <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />
                 </div>
-                <p className="max-w-full overflow-hidden text-ellipsis hover:text-clip hover:overflow-visible hover:whitespace-normal hover:break-words">
+                <p
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                  onMouseEnter={() => setShowStudentPopup(true)}
+                  onMouseLeave={() => setShowStudentPopup(false)}
+                >
                   {email}
                 </p>
+                {showStudentPopup && (
+                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
+                    {email}
+                  </div>
+                )}
               </div>
             </th>
             <th className="w-1/5 font-normal">
               <p>
                 {tutee_first_name} {tutee_last_name}
               </p>
-              <div className="text-[#888888] flex items-center gap-x-2">
+              <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />
                 </div>
-                <p className="max-w-full overflow-hidden text-ellipsis hover:text-clip hover:overflow-visible hover:whitespace-normal hover:break-words">
+                <p
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                  onMouseEnter={() => setShowParentPopup(true)}
+                  onMouseLeave={() => setShowParentPopup(false)}
+                >
                   {parent_email}
                 </p>
+                {showParentPopup && (
+                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
+                    {parent_email}
+                  </div>
+                )}
               </div>
             </th>
             <th className="w-1/5">
@@ -103,7 +122,7 @@ export default function MatchedInfoBoxbox_props({
                     <BsEnvelope size={20} />
                   )}
 
-                  <p className="font-thin ml-2">
+                  <p className="font-medium ml-2">
                     {emailSent ? "Sent Email" : "Send Email"}
                   </p>
                 </button>
@@ -140,8 +159,8 @@ export default function MatchedInfoBoxbox_props({
         {showDescription && (
           <tbody className="bg-inherit">
             <tr className={`h-[35px] bg-gray-100/50 border-b`}>
-              <td className="text-gray-400 font-thin px-3 w-1/5">Subject</td>
-              <td className="text-gray-400 w-1/5 font-thin">Grade</td>
+              <td className="text-gray-400 px-3 w-1/5">Subject</td>
+              <td className="text-gray-400 w-1/5">Grade</td>
               <td className="text-gray-400 w-1/5">Special Needs</td>
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
               <td className="text-gray-400 w-1/5"></td>
