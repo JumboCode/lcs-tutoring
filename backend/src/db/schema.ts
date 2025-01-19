@@ -17,6 +17,8 @@ export const tutorTable = pgTable("tutor", {
   previous_tutee: boolean('previous_tutee').default(false).notNull(),
   continuing_tutee_name: varchar({ length: 50 }),
   num_tutees: integer().default(0).notNull(),
+  notes: text(),
+  language_proficiencies: varchar({ length: 100 }),
 });
 
 export const tuteeTable = pgTable("tutee", {

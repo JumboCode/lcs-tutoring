@@ -79,7 +79,7 @@ app.get("/tutors", async (req: Request, res: Response) => {
         // .from(tutorTable)
         // .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
         .select()
-        .from(tutorTable) //Getting all tutors but instead want to just get filtered
+        .from(tutorTable) // Getting all tutors but instead want to just get filtered
         .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
         .where(inArray(tutorTable.id, tutorIds));
   
@@ -110,10 +110,10 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
   try {
     console.log("This the req body: ", req.body);
     const request = req.body;
-    const { childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subject, tutoringMode, additionalInfo, agreement, signature } = request;
+    const { childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subjects, tutoringMode, additionalInfo, agreement, signature } = request;
     // bad practice, prefer to submit number directly
     const gradeNum = Number(grade);
-    console.log("This the grade num: ", gradeNum);
+    console.log("This the subjects: ", subjects);
     await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
@@ -125,7 +125,7 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
       parent_last_name: parentLastName,
       parent_phone: phone,
       parent_email: email,
-      subject: subject,
+      subjects: subjects,
       tutoring_mode: tutoringMode,
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
@@ -142,8 +142,6 @@ app.post("/tutorsubmission", async (req: Request, res: Response) => {
     console.log("This the req body: ", req.body);
     const request = req.body;
     const { firstName, lastName, pronouns, id, major, yearGrad, phone, email, pairedWithTutee, pairedTutee, numTutees, gradeLevels, comfortableSpecialNeeds, subjects, languageProficiencies, tutoringMode, notes, agreement, signature } = request;
-    // bad practice, prefer to submit number directly
-    const gradeLevel = Number(gradeLevels);
     await db.insert(tutorTable).values({
       id: id,
       first_name: firstName,
@@ -161,6 +159,8 @@ app.post("/tutorsubmission", async (req: Request, res: Response) => {
       previous_tutee: pairedWithTutee,
       continuing_tutee_name: pairedTutee,
       num_tutees: numTutees,
+      notes: notes,
+      language_proficiencies: languageProficiencies,
     });
     console.log("Tutee submitted: ", req.body);
   } catch (error) {
