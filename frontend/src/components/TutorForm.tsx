@@ -39,10 +39,15 @@ const subject_options = [
   { value: "Statistics", label: "Statistics" },
   { value: "Computer Science", label: "Computer Science" },
   { value: "Science", label: "Science (1-8)" },
-  // Languages
-  // SAT/ACT
-  // OTHER
-  // History (global/US)
+  { value: "Biology", label: "Biology" },
+  { value: "Chemistry", label: "Chemistry" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "French", label: "French" },
+  { value: "Italian", label: "Italian" },
+  { value: "SAT/ACT", label: "SAT/ACT" },
+  { value: "US History", label: "US History" },
+  { value: "Global History", label: "Global History" },
+  { value: "Other", label: "Other" },
 ];
 
 const grade_options = [

@@ -36,6 +36,15 @@ const subject_options = [
   { value: "Statistics", label: "Statistics" },
   { value: "Computer Science", label: "Computer Science" },
   { value: "Science", label: "Science (1-8)" },
+  { value: "Biology", label: "Biology" },
+  { value: "Chemistry", label: "Chemistry" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "French", label: "French" },
+  { value: "Italian", label: "Italian" },
+  { value: "SAT/ACT", label: "SAT/ACT" },
+  { value: "US History", label: "US History" },
+  { value: "Global History", label: "Global History" },
+  { value: "Other", label: "Other" },
 ];
 
 const gender_options = [
@@ -218,7 +227,9 @@ export default function TuteeForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      fetch("https://lcs-tutoring.onrender.com/tuteesubmission", {
+      // http://localhost:3000/tuteesubmission
+      // https://lcs-tutoring.onrender.com/tuteesubmission
+      fetch("http://localhost:3000/tuteesubmission", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -483,7 +494,8 @@ export default function TuteeForm() {
               </div>
               <div className="space-y-2">
                 <h1 className="text-base">
-                  Anything else you would like to let us know?
+                  Anything else you would like to let us know? (Unlisted
+                  subject, accomodation, etc.)
                 </h1>
                 <input
                   type="text"

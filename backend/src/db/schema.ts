@@ -51,6 +51,12 @@ export const matchedTable = pgTable('matched', {
   tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
 });
 
+export const historyTable = pgTable('history', {
+  id: serial('id').primaryKey(),
+  tutee_id: integer().references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
+});
+
 export const approvedMatchesTable = pgTable('approved_matches', {
   id: serial('id').primaryKey(),
   tutee_id: integer().notNull().references(() => tuteeTable.id),

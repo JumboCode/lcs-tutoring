@@ -103,6 +103,7 @@ export default function TuteeTable() {
       parent_last_name: "Bob",
       parent_phone: "(123) 456-7890",
       matched: true,
+      notes: "This is a note",
     },
     {
       date: "10/31/2024",
@@ -122,6 +123,7 @@ export default function TuteeTable() {
       parent_last_name: "Bob",
       parent_phone: "(123) 456-7890",
       matched: true,
+      notes: "This is a note",
     },
     {
       date: "10/31/2024",
@@ -141,6 +143,7 @@ export default function TuteeTable() {
       parent_last_name: "Bob",
       parent_phone: "(123) 456-7890",
       matched: true,
+      notes: "This is a note",
     },
   ];
 

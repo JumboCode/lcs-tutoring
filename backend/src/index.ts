@@ -5,6 +5,7 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
+  historyTable,
   approvedMatchesTable,
   adminTable
 } from "./db/schema";

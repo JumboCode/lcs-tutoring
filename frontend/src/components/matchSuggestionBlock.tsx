@@ -87,7 +87,7 @@ const MatchSuggestionBlock = ({
           Approve
         </button>
         <button
-          className="rounded-lg bg-white px-5 py-3 border text-grey text-lg hover:bg-gray-200"
+          className="rounded-lg bg-white px-5 py-3 border text-gray-700 text-lg hover:bg-gray-200"
           type="button"
         >
           <span className="inline-block ml-0.5">
