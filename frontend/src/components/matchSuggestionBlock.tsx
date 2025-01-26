@@ -9,6 +9,9 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
 
+import { Modal } from "react-bootstrap";
+import { useState, useEffect } from "react";
+
 const MatchSuggestionBlock = ({
   tutor_info,
   tutee1,
@@ -30,6 +33,15 @@ const MatchSuggestionBlock = ({
     open_to_disability,
     tutoring_mode,
   } = tutor_info;
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Modal open function
+  const openModal = () => setModalVisible(true);
+
+  // Modal close function
+  const closeModal = () => setModalVisible(false);
+
 
   return (
     <div className="border rounded-lg bg-white p-6 mx-8 my-8">
@@ -87,6 +99,7 @@ const MatchSuggestionBlock = ({
           Approve
         </button>
         <button
+          onClick={openModal} 
           className="rounded-lg bg-white px-5 py-3 border text-gray-700 text-lg hover:bg-gray-200"
           type="button"
         >
@@ -96,6 +109,22 @@ const MatchSuggestionBlock = ({
           Custom Match
         </button>
       </div>
+
+      <Modal show={modalVisible} onHide={closeModal}>
+        <Modal.Header closeButton>
+            <Modal.Title>Custom Match</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <p>boday</p>
+        </Modal.Body>
+        <Modal.Footer>
+            <button className="btn btn-secondary" onClick={closeModal}>
+                Close
+            </button>
+        </Modal.Footer>
+      </Modal>
+
+
     </div>
   );
 };
