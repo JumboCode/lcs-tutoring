@@ -238,7 +238,9 @@ export default function TutorForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      fetch("https://lcs-tutoring.onrender.com/tutorsubmission", {
+      // https://jumbocodegpt.onrender.com/tutorsubmission
+      // http://localhost:3000/tutorsubmission
+      fetch("http://localhost:3000/tutorsubmission", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

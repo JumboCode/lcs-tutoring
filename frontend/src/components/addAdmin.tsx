@@ -20,7 +20,9 @@ export default function AddAdmin() {
     }
     setErrorMessage("");
     setErrorOutline("");
-    await fetch(`https://lcs-tutoring.onrender.com/admin/${email}`, {
+    // http://localhost:3000/admin/${email}
+    // https://lcs-tutoring.onrender.com/admin/${email}
+    await fetch(`http://localhost:3000/admin/${email}`, {
       method: "POST",
     });
   };

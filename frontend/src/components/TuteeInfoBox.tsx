@@ -40,6 +40,7 @@ export default function TuteeInfoBox({
     parent_first_name,
     parent_last_name,
     parent_phone,
+    notes,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -100,13 +101,14 @@ export default function TuteeInfoBox({
                   </div>
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
-                <span
+                {/* Here is where you will implement the delete button ticket */}
+                <button
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
                 >
                   {" "}
                   ...{" "}
-                </span>
+                </button>
               </div>
             </th>
           </tr>

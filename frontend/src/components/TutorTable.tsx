@@ -29,7 +29,9 @@ export default function TutorTable() {
     const fetchTutors = async () => {
       try {
         const response = await fetch(
-          "https://lcs-tutoring.onrender.com/tutors"
+          // https://jumbocodegpt.onrender.com/tutors
+          // http://localhost:3000/tutors
+          "http://localhost:3000/tutors"
         );
         const data = await response.json();
         const { matchedTutors, unmatchedTutors } = data;

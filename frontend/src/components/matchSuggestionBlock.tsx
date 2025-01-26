@@ -90,6 +90,7 @@ const MatchSuggestionBlock = ({
           className="rounded-lg bg-white px-5 py-3 border text-gray-700 text-lg hover:bg-gray-200"
           type="button"
         >
+          {/* This is where you will complete your ticket */}
           <span className="inline-block ml-0.5">
             <FaCheck />
           </span>{" "}
