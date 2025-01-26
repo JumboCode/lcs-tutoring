@@ -50,5 +50,6 @@ export interface tuteeInfo {
   subject: string;
   grade: string;
   special_needs: string;
-  tutoring_mode: string;
+  tutoring_mode?: string;
+  notes?: string;
 }

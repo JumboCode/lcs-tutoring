@@ -40,6 +40,7 @@ export default function NavigationBar() {
     grade: "8",
     special_needs: "No",
     tutoring_mode: "Hybrid",
+    notes: "I would like to be paired with xxx",
   };
 
   const tutee2: tuteeInfo = {
