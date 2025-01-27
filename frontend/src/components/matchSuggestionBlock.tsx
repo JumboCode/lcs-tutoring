@@ -43,6 +43,36 @@ const MatchSuggestionBlock = ({
   const closeModal = () => setModalVisible(false);
 
 
+  interface TuteeName {
+    firstName: string;
+    lastName: string;
+  }
+    const [unmatchedNames, setUnmatchedNames] = useState<TuteeName[]>([]);
+
+    useEffect(() => {
+        const fetchTutees = async () => {
+          try {
+            const response = await fetch("http://localhost:5432/tutees");
+            if (!response.ok) {
+              throw new Error("Failed to fetch tutees");
+            }
+            const data = await response.json(); // Parse the response body as JSON
+            const { matchedTutees, unmatchedTutees } = data;
+            const names = unmatchedTutees.map((formData: any) => ({
+                firstName: formData.tutee_first_name, 
+                lastName: formData.tutee_last_name,
+            }));
+            setUnmatchedNames(names);
+            console.log("Unmatched Tutee Names: ", names); 
+            //console.log(data);
+          } catch (error) {
+            console.error("Error fetching tutees: ", error);
+          }
+        };
+        fetchTutees();
+      }, []);
+  
+
   return (
     <div className="border rounded-lg bg-white p-6 mx-8 my-8">
       <div className="flex p-6 space-x-6 mx-6">
@@ -115,7 +145,15 @@ const MatchSuggestionBlock = ({
             <Modal.Title>Custom Match</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <p>boday</p>
+            <div>
+            <ul>
+            {unmatchedNames.map((name, index) => (
+                <li key={index}>
+                {name.firstName} {name.lastName}
+                </li>
+            ))}
+             </ul>
+            </div>
         </Modal.Body>
         <Modal.Footer>
             <button className="btn btn-secondary" onClick={closeModal}>
