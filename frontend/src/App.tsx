@@ -89,6 +89,7 @@ function App() {
     grade: "8",
     special_needs: "No",
     tutoring_mode: "Hybrid",
+    notes: "I would like to get matched with xxx",
   };
 
   const tutee2: tuteeInfo = {

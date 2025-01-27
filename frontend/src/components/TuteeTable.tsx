@@ -28,7 +28,7 @@ export default function TuteeTable() {
   useEffect(() => {
     const fetchTutees = async () => {
       try {
-        // https://jumbocodegpt.onrender.com/api/add-prompt
+        // https://jumbocodegpt.onrender.com/tutees
         // http://localhost:3000/tutees
         const response = await fetch("http://localhost:3000/tutees");
         const data = await response.json();
