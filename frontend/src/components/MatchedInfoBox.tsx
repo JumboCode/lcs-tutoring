@@ -149,7 +149,7 @@ export default function MatchedInfoBoxbox_props({
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
                 >
-                  {" "}
+                  {/* This is where you will implement the flag functionality */}{" "}
                   ...{" "}
                 </span>
               </div>

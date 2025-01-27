@@ -20,7 +20,7 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json());
 
-const port = process.env.PGPORT || 3000;
+const port = 3000;
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
@@ -65,6 +65,7 @@ app.get("/tutees", async (req: Request, res: Response) => {
 
 /* GET endpoint -- returns all the matched and unmatched tutors */
 app.get("/tutors", async (req: Request, res: Response) => {
+  console.log("im in")
     try {
       const filteredTutors = await filterTutors([11,12], undefined, true, undefined);
       const tutorIds = filteredTutors.map((tutor) => tutor.id).filter((id) => id !== undefined);

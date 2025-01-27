@@ -61,6 +61,7 @@ export const approvedMatchesTable = pgTable('approved_matches', {
   id: serial('id').primaryKey(),
   tutee_id: integer().notNull().references(() => tuteeTable.id),
   tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
+  flagged: boolean('flagged').notNull().default(false),
 });
 
 export const adminTable = pgTable("admin", {

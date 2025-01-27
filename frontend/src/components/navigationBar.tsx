@@ -1,9 +1,9 @@
 import { useState } from "react";
-import Mail from "../assets/images/nav_icons/mailing_list.svg";
-import Matching from "../assets/images/nav_icons/matching_suggestion.svg";
-import TuteeDB from "../assets/images/nav_icons/tutee_db.svg";
-import ApprovedMatch from "../assets/images/nav_icons/approved_match.svg";
-import TutorDB from "../assets/images/nav_icons/tutor_db.svg";
+import Mail from "../assets/images/nav_icons/mailing_list_gray.svg";
+import Matching from "../assets/images/nav_icons/match_suggestion_gray.svg";
+import TuteeDB from "../assets/images/nav_icons/tutee_db_gray.svg";
+import ApprovedMatch from "../assets/images/nav_icons/approved_match_gray.svg";
+import TutorDB from "../assets/images/nav_icons/tutor_db_gray.svg";
 import Collapse from "../assets/images/nav_icons/collapse.svg";
 
 import TuteeTable from "./TuteeTable";
@@ -40,7 +40,6 @@ export default function NavigationBar() {
     grade: "8",
     special_needs: "No",
     tutoring_mode: "Hybrid",
-    notes: "I would like to be paired with xxx",
   };
 
   const tutee2: tuteeInfo = {

@@ -16,11 +16,9 @@ export default function TuteeSuggestionBox({
     grade,
     special_needs,
     tutoring_mode,
-    notes,
   } = tutee_info;
 
   return (
-    
     <div className="font-interBlack border bg-[#FFFFFF] flex flex-col text-left rounded-md w-full">
       <span className="text-center font-interBlack text-lg pt-2">
         {first_name} {last_name}
@@ -50,16 +48,6 @@ export default function TuteeSuggestionBox({
         <span className="w-1/2">{special_needs}</span>
         <span className="w-1/2">{tutoring_mode}</span>
       </div>
-      {notes && (
-        <>
-        <div className="py-1 font-interBlack flex flex-row text-[#D70000] px-8 bg-[#FFD6D6] justify-start items-center">
-          Special Request:
-        </div>
-        <div className="py-2 px-8 pb-2">
-          {notes}
-        </div>
-        </>
-      )}
     </div>
   );
 }

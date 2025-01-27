@@ -11,7 +11,7 @@ export type tuteeBoxProps = {
   parent_first_name: string;
   parent_last_name: string;
   parent_phone: string;
-  notes: string;
+  notes?: string;
 };
 
 export type tutorBoxProps = {
@@ -51,5 +51,4 @@ export interface tuteeInfo {
   grade: string;
   special_needs: string;
   tutoring_mode?: string;
-  notes?: string;
 }

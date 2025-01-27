@@ -33,6 +33,7 @@ export default function TuteeTable() {
         const response = await fetch("http://localhost:3000/tutees");
         const data = await response.json();
         const { matchedTutees, unmatchedTutees } = data;
+        // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
         setMatchedTutees(matchedTutees);
         setUnmatchedTutees(unmatchedTutees);
       } catch (error) {

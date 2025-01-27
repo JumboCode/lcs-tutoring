@@ -144,6 +144,12 @@ export default function TuteeInfoBox({
           </tbody>
         )}
       </table>
+      {notes && (
+        <div className="bg-[#FFD6D6] text-sm flex flex-row">
+          <td className="text-[#D70000] px-3">Special Request:</td>
+          <td className="">{notes}</td>
+        </div>
+      )}
     </div>
   );
 }
