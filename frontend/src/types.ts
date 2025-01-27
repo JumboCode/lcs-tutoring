@@ -1,4 +1,5 @@
 export type tuteeBoxProps = {
+  id: string;
   date: string;
   tutee_first_name: string;
   tutee_last_name: string;

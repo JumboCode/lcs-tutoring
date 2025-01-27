@@ -5,6 +5,7 @@ import { tuteeBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
+import TrashCan from "../assets/images/delete.svg";
 
 const STYLES = {
   colors: {
@@ -28,6 +29,7 @@ export default function TuteeInfoBox({
   bgColor,
 }: TuteeInfoBoxProps) {
   const {
+    id,
     date,
     tutee_first_name,
     tutee_last_name,
@@ -48,6 +50,20 @@ export default function TuteeInfoBox({
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
+  };
+  
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+  const handleSubmit = () => {
+    setIsDropdownOpen(false)
+    console.log("id from front end: ", id);
+    fetch(`http://localhost:3000/move-tutee-to-history/${id}`, {
+      method: "POST"
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -100,13 +116,38 @@ export default function TuteeInfoBox({
                   </div>
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
-                <span
+
+                <button
+                  onClick={toggleDropdown}
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
                 >
                   {" "}
                   ...{" "}
-                </span>
+                  <div
+                    className={`transition-transform duration-300 ${
+                      isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                    }`}
+                  >
+                  </div>
+                </button>
+
+                {isDropdownOpen && (
+                    <div
+                      className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2"
+                    >
+                      <button
+                        onClick={handleSubmit}
+                        className=""
+                      >
+                        Delete Tutee
+                      </button>
+                      <img 
+                        src={TrashCan} 
+                        className="mx-2"
+                      />
+                    </div>
+                )}
               </div>
             </th>
           </tr>

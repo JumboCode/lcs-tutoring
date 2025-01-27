@@ -86,6 +86,7 @@ export default function TuteeTable() {
 
   const tutees = [
     {
+      id: "7890",
       date: "10/31/2024",
       tutee_first_name: "Bob",
       tutee_last_name: "Techakalayatum",
@@ -106,6 +107,7 @@ export default function TuteeTable() {
       notes: "This is a note",
     },
     {
+      id: "7890",
       date: "10/31/2024",
       tutee_first_name: "Joe",
       tutee_last_name: "Techakalayatum",
@@ -126,6 +128,7 @@ export default function TuteeTable() {
       notes: "This is a note",
     },
     {
+      id: "7890",
       date: "10/31/2024",
       tutee_first_name: "Alice",
       tutee_last_name: "Techakalayatum",

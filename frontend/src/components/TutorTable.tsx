@@ -24,19 +24,19 @@ export default function TutorTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
   const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
   const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
+  const [historyTutors, setHistoryTutors] = useState<tutorBoxProps[]>([]);
 
   useEffect(() => {
     const fetchTutors = async () => {
       try {
         const response = await fetch(
-          "https://lcs-tutoring.onrender.com/tutors"
+          "http://localhost:3000/tutors"
         );
         const data = await response.json();
-        const { matchedTutors, unmatchedTutors } = data;
-        console.log("Matched filtered Tutors: ", matchedTutors);
-        console.log("Unmatched filtered Tutors: ", unmatchedTutors);
+        const { matchedTutors, unmatchedTutors, historyTutors } = data;
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
+        setHistoryTutors(historyTutors);
       } catch (error) {
         console.error("Error fetching tutors:", error);
       }
@@ -122,7 +122,7 @@ export default function TutorTable() {
                     : COLORS.HISTORY_BG)
                 }
               >
-                0
+                {historyTutors.length}
               </div>
             </div>
           </div>
@@ -160,6 +160,17 @@ export default function TutorTable() {
         {isActive === TABS.MATCHED && (
           <div>
             {matchedTutors.map((box_props, index) => (
+              <TutorInfoBox
+                box_props={box_props}
+                key={index}
+                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+              />
+            ))}
+          </div>
+        )}
+        {isActive === TABS.HISTORY && (
+          <div>
+            {historyTutors.map((box_props, index) => (
               <TutorInfoBox
                 box_props={box_props}
                 key={index}

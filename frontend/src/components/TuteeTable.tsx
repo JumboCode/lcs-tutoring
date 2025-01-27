@@ -24,6 +24,7 @@ export default function TuteeTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
   const [unmatchedTutees, setUnmatchedTutees] = useState<tuteeBoxProps[]>([]);
   const [matchedTutees, setMatchedTutees] = useState<tuteeBoxProps[]>([]);
+  const [historyTutees, setHistoryTutees] = useState<tuteeBoxProps[]>([]);
 
   useEffect(() => {
     const fetchTutees = async () => {
@@ -32,9 +33,10 @@ export default function TuteeTable() {
         // http://localhost:3000/tutees
         const response = await fetch("http://localhost:3000/tutees");
         const data = await response.json();
-        const { matchedTutees, unmatchedTutees } = data;
+        const { matchedTutees, unmatchedTutees, historyTutees } = data;
         setMatchedTutees(matchedTutees);
         setUnmatchedTutees(unmatchedTutees);
+        setHistoryTutees(historyTutees);
       } catch (error) {
         console.error("Error fetching tutees:", error);
       }
@@ -120,7 +122,7 @@ export default function TuteeTable() {
                     : COLORS.HISTORY_BG)
                 }
               >
-                0
+                {historyTutees.length}
               </div>
             </div>
           </div>
@@ -158,6 +160,17 @@ export default function TuteeTable() {
         {isActive === TABS.MATCHED && (
           <div>
             {matchedTutees.map((box_props, index) => (
+              <TuteeInfoBox
+                box_props={box_props}
+                key={index}
+                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+              />
+            ))}
+          </div>
+        )}
+        {isActive === TABS.HISTORY && (
+          <div>
+            {historyTutees.map((box_props, index) => (
               <TuteeInfoBox
                 box_props={box_props}
                 key={index}
