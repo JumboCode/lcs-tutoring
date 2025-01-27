@@ -9,6 +9,9 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
 
+import { Modal } from "react-bootstrap";
+import { useState, useEffect } from "react";
+
 const MatchSuggestionBlock = ({
   tutor_info,
   tutee1,
@@ -30,6 +33,45 @@ const MatchSuggestionBlock = ({
     open_to_disability,
     tutoring_mode,
   } = tutor_info;
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Modal open function
+  const openModal = () => setModalVisible(true);
+
+  // Modal close function
+  const closeModal = () => setModalVisible(false);
+
+
+  interface TuteeName {
+    firstName: string;
+    lastName: string;
+  }
+    const [unmatchedNames, setUnmatchedNames] = useState<TuteeName[]>([]);
+
+    useEffect(() => {
+        const fetchTutees = async () => {
+          try {
+            const response = await fetch("http://localhost:5432/tutees");
+            if (!response.ok) {
+              throw new Error("Failed to fetch tutees");
+            }
+            const data = await response.json(); // Parse the response body as JSON
+            const { matchedTutees, unmatchedTutees } = data;
+            const names = unmatchedTutees.map((formData: any) => ({
+                firstName: formData.tutee_first_name, 
+                lastName: formData.tutee_last_name,
+            }));
+            setUnmatchedNames(names);
+            console.log("Unmatched Tutee Names: ", names); 
+            //console.log(data);
+          } catch (error) {
+            console.error("Error fetching tutees: ", error);
+          }
+        };
+        fetchTutees();
+      }, []);
+  
 
   return (
     <div className="border rounded-lg bg-white p-6 mx-8 my-8">
@@ -87,6 +129,7 @@ const MatchSuggestionBlock = ({
           Approve
         </button>
         <button
+          onClick={openModal} 
           className="rounded-lg bg-white px-5 py-3 border text-gray-700 text-lg hover:bg-gray-200"
           type="button"
         >
@@ -97,6 +140,30 @@ const MatchSuggestionBlock = ({
           Custom Match
         </button>
       </div>
+
+      <Modal show={modalVisible} onHide={closeModal}>
+        <Modal.Header closeButton>
+            <Modal.Title>Custom Match</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <div>
+            <ul>
+            {unmatchedNames.map((name, index) => (
+                <li key={index}>
+                {name.firstName} {name.lastName}
+                </li>
+            ))}
+             </ul>
+            </div>
+        </Modal.Body>
+        <Modal.Footer>
+            <button className="btn btn-secondary" onClick={closeModal}>
+                Close
+            </button>
+        </Modal.Footer>
+      </Modal>
+
+
     </div>
   );
 };
