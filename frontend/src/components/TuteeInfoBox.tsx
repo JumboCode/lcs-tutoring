@@ -28,6 +28,7 @@ export default function TuteeInfoBox({
   bgColor,
 }: TuteeInfoBoxProps) {
   const {
+    // id, 
     date,
     tutee_first_name,
     tutee_last_name,

@@ -2,8 +2,8 @@
 
 import { tuteeInfo } from "../types";
 import { BsEnvelope } from "react-icons/bs";
-import { useState } from "react";
-const BG_COLOR = "#fbfbfb";
+// import { useState } from "react";
+// const BG_COLOR = "#fbfbfb";
 
 export default function TuteeSuggestionBox({
   tutee_info,

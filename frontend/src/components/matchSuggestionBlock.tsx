@@ -12,7 +12,7 @@ import { tuteeInfo } from "../types";
 import { Modal } from "react-bootstrap";
 import { useState, useEffect } from "react";
 
-const BG_COLOR = "#fbfbfb";
+// const BG_COLOR = "#fbfbfb";
 
 const MatchSuggestionBlock = ({
   tutor_info,
