@@ -4,6 +4,7 @@ import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { BsCheck2 } from "react-icons/bs";
+import { deleteIcon } from "../assets/images/delete.svg";
 
 const STYLES = {
   colors: {
@@ -154,7 +155,20 @@ export default function MatchedInfoBoxbox_props({
                   className="mb-2 ml-5 p-0 text-lg"
                 >
                   {/* This is where you will implement the flag functionality */}{" "}
-                  ...{" "}
+                  ...{" "} 
+                  <button
+                    onClick={toggleDropdown}
+                    className="flex items-center space-x-1 cursor-pointer hover:text-gray-600 border-b-2 border-transparent hover:border-black focus:outline-none"
+                  >
+                    <img src={deleteIcon}></img> 
+                    <span>...</span>
+                    <div
+                      className={`transition-transform duration-300 ${
+                        isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                      }`}
+                    >
+                    </div>
+                  </button>
                 </span>
               </div>
             </th>
