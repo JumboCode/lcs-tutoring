@@ -95,6 +95,46 @@ app.get("/tutors", async (req: Request, res: Response) => {
     }
   });
 
+  /* GET endpoint -- returns all the matched and unmatched tutees */
+app.get("/approved-matches", async (req: Request, res: Response) => {
+  try {
+    console.log("Inside approved matches endpoint");
+    // query logic
+    const matches = await db
+      .select({
+        matchId: approvedMatchesTable.id,
+        flagged: approvedMatchesTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          email: tutorTable.email,
+          major: tutorTable.major,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        tutee: {
+          id: tuteeTable.id,
+          tutee_first_name: tuteeTable.tutee_first_name,
+          tutee_last_name: tuteeTable.tutee_last_name,
+          grade: tuteeTable.grade,
+          parent_email: tuteeTable.parent_email,
+          subjects: tuteeTable.subjects,
+          tutoring_mode: tuteeTable.tutoring_mode,
+        },
+      })
+      .from(approvedMatchesTable)
+      .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
+
+      res.send({
+        approvedMatches: matches
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching approved matches");
+  }
+});
+
   app.post("/admin/:email", async (req: Request, res: Response) => {
     try {
       const email = req.params.email;

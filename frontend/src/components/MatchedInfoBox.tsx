@@ -20,6 +20,8 @@ const STYLES = {
 type MatchedInfoBoxProps = {
   tutee_props: tuteeBoxProps;
   tutor_props: tutorBoxProps;
+  matchId: string;
+  flagged: boolean;
   bgColor: string;
   date: string;
 };
@@ -27,6 +29,8 @@ type MatchedInfoBoxProps = {
 export default function MatchedInfoBoxbox_props({
   tutee_props,
   tutor_props,
+  matchId,
+  flagged,
   bgColor,
   date,
 }: MatchedInfoBoxProps) {

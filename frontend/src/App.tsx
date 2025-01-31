@@ -70,7 +70,6 @@ function App() {
   // };
 
   const tutor1: tutorInfo = {
-    id : "1234567",
     first_name: "Brandon",
     last_name: "Dionisio",
     email: "brandon.dionisio@tufts.edu",
@@ -89,7 +88,6 @@ function App() {
     grade: "8",
     special_needs: "No",
     tutoring_mode: "Hybrid",
-    notes: "I would like to get matched with xxx",
   };
 
   const tutee2: tuteeInfo = {
@@ -224,10 +222,6 @@ function App() {
                 tutee2={tutee2}
                 tutee3={tutee3}
                 tutor_info={tutor1}
-                onMatchApproved={(tutorId, tuteeId) => {
-                  // Handle successful match (e.g., refresh data, show success message)
-                  console.log('Match approved:', tutorId, tuteeId);
-                }}  
               />
             </div>
           }
