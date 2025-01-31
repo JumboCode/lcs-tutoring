@@ -4,6 +4,8 @@ import { matchedTable, tuteeTable, tutorTable, unmatchedTable } from './db/schem
 import { or, arrayContains, and , eq } from 'drizzle-orm';
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
+import React, {useEffect} from 'react';
+
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -15,9 +17,42 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
+app.get("/approvedmatches", async (req: Request, res: Response) => {
+    try {
+      const matches = await db.select().from(matchedTable); 
+      res.json(matches); 
+    } catch (error) {
+      console.error("Error fetching approved matches:", error);
+      res.status(500).json({ error: "Failed to fetch approved matches" });
+    }
+    
+  });
+
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
+
+// app.get("/match/:tutorId/:tuteeId", async (req: Request, res: Response) => {
+//     const { tutorId, tuteeId } = req.params;
+//     try {
+//         const tutor = await db
+//           .select()
+//           .from(tutorTable)
+//           .innerJoin(approvedMatchesTable, eq(tutorTable.id, tutorId))
+//           .execute();
+
+//         const tutee = await db
+//           .select()
+//           .from(tuteeTable)
+//           .innerJoin(approvedMatchesTable, eq(tuteeTable.id, tuteeId))
+//           .execute();
+
+//         res.json({ tutor, tutee });
+//     } catch (error) {
+//         console.error("Error fetching match information:", error);
+//         res.status(500).json({ error: "Failed to fetch match information" });
+//     }
+// });
 
 /**** Filter Tutors by grade levels and subject prefs ****
  * 
@@ -60,6 +95,37 @@ async function filterTutors(gradeLevels?: number[], subject_pref?: string[], dis
     const tutors = await query;
     return tutors;
 }
+
+//Approved Matches
+const ApprovedMatches = () => {
+    useEffect(() => {
+      const fetchApprovedMatches = async () => {
+        try {
+          const response = await fetch("http://localhost:3000/approvedmatches");
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Matches fetched:", data); // Log the data received
+          } else {
+            throw new Error('Failed to fetch matches');
+          }
+        } catch (error) {
+          console.error("Error fetching approved matches:", error);
+        }
+      };
+  
+      fetchApprovedMatches();
+    }, []);
+    // return (
+    //     <div>
+    //       {/* Render your UI here */}
+    //       <h1>Approved Matches</h1>
+    //     </div>
+    //   );
+    };
+
+// appro
+
+
 
 // filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
 // moveToMatched("1000002");
