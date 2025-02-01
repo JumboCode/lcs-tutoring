@@ -29,6 +29,8 @@ import AddAdmin from "./components/addAdmin";
 import MatchSuggestions from "./components/matchSuggestionBlock";
 import AdminHeader from "./components/HeaderAdmin";
 
+import SuccessPage from "./components/SuccessPage";
+
 /* Type definitions */
 // import { tutorBoxProps, tuteeBoxProps } from "./types";
 import { tutorInfo, tuteeInfo } from "./types";
@@ -167,6 +169,18 @@ function App() {
               <ScrollToTop />
               <Header />
               <TuteeForm />
+              <Footer />
+            </div>
+          }
+        ></Route>
+
+        <Route
+          path="/success-page"
+          element={
+            <div className="flex flex-col">
+              <ScrollToTop />
+              <Header />
+              <SuccessPage />
               <Footer />
             </div>
           }

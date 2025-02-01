@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   firstName: string;
@@ -83,6 +84,7 @@ const tutoring_mode_options = [
 ];
 
 export default function TutorForm() {
+
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -251,6 +253,7 @@ export default function TutorForm() {
         .then((data) => console.log(data))
         .catch((error) => console.error(error));
       console.log("Form submitted successfully:", formData);
+
       //reset form
       // setFormData({
       //   childFirstName: "",
@@ -269,7 +272,12 @@ export default function TutorForm() {
       //   agreement: "",
       //   signature: "",
       // });
+
+      //setShowTextBox(false);
       alert("Form submitted successfully!");
+      const navigate = useNavigate();
+
+      navigate("/success-page");
     }
   };
 
