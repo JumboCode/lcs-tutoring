@@ -27,6 +27,7 @@ export default function NavigationBar() {
   };
 
   const tutor1: tutorInfo = {
+    id: "",
     first_name: "Brandon",
     last_name: "Dionisio",
     email: "brandon.dionisio@tufts.edu",

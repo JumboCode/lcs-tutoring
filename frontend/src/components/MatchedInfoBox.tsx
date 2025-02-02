@@ -4,7 +4,7 @@ import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { BsCheck2 } from "react-icons/bs";
-import { deleteIcon } from "../assets/images/delete.svg";
+import deleteIcon from "../assets/images/delete.svg";
 
 const STYLES = {
   colors: {
@@ -57,6 +57,20 @@ export default function MatchedInfoBoxbox_props({
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+  const moveToInactive = () => {
+    setIsDropdownOpen(false)
+
+    fetch(`http://localhost:3000/move-to-inactive/${matchId}`, {
+      method: "POST"
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
+  }
 
   return (
     <div
@@ -150,18 +164,13 @@ export default function MatchedInfoBoxbox_props({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                <span
-                  style={{ color: STYLES.colors.textGray }}
-                  className="mb-2 ml-5 p-0 text-lg"
-                >
-                  {/* This is where you will implement the flag functionality */}{" "}
-                  ...{" "} 
+                <div className="relative inline-block">
                   <button
                     onClick={toggleDropdown}
-                    className="flex items-center space-x-1 cursor-pointer hover:text-gray-600 border-b-2 border-transparent hover:border-black focus:outline-none"
+                    style={{ color: STYLES.colors.textGray }}
+                    className="mb-2 ml-5 p-0 text-lg"
                   >
-                    <img src={deleteIcon}></img> 
-                    <span>...</span>
+                    ...
                     <div
                       className={`transition-transform duration-300 ${
                         isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
@@ -169,7 +178,21 @@ export default function MatchedInfoBoxbox_props({
                     >
                     </div>
                   </button>
-                </span>
+                  {isDropdownOpen && (
+                    <div className="absolute flex flex-row whitespace-nowrap transform -translate-x-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                      <button
+                        className=""
+                        onClick={moveToInactive}
+                      > 
+                        Move to Inactive
+                      </button>
+                      <img 
+                        src={deleteIcon}
+                        className="mx-2"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </th>
           </tr>
