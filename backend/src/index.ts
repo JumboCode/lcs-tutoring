@@ -135,6 +135,18 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
   }
 });
 
+app.get("/move-to-inactive/:id", async (req: Request, res: Response) => {
+  try {
+    console.log("inside move to inactive");
+    const id = req.params.id;
+    // const request = req.body;
+    moveToInactive(Number(id));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to inactive");
+  }
+});
+
   app.post("/admin/:email", async (req: Request, res: Response) => {
     try {
       const email = req.params.email;
@@ -381,4 +393,12 @@ async function fetchAllTutees() {
   const query = await db.select().from(tuteeTable);
   const tutees = query;
   return tutees;
+}
+
+async function moveToInactive(matchId: number) {
+  const query = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, matchId));
+    console.log(query); 
 }
