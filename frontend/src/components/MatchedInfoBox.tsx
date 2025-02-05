@@ -65,12 +65,13 @@ export default function MatchedInfoBoxbox_props({
     setIsDropdownOpen(false)
 
     fetch(`http://localhost:3000/move-to-inactive/${matchId}`, {
-      method: "POST"
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
     })
       .then((response) => response.json())
       .then((data) => console.log(data))
       .catch((error) => console.error(error));
-  }
+  };
 
   return (
     <div

@@ -135,12 +135,15 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/move-to-inactive/:id", async (req: Request, res: Response) => {
+app.post("/move-to-inactive/:id", async (req: Request, res: Response) => {
   try {
     console.log("inside move to inactive");
     const id = req.params.id;
+    console.log("sgrg");
+    console.log(id);
     // const request = req.body;
     moveToInactive(Number(id));
+    console.log("after function call");
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to inactive");
@@ -371,7 +374,11 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("${id} does not exist in matched table");
     }
 
-    await db.insert(unmatchedTable).values(query);
+    await db
+    .insert(unmatchedTable)
+    .values(query)
+    .onConflictDoNothing(); 
+
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
@@ -395,10 +402,40 @@ async function fetchAllTutees() {
   return tutees;
 }
 
+async function moveTuteeToUnmatched(tutee_id: number) {
+  const query = await db
+    .select()
+    .from(matchedTable)
+    .where(eq(matchedTable.tutee_id, tutee_id));
+  console.log(query);
+
+  if (!query) {
+    throw new Error("${id} does not exist in matched table");
+  }
+
+  await db
+    .insert(unmatchedTable)
+    .values(query)
+    .onConflictDoNothing(); 
+    
+  await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+}
+
 async function moveToInactive(matchId: number) {
+  console.log("moving to inactive");
   const query = await db
       .select()
       .from(approvedMatchesTable)
       .where(eq(approvedMatchesTable.id, matchId));
     console.log(query); 
+     
+    // const tutor = await db
+    //   .select()
+    //   .from()
+    // await db.insert(tutorTable).values(query);
+    // await db.insert(unmatchedTable).values(query);
+
+    moveTutorToUnmatched(query[0].tutor_id);
+    moveTuteeToUnmatched(query[0].tutee_id);
+    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, matchId));
 }
