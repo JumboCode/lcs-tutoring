@@ -9,7 +9,7 @@ import {
   approvedMatchesTable,
   adminTable
 } from "./db/schema";
-import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
+import { or, inArray, arrayContains, and, eq, sql } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from 'fs';
@@ -95,7 +95,7 @@ app.get("/tutors", async (req: Request, res: Response) => {
     }
   });
 
-  /* GET endpoint -- returns all the matched and unmatched tutees */
+/* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/approved-matches", async (req: Request, res: Response) => {
   try {
     console.log("Inside approved matches endpoint");
@@ -132,6 +132,42 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching approved matches");
+  }
+});
+
+/* GET endpoint */
+app.get("/match-suggestions", async (req: Request, res: Response) => {
+  try {
+    console.log("Inside match suggestions endpoint");
+    // query logic
+    // NOTE: Algorithm implementation somewhere here
+    
+    const matches = await db
+      .select({
+        matchId: unmatchedTable.id,
+        flagged: unmatchedTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          phone: tutorTable.phone,
+          email: tutorTable.email,
+          subject: tutorTable.subject_pref,
+          grade_level_pref: tutorTable.grade_level_pref,
+          disability_pref: tutorTable.disability_pref,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        // TUTEE SUGGESTIONS FROM ALGORITHM
+      })
+      .from(unmatchedTable)
+      .innerJoin(tutorTable, eq(unmatchedTable.tutor_id, tutorTable.id));
+
+      res.send({
+        matchSuggestions: matches
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching match suggestions");
   }
 });
 

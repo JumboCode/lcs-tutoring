@@ -18,7 +18,7 @@ export default function TuteeSuggestionBox({
     first_name,
     last_name,
     email,
-    subject,
+    subjects = [],
     grade,
     special_needs,
     tutoring_mode,
@@ -48,7 +48,7 @@ export default function TuteeSuggestionBox({
       </div>
       <div className="py-2 font-interBlack flex flex-row text-[black] px-8 justify-start items-center mx-2">
         <span className="w-1/2">{grade}</span>
-        <span className="w-1/2">{subject}</span>
+        <span className="w-1/2">{subjects.join(", ")}</span>
       </div>
       <div className="py-1 font-interBlack flex flex-row text-gray-500 px-8 bg-[#fbfbfb] justify-start items-center mx-2">
         <span className="w-1/2">Special Needs</span>

@@ -10,21 +10,29 @@ import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
 
 import { Modal } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 // const BG_COLOR = "#fbfbfb";
+interface TuteeName {
+  firstName: string;
+  lastName: string;
+}
 
 const MatchSuggestionBlock = ({
   tutor_info,
   tutee1,
   tutee2,
   tutee3,
+  flagged,
+  unmatched_names,
 }: // onMatchApproved,
 {
   tutor_info: tutorInfo;
   tutee1: tuteeInfo;
   tutee2: tuteeInfo;
   tutee3: tuteeInfo;
+  flagged: Boolean;
+  unmatched_names: TuteeName[];
   // onMatchApproved: (tutorId: string, tuteeId: string) => void;
 }) => {
   const [selectedTuteeEmail, setselectedTuteeEmail] = useState<string | null>(
@@ -72,9 +80,9 @@ const MatchSuggestionBlock = ({
     last_name,
     email,
     phone,
-    subject,
-    grade,
-    open_to_disability,
+    subject = [],
+    grade_level_pref = [],
+    disability_pref,
     tutoring_mode,
   } = tutor_info;
 
@@ -85,36 +93,6 @@ const MatchSuggestionBlock = ({
 
   // Modal close function
   const closeModal = () => setModalVisible(false);
-
-  interface TuteeName {
-    firstName: string;
-    lastName: string;
-  }
-  const [unmatchedNames, setUnmatchedNames] = useState<TuteeName[]>([]);
-
-  useEffect(() => {
-    const fetchTutees = async () => {
-      try {
-        const response = await fetch("http://localhost:5432/tutees");
-        if (!response.ok) {
-          throw new Error("Failed to fetch tutees");
-        }
-        const data = await response.json(); // Parse the response body as JSON
-        const { _, unmatchedTutees } = data;
-        void _;
-        const names = unmatchedTutees.map((formData: any) => ({
-          firstName: formData.tutee_first_name,
-          lastName: formData.tutee_last_name,
-        }));
-        setUnmatchedNames(names);
-        console.log("Unmatched Tutee Names: ", names);
-        //console.log(data);
-      } catch (error) {
-        console.error("Error fetching tutees: ", error);
-      }
-    };
-    fetchTutees();
-  }, []);
 
   return (
     <div className="border rounded-lg bg-white p-6 m-8">
@@ -152,8 +130,8 @@ const MatchSuggestionBlock = ({
       </div>
       <div className="py-2 font-interBlack flex flex-row text-[black] px-2 justify-start items-center mx-3">
         <span className="w-1/4">{subject.join(", ")}</span>
-        <span className="w-1/4">{grade.join(", ")}</span>
-        <span className="w-1/4">{open_to_disability}</span>
+        <span className="w-1/4">{grade_level_pref.join(", ")}</span>
+        <span className="w-1/4">{disability_pref}</span>
         <span className="w-1/4">{tutoring_mode}</span>
       </div>
 
@@ -208,7 +186,7 @@ const MatchSuggestionBlock = ({
         <Modal.Body>
           <div>
             <ul>
-              {unmatchedNames.map((name, index) => (
+              {unmatched_names.map((name, index) => (
                 <li key={index}>
                   {name.firstName} {name.lastName}
                 </li>

@@ -43,6 +43,7 @@ export const unmatchedTable = pgTable('unmatched', {
   id: serial('id').primaryKey(),
   tutee_id: integer().references(() => tuteeTable.id),
   tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
+  flagged: boolean('flagged').notNull().default(false),
 });
 
 export const matchedTable = pgTable('matched', {

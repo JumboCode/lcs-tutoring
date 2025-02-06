@@ -14,7 +14,7 @@ import Collapse from "../assets/images/nav_icons/collapse.svg";
 import TuteeTable from "./TuteeTable";
 import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
-import MatchSuggestionBlock from "./matchSuggestionBlock";
+import MatchSuggestionTable from "./matchSuggestionTable";
 
 import { tutorInfo, tuteeInfo } from "../types";
 
@@ -132,14 +132,7 @@ export default function NavigationBar() {
       </div>
       <div className="flex-grow p-4 bg-gray-100/50">
         <div className="mt-4">
-          {currentPage === "Match Suggestions" && (
-            <MatchSuggestionBlock
-              tutee1={tutee1}
-              tutee2={tutee2}
-              tutee3={tutee3}
-              tutor_info={tutor1}
-            />
-          )}
+          {currentPage === "Match Suggestions" && <MatchSuggestionTable />}
           {currentPage === "Tutor Database" && <TutorTable />}
           {currentPage === "Tutee Database" && <TuteeTable />}
           {currentPage === "Approved Matches" && <ApprovedMatches />}
