@@ -6,6 +6,7 @@ import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa6";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { BsPlusLg } from "react-icons/bs";
 import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
 
@@ -174,7 +175,7 @@ const MatchSuggestionBlock = ({
         >
           {/* This is where you will complete your ticket */}
           <span className="inline-block ml-0.5">
-            <FaCheck />
+            <BsPlusLg />
           </span>{" "}
           Custom Match
         </button>
