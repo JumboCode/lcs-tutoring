@@ -1,6 +1,5 @@
 import MatchSuggestionBlock from "./matchSuggestionBlock";
 import { useState, useEffect } from "react";
-import { BsPlusLg } from "react-icons/bs";
 import { tuteeInfo, tutorInfo } from "../types";
 // import FilterButton from "./FilterButton";
 

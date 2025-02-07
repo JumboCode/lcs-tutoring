@@ -29,7 +29,6 @@ type MatchedInfoBoxProps = {
 export default function MatchedInfoBoxbox_props({
   tutee_props,
   tutor_props,
-  matchId,
   flagged,
   bgColor,
   date,

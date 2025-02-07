@@ -29,7 +29,7 @@ export default function TuteeInfoBox({
   bgColor,
 }: TuteeInfoBoxProps) {
   const {
-    // id, 
+    id,
     date,
     tutee_first_name,
     tutee_last_name,
@@ -52,15 +52,15 @@ export default function TuteeInfoBox({
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
-  
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   const handleSubmit = () => {
-    setIsDropdownOpen(false)
+    setIsDropdownOpen(false);
     console.log("id from front end: ", id);
     fetch(`http://localhost:3000/move-tutee-to-history/${id}`, {
-      method: "POST"
+      method: "POST",
     })
       .then((response) => response.json())
       .then((data) => console.log(data))
@@ -129,25 +129,16 @@ export default function TuteeInfoBox({
                     className={`transition-transform duration-300 ${
                       isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
                     }`}
-                  >
-                  </div>
+                  ></div>
                 </button>
 
                 {isDropdownOpen && (
-                    <div
-                      className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2"
-                    >
-                      <button
-                        onClick={handleSubmit}
-                        className=""
-                      >
-                        Delete Tutee
-                      </button>
-                      <img 
-                        src={TrashCan} 
-                        className="mx-2"
-                      />
-                    </div>
+                  <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                    <button onClick={handleSubmit} className="">
+                      Delete Tutee
+                    </button>
+                    <img src={TrashCan} className="mx-2" />
+                  </div>
                 )}
               </div>
             </th>

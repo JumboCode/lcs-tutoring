@@ -16,55 +16,12 @@ import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
 import MatchSuggestionTable from "./matchSuggestionTable";
 
-import { tutorInfo, tuteeInfo } from "../types";
-
 export default function NavigationBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [currentPage, setCurrentPage] = useState("Match Suggestions");
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
-  };
-
-  const tutor1: tutorInfo = {
-    first_name: "Brandon",
-    last_name: "Dionisio",
-    email: "brandon.dionisio@tufts.edu",
-    phone: "8454204946",
-    subject: ["Math", "Science"],
-    grade: ["9", "10"],
-    open_to_disability: true,
-    tutoring_mode: "Hybrid",
-  };
-
-  const tutee1: tuteeInfo = {
-    first_name: "Bill",
-    last_name: "Smith",
-    email: "bill.smith@hi.com",
-    subject: "Math",
-    grade: "8",
-    special_needs: "No",
-    tutoring_mode: "Hybrid",
-  };
-
-  const tutee2: tuteeInfo = {
-    first_name: "Bob",
-    last_name: "Jones",
-    email: "bob.jones@hi.com",
-    subject: "Science",
-    grade: "10",
-    special_needs: "Dyslexia",
-    tutoring_mode: "In-Person",
-  };
-
-  const tutee3: tuteeInfo = {
-    first_name: "Ana",
-    last_name: "Todd",
-    email: "ana.todd@hi.com",
-    subject: "English",
-    grade: "9",
-    special_needs: "No",
-    tutoring_mode: "Hybrid",
   };
 
   const menuItems = [

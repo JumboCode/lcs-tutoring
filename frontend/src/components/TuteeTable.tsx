@@ -36,6 +36,7 @@ export default function TuteeTable() {
         const response = await fetch("http://localhost:3000/tutees");
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
+        // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
         setMatchedTutees(matchedTutees);
         setUnmatchedTutees(unmatchedTutees);
         setHistoryTutees(historyTutees);
@@ -191,59 +192,7 @@ export default function TuteeTable() {
             </div>
           )}
         </div>
-        <table className="w-full">
-          <thead>
-            <tr className="h-[35px] bg-gray-100/50">
-              <td className="px-3 w-1/5">
-                <h1 className="text-gray-500 text-lg">Date</h1>
-              </td>
-              <td className="w-1/5">
-                <h1 className="text-gray-500 text-lg ">Name</h1>
-              </td>
-              <td className="w-1/5">
-                <h1 className="text-gray-500 text-lg ">Subject</h1>
-              </td>
-              <td className="w-1/5">
-                <h1 className="text-gray-500 text-lg ">Grade</h1>
-              </td>
-              <td className="w-1/5"></td>
-            </tr>
-          </thead>
-        </table>
-        {isActive === TABS.UNMATCHED && (
-          <div>
-            {unmatchedTutees.map((box_props, index) => (
-              <TuteeInfoBox
-                box_props={box_props}
-                key={index}
-                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
-              />
-            ))}
-          </div>
-        )}
-        {isActive === TABS.MATCHED && (
-          <div>
-            {matchedTutees.map((box_props, index) => (
-              <TuteeInfoBox
-                box_props={box_props}
-                key={index}
-                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
-              />
-            ))}
-          </div>
-        )}
-        {isActive === TABS.HISTORY && (
-          <div>
-            {historyTutees.map((box_props, index) => (
-              <TuteeInfoBox
-                box_props={box_props}
-                key={index}
-                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
