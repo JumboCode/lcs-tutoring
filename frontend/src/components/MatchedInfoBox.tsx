@@ -6,6 +6,7 @@ import { BsEnvelope } from "react-icons/bs";
 import { BsCheck2, BsTrashFill } from "react-icons/bs";
 import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
+import deleteIcon from "../assets/images/delete.svg";
 
 const STYLES = {
   colors: {
@@ -47,13 +48,25 @@ export default function MatchedInfoBoxbox_props({
     subject,
     grade,
   } = tutee_props;
-  const [showDropdown, setShowDropdown] = useState(false);
   const [isCurrentlyFlagged, setIsCurrentlyFlagged] = useState(flagged);
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const moveToInactive = () => {
+    setIsDropdownOpen(false);
+
+    fetch(`http://localhost:3000/move-to-inactive/${matchId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
+  };
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
@@ -67,7 +80,7 @@ export default function MatchedInfoBoxbox_props({
       });
       if (response.ok) {
         setIsCurrentlyFlagged(!isCurrentlyFlagged);
-        setShowDropdown(false);
+        setIsDropdownOpen(false);
       }
     } catch (error) {
       console.error("Error:", error);
@@ -174,19 +187,24 @@ export default function MatchedInfoBoxbox_props({
 
                 <div className="relative">
                   <button
-                    onClick={() => setShowDropdown(!showDropdown)}
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     className="mb-2 ml-5 p-0 text-lg text-gray-400"
                   >
                     ...
+                    <div
+                      className={`transition-transform duration-300 ${
+                        isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                      }`}
+                    ></div>
                   </button>
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[150px] z-50">
-                      <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                      {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
                         <div className="className=" mr-2 w-4 h-4 inline-block>
                           <BsTrashFill size={20} />
                         </div>
                         Remove Pair
-                      </button>
+                      </button> */}
                       <button
                         onClick={handleToggleFlag}
                         className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
@@ -209,7 +227,14 @@ export default function MatchedInfoBoxbox_props({
                           </>
                         )}
                       </button>
-                      <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                      <button
+                        className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                        onClick={moveToInactive}
+                      >
+                        <img
+                          src={deleteIcon}
+                          className="w-4 h-4 inline-block mr-2"
+                        />
                         Move to Inactive
                       </button>
                     </div>

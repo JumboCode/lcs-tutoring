@@ -118,10 +118,16 @@ app.get("/tutors", async (req: Request, res: Response) => {
       .from(tutorTable) // Getting all tutors but instead want to just get filtered
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
+    
+    const historyTutors = await db
+      .select()
+      .from(tutorTable)
+      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id));
 
     res.send({
       matchedTutors: matchedTutors.map((row) => row.tutor),
       unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+      historyTutors: historyTutors.map((row) => row.tutor),
     });
   } catch (error) {
     console.error(error);
@@ -129,8 +135,6 @@ app.get("/tutors", async (req: Request, res: Response) => {
   }
 });
 
-/* GET endpoint -- returns all the matched and unmatched tutees */
-/* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/approved-matches", async (req: Request, res: Response) => {
   try {
     console.log("Inside approved matches endpoint");
@@ -203,6 +207,19 @@ app.get("/match-suggestions", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching match suggestions");
+  }
+});
+
+app.post("/move-to-inactive/:id", async (req: Request, res: Response) => {
+  try {
+    console.log("inside move to inactive");
+    const id = req.params.id;
+  
+    moveToInactive(Number(id));
+    console.log("after function call");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to inactive");
   }
 });
 
@@ -389,6 +406,44 @@ async function moveTutorToHistory(tutor_id: string) {
   }
 }
 
+async function moveTuteeToUnmatched(tutee_id: number) {
+  const query = await db
+    .select()
+    .from(matchedTable)
+    .where(eq(matchedTable.tutee_id, tutee_id));
+  console.log(query);
+
+  if (!query) {
+    throw new Error("${id} does not exist in matched table");
+  }
+
+  await db
+    .insert(unmatchedTable)
+    .values(query)
+    .onConflictDoNothing(); 
+
+  await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+}
+
+async function moveToInactive(matchId: number) {
+  console.log("moving to inactive");
+  const query = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, matchId));
+    console.log(query); 
+
+    // const tutor = await db
+    //   .select()
+    //   .from()
+    // await db.insert(tutorTable).values(query);
+    // await db.insert(unmatchedTable).values(query);
+
+    moveTutorToUnmatched(query[0].tutor_id);
+    moveTuteeToUnmatched(query[0].tutee_id);
+    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, matchId));
+}
+
 async function moveTuteeToHistory(tutee_id: number) {
   console.log("in move tutee to history");
   if (tutee_id > 0) {
@@ -541,7 +596,10 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("${id} does not exist in matched table");
     }
 
-    await db.insert(unmatchedTable).values(query);
+    await db
+      .insert(unmatchedTable)
+      .values(query)
+      .onConflictDoNothing(); 
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }

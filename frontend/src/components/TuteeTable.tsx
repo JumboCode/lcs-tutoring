@@ -52,7 +52,7 @@ export default function TuteeTable() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center w-[70vw]">
+    <div className="flex flex-col justify-center items-center">
       <h1 className="w-full text-3xl font-bold text-left">Tutee Database</h1>
 
       {/* When awaiting the fetch */}
@@ -183,6 +183,17 @@ export default function TuteeTable() {
           {isActive === TABS.MATCHED && (
             <div>
               {matchedTutees.map((box_props, index) => (
+                <TuteeInfoBox
+                  box_props={box_props}
+                  key={index}
+                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+                />
+              ))}
+            </div>
+          )}
+          {isActive === TABS.HISTORY && (
+            <div>
+              {historyTutees.map((box_props, index) => (
                 <TuteeInfoBox
                   box_props={box_props}
                   key={index}
