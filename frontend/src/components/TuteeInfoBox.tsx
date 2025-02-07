@@ -31,6 +31,7 @@ export default function TuteeInfoBox({
   const {
     id,
     date,
+    history_date,
     tutee_first_name,
     tutee_last_name,
     parent_email,
@@ -72,7 +73,7 @@ export default function TuteeInfoBox({
       <table className="table-fixed w-full">
         <thead>
           <tr className={`h-[80px] ${bgColor} border-b`}>
-            <th className="font-normal w-1/5 px-3">{date}</th>
+            <th className="font-normal w-1/5 px-3">{date} {history_date}</th>
             <th className="font-normal w-1/5">
               <p className="">
                 {tutee_first_name} {tutee_last_name}

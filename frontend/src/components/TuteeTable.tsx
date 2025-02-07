@@ -191,6 +191,17 @@ export default function TuteeTable() {
               ))}
             </div>
           )}
+          {isActive === TABS.HISTORY && (
+            <div>
+              {historyTutees.map((box_props, index) => (
+                <TuteeInfoBox
+                  box_props={box_props}
+                  key={index}
+                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -303,6 +303,8 @@ app.post("/move-tutee-to-history/:id", async (req: Request, res: Response) => {
   }
 })
 
+
+
 async function moveTutorToHistory(tutor_id: string) {
   if (tutor_id.length == 7 || tutor_id.length == 8) {
     const query = await db
@@ -336,7 +338,15 @@ async function moveTuteeToHistory(tutee_id: number) {
       .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
 
     if (query.length > 0) {
+      // const rowWithDate = {
+      //   ...query[0],   // Spread existing data
+      //   history_date: new Date() // Add timestamp
+      // };
+
+    // Insert modified row into historyTable
+      // await db.insert(historyTable).values(rowWithDate);
       await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+      // console.log(query);
 
       await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 
