@@ -69,6 +69,26 @@ app.get("/tutees", async (req: Request, res: Response) => {
   }
 });
 
+export async function moveToInactive(matchId: number) {
+  // Get the match details first
+  const [match] = await db
+    .select()
+    .from(approvedMatchesTable)
+    .where(eq(approvedMatchesTable.id, matchId));
+
+  if (!match) {
+    throw new Error("Match not found");
+  }
+
+  // Insert both tutor and tutee into unmatched table
+  await db.insert(unmatchedTable).values([
+    {
+      tutee_id: match.tutee_id,
+      tutor_id: match.tutor_id,
+      flagged: false,
+    },
+  ]);
+}
 // backend/src/index.ts
 app.post("/flag/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
@@ -218,12 +238,32 @@ app.post("/admin/:email", async (req: Request, res: Response) => {
     res.status(500).send("Error adding new admin");
   }
 });
+app.post("/move-to-inactive/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    // Move tutor & tutee to unmatched table
+    await moveToInactive(id);
+
+    // Remove the match from approved_matches
+    await db
+      .delete(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, id));
+
+    // db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, id));
+    console.log(`Match ${id} moved to inactive`);
+    res.send("Match moved to inactive");
+  } catch (error) {
+    console.error("Error moving to inactive:", error);
+    res.status(500).send("Error moving to inactive");
+  }
+});
 
 app.post("/tuteesubmission", async (req: Request, res: Response) => {
   try {
     console.log("This the req body: ", req.body);
     const request = req.body;
     const {
+      id,
       childFirstName,
       childLastName,
       gender,

@@ -1,4 +1,12 @@
-import { boolean, integer, pgTable, varchar, text, date, serial } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  integer,
+  pgTable,
+  varchar,
+  text,
+  date,
+  serial,
+} from "drizzle-orm/pg-core";
 
 export const tutorTable = pgTable("tutor", {
   id: varchar({ length: 7 }).notNull().primaryKey(),
@@ -14,7 +22,7 @@ export const tutorTable = pgTable("tutor", {
   subject_pref: varchar({ length: 50 }).array(),
   tutoring_mode: varchar({ length: 50 }).notNull(),
   date: date().notNull(),
-  previous_tutee: boolean('previous_tutee').default(false).notNull(),
+  previous_tutee: boolean("previous_tutee").default(false).notNull(),
   continuing_tutee_name: varchar({ length: 50 }),
   num_tutees: integer().default(0).notNull(),
   notes: text(),
@@ -22,7 +30,7 @@ export const tutorTable = pgTable("tutor", {
 });
 
 export const tuteeTable = pgTable("tutee", {
-  id: serial('id').primaryKey(),
+  id: serial("id").primaryKey(),
   tutee_first_name: varchar({ length: 100 }).notNull(),
   tutee_last_name: varchar({ length: 100 }).notNull(),
   gender: varchar({ length: 50 }).notNull(),
@@ -39,30 +47,34 @@ export const tuteeTable = pgTable("tutee", {
   date: date().notNull(),
 });
 
-export const unmatchedTable = pgTable('unmatched', {
-  id: serial('id').primaryKey(),
+export const unmatchedTable = pgTable("unmatched", {
+  id: serial("id").primaryKey(),
   tutee_id: integer().references(() => tuteeTable.id),
   tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
-  flagged: boolean('flagged').notNull().default(false),
+  flagged: boolean("flagged").notNull().default(false),
 });
 
-export const matchedTable = pgTable('matched', {
-  id: serial('id').primaryKey(),
-  tutee_id: integer().references(() => tuteeTable.id),
-  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
-});
-
-export const historyTable = pgTable('history', {
-  id: serial('id').primaryKey(),
+export const matchedTable = pgTable("matched", {
+  id: serial("id").primaryKey(),
   tutee_id: integer().references(() => tuteeTable.id),
   tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
 });
 
-export const approvedMatchesTable = pgTable('approved_matches', {
-  id: serial('id').primaryKey(),
-  tutee_id: integer().notNull().references(() => tuteeTable.id),
-  tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
-  flagged: boolean('flagged').notNull().default(false),
+export const historyTable = pgTable("history", {
+  id: serial("id").primaryKey(),
+  tutee_id: integer().references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
+});
+
+export const approvedMatchesTable = pgTable("approved_matches", {
+  id: serial("id").primaryKey(),
+  tutee_id: integer()
+    .notNull()
+    .references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 })
+    .notNull()
+    .references(() => tutorTable.id),
+  flagged: boolean("flagged").notNull().default(false),
 });
 
 export const adminTable = pgTable("admin", {
