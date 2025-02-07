@@ -24,6 +24,7 @@ export default function TutorTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
   const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
   const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
+  const [historyTutors, setHistoryTutors] = useState<tutorBoxProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,11 +37,10 @@ export default function TutorTable() {
           "http://localhost:3000/tutors"
         );
         const data = await response.json();
-        const { matchedTutors, unmatchedTutors } = data;
-        console.log("Matched filtered Tutors: ", matchedTutors);
-        console.log("Unmatched filtered Tutors: ", unmatchedTutors);
+        const { matchedTutors, unmatchedTutors, historyTutors } = data;
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
+        setHistoryTutors(historyTutors);
       } catch (error) {
         console.error("Error fetching tutors:", error);
         setError((error as Error).message);
@@ -146,7 +146,7 @@ export default function TutorTable() {
                       : COLORS.HISTORY_BG)
                   }
                 >
-                  0
+                  {historyTutors.length}
                 </div>
               </div>
             </div>
@@ -193,7 +193,59 @@ export default function TutorTable() {
             </div>
           )}
         </div>
-      )}
+        <table className="w-full">
+          <thead>
+            <tr className="h-[35px] bg-gray-100/50">
+              <td className="px-3 w-1/5">
+                <h1 className="text-gray-500 text-lg">Date</h1>
+              </td>
+              <td className="w-1/5">
+                <h1 className="text-gray-500 text-lg ">Name</h1>
+              </td>
+              <td className="w-1/5">
+                <h1 className="text-gray-500 text-lg ">Tufts ID</h1>
+              </td>
+              <td className="w-1/5">
+                <h1 className="text-gray-500 text-lg ">Subjects</h1>
+              </td>
+              <td className="w-1/5"></td>
+            </tr>
+          </thead>
+        </table>
+        {isActive === TABS.UNMATCHED && (
+          <div>
+            {unmatchedTutors.map((box_props, index) => (
+              <TutorInfoBox
+                box_props={box_props}
+                key={index}
+                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+              />
+            ))}
+          </div>
+        )}
+        {isActive === TABS.MATCHED && (
+          <div>
+            {matchedTutors.map((box_props, index) => (
+              <TutorInfoBox
+                box_props={box_props}
+                key={index}
+                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+              />
+            ))}
+          </div>
+        )}
+        {isActive === TABS.HISTORY && (
+          <div>
+            {historyTutors.map((box_props, index) => (
+              <TutorInfoBox
+                box_props={box_props}
+                key={index}
+                bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

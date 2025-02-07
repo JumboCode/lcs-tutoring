@@ -53,9 +53,15 @@ app.get("/tutees", async (req: Request, res: Response) => {
       .from(tuteeTable)
       .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
 
+      const historyTutees = await db
+      .select()
+      .from(tuteeTable)
+      .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id));
+
     res.send({
       matchedTutees: matchedTutees.map((row) => row.tutee),
       unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
+      historyTutees: historyTutees.map((row) => row.tutee) 
     });
   } catch (error) {
     console.error(error);
@@ -84,10 +90,17 @@ app.get("/tutors", async (req: Request, res: Response) => {
         .from(tutorTable) // Getting all tutors but instead want to just get filtered
         .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
         .where(inArray(tutorTable.id, tutorIds));
-  
+
+      const historyTutors = await db
+        .select()
+        .from(tutorTable)
+        .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id))
+        .where(inArray(tutorTable.id, tutorIds));
+
       res.send({
         matchedTutors: matchedTutors.map((row) => row.tutor),
-        unmatchedTutors: unmatchedTutors.map((row) => row.tutor)
+        unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+        historyTutors: historyTutors.map((row) => row.tutor) 
       });
     } catch (error) {
       console.error(error);
@@ -188,11 +201,12 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
   try {
     console.log("This the req body: ", req.body);
     const request = req.body;
-    const { childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subjects, tutoringMode, additionalInfo, agreement, signature } = request;
+    const { id, childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subjects, tutoringMode, additionalInfo, agreement, signature } = request;
     // bad practice, prefer to submit number directly
     const gradeNum = Number(grade);
     console.log("This the subjects: ", subjects);
     await db.insert(tuteeTable).values({
+      id: id,
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
       gender: gender,
@@ -246,6 +260,33 @@ app.post("/tutorsubmission", async (req: Request, res: Response) => {
     res.status(500).send("Error moving to matched");
   }
 });
+
+// app.get("/move-tutor-to-history", async (req : Request, res : Response) => {
+//   console.log("move to tutor is being requested");
+
+// })
+app.post("/move-tutor-to-history/:id", async (req: Request, res: Response) => { 
+  try {
+    const id = req.params.id;
+    // const request = req.body;
+    moveTutorToHistory(id);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to history");
+  }
+})
+
+app.post("/move-tutee-to-history/:id", async (req: Request, res: Response) => { 
+  try {
+    const id = req.params.id;
+    console.log("id as a string: ", id);
+    console.log(Number(id));
+    moveTuteeToHistory(Number(id));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to history");
+  }
+})
 
 const importUnmatchedData = async () => {
   const jsonData = JSON.parse(fs.readFileSync("src/unmatched.json", "utf-8"));
@@ -417,4 +458,53 @@ async function fetchAllTutees() {
   const query = await db.select().from(tuteeTable);
   const tutees = query;
   return tutees;
+}
+
+async function moveTutorToHistory(tutor_id: string) {
+  if (tutor_id.length == 7 || tutor_id.length == 8) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutor_id, tutor_id)); //returns an array with only one element
+      
+    if (query.length > 0) {
+      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+
+      // for (let i = 0; i < query.length - 1; i++) {
+      //   //adding rows back in
+      //   await db.insert(matchedTable).values(query[0]);
+      // }
+    } else {
+      throw new Error("ID not found in matched table");
+    }
+  } else {
+    throw new Error("Invalid ID");
+  }
+}
+
+async function moveTuteeToHistory(tutee_id: number) {
+  console.log("in move tutee to history");
+  if (tutee_id > 0) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
+      
+    if (query.length > 0) {
+      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+
+      // for (let i = 0; i < query.length - 1; i++) {
+      //   //adding rows back in
+      //   await db.insert(matchedTable).values(query[0]);
+      // }
+    } else {
+      throw new Error("ID not found in matched table");
+    }
+  } else {
+    throw new Error("Invalid ID");
+  }
 }

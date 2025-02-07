@@ -16,25 +16,17 @@ export default function BoardBox({
   return (
     <div
       className={
-        "flex w-[95vw] md:h-[300px] h-[220px] lg:w-[60vw] xl:w-[50vw] bg-[#FBFDFE] rounded-lg border-2 border-[#BFDBF7] p-2"
+        "flex w-6/12 h-72 bg-[#FBFDFE] rounded-lg border-2 border-[#BFDBF7] p-2 mx-8"
       }
     >
-      <img
-        src={photo}
-        alt={`${name}'s photo`}
-        className="rounded-md w-auto md:h-[280px] h-[200px] object-cover"
-      />
+      <img src={photo} className={"rounded-md"} />
       <div className={"flex flex-col mx-2"}>
-        <p className={"font-semibold text-xl md:text-2xl"}>{name}</p>
-        <p className={"font-normal text-sm md:text-lg"}>{title}</p>
-        <p className={"font-light italic text-sm md:text-base"}>
+        <p className={"font-interBlack font-semibold text-2xl"}>{name}</p>
+        <p className={"font-inter font-normal text-lg"}>{title}</p>
+        <p className={"font-inter font-light italic text-base"}>
           Class of {year}
         </p>
-        <p
-          className={
-            "font-light xl:text-base lg:text-sm md:text-base sm:text-sm text-[0.625rem] md:leading-5 mt-1 md:mt-3"
-          }
-        >
+        <p className={"font-inter font-light text-base leading-5 mt-3"}>
           {bio}
         </p>
       </div>
