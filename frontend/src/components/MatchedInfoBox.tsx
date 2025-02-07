@@ -6,6 +6,7 @@ import { BsEnvelope } from "react-icons/bs";
 import { BsCheck2, BsTrashFill } from "react-icons/bs";
 import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
+
 const STYLES = {
   colors: {
     textGray: "#888888",
@@ -31,8 +32,8 @@ type MatchedInfoBoxProps = {
 export default function MatchedInfoBoxbox_props({
   tutee_props,
   tutor_props,
+  matchId,
   flagged,
-  bgColor,
   date,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
@@ -76,8 +77,7 @@ export default function MatchedInfoBoxbox_props({
     <div
       className={`${
         isCurrentlyFlagged ? "bg-red-50" : "odd:bg-gray-50 even:bg-white"
-      } 
-  w-full h-auto rounded-lg border-b text-left transition-colors my-2`}
+      } w-full h-auto rounded-lg border-b text-left transition-colors my-2`}
     >
       <table className="table-fixed w-full">
         <thead>
@@ -182,10 +182,9 @@ export default function MatchedInfoBoxbox_props({
                   {showDropdown && (
                     <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[150px] z-50">
                       <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
-                        <BsTrashFill
-                          size={20}
-                          className="mr-2 w-4 h-4 inline-block"
-                        />
+                        <div className="className=" mr-2 w-4 h-4 inline-block>
+                          <BsTrashFill size={20} />
+                        </div>
                         Remove Pair
                       </button>
                       <button
