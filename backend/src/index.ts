@@ -7,12 +7,12 @@ import {
   unmatchedTable,
   historyTable,
   approvedMatchesTable,
-  adminTable
+  adminTable,
 } from "./db/schema";
 import { or, inArray, arrayContains, and, eq, sql } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
-import fs from 'fs';
+import fs from "fs";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -31,13 +31,13 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("/demo/:id", async (req: Request, res: Response) => {
-    const id = req.params.id;
-    try {
-        res.send(`Here is our message: ${id}`);
-    } catch (error) {
-        console.error(error);
-    }
-})
+  const id = req.params.id;
+  try {
+    res.send(`Here is our message: ${id}`);
+  } catch (error) {
+    console.error(error);
+  }
+});
 
 /* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/tutees", async (req: Request, res: Response) => {
@@ -61,7 +61,7 @@ app.get("/tutees", async (req: Request, res: Response) => {
     res.send({
       matchedTutees: matchedTutees.map((row) => row.tutee),
       unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
-      historyTutees: historyTutees.map((row) => row.tutee) 
+      historyTutees: historyTutees.map((row) => row.tutee),
     });
   } catch (error) {
     console.error(error);
@@ -69,42 +69,67 @@ app.get("/tutees", async (req: Request, res: Response) => {
   }
 });
 
+// backend/src/index.ts
+app.post("/flag/:id", async (req: Request, res: Response) => {
+  const id = parseInt(req.params.id);
+  try {
+    const [match] = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, id));
+
+    const [updated] = await db
+      .update(approvedMatchesTable)
+      .set({ flagged: !match.flagged })
+      .where(eq(approvedMatchesTable.id, id))
+      .returning();
+
+    res.json(updated);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating flag status");
+  }
+});
 /* GET endpoint -- returns all the matched and unmatched tutors */
 app.get("/tutors", async (req: Request, res: Response) => {
-  console.log("im in")
-    try {
-      const filteredTutors = await filterTutors([11,12], undefined, true, undefined);
-      const tutorIds = filteredTutors.map((tutor) => tutor.id).filter((id) => id !== undefined);
+  console.log("im in");
+  try {
+    const filteredTutors = await filterTutors(
+      [11, 12],
+      undefined,
+      true,
+      undefined
+    );
+    const tutorIds = filteredTutors
+      .map((tutor) => tutor.id)
+      .filter((id) => id !== undefined);
 
-      const matchedTutors = await db
-        .select()
-        .from(tutorTable) //Getting all tutors but instead want to just get filtered
-        .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id))
-        .where(inArray(tutorTable.id, tutorIds));
-  
-      const unmatchedTutors = await db
-        .select()
-        .from(tutorTable) // Getting all tutors but instead want to just get filtered
-        .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
-        .where(inArray(tutorTable.id, tutorIds));
+    const matchedTutors = await db
+      .select()
+      .from(tutorTable) //Getting all tutors but instead want to just get filtered
+      .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id))
+      .where(inArray(tutorTable.id, tutorIds));
 
-        const historyTutors = await db
-        .select()
-        .from(tutorTable)
-        .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id))
-        .where(inArray(tutorTable.id, tutorIds));
-  
-      res.send({
-        matchedTutors: matchedTutors.map((row) => row.tutor),
-        unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
-        historyTutors: historyTutors.map((row) => row.tutor)
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error fetching tutors");
-    }
-  });
+    const unmatchedTutors = await db
+      // .select()
+      // .from(tutorTable)
+      // .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
+      .select()
+      .from(tutorTable) // Getting all tutors but instead want to just get filtered
+      .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
+      .where(inArray(tutorTable.id, tutorIds));
 
+    res.send({
+      matchedTutors: matchedTutors.map((row) => row.tutor),
+      unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching tutors");
+  }
+});
+
+/* GET endpoint -- returns all the matched and unmatched tutees */
 /* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/approved-matches", async (req: Request, res: Response) => {
   try {
@@ -136,9 +161,9 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
       .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
 
-      res.send({
-        approvedMatches: matches
-      });
+    res.send({
+      approvedMatches: matches,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching approved matches");
@@ -151,7 +176,7 @@ app.get("/match-suggestions", async (req: Request, res: Response) => {
     console.log("Inside match suggestions endpoint");
     // query logic
     // NOTE: Algorithm implementation somewhere here
-    
+
     const matches = await db
       .select({
         matchId: unmatchedTable.id,
@@ -172,33 +197,49 @@ app.get("/match-suggestions", async (req: Request, res: Response) => {
       .from(unmatchedTable)
       .innerJoin(tutorTable, eq(unmatchedTable.tutor_id, tutorTable.id));
 
-      res.send({
-        matchSuggestions: matches
-      });
+    res.send({
+      matchSuggestions: matches,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching match suggestions");
   }
 });
 
-  app.post("/admin/:email", async (req: Request, res: Response) => {
-    try {
-      const email = req.params.email;
-      await db.insert(adminTable).values({
-        email: email
-      });
-      console.log("Email submitted: ", req.body);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Error adding new admin");
-    }
-  });
+app.post("/admin/:email", async (req: Request, res: Response) => {
+  try {
+    const email = req.params.email;
+    await db.insert(adminTable).values({
+      email: email,
+    });
+    console.log("Email submitted: ", req.body);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error adding new admin");
+  }
+});
 
 app.post("/tuteesubmission", async (req: Request, res: Response) => {
   try {
     console.log("This the req body: ", req.body);
     const request = req.body;
-    const { id, childFirstName, childLastName, gender, grade, specialNeeds, specialNeedsInfo, parentFirstName, parentLastName, phone, email, subjects, tutoringMode, additionalInfo, agreement, signature } = request;
+    const {
+      childFirstName,
+      childLastName,
+      gender,
+      grade,
+      specialNeeds,
+      specialNeedsInfo,
+      parentFirstName,
+      parentLastName,
+      phone,
+      email,
+      subjects,
+      tutoringMode,
+      additionalInfo,
+      agreement,
+      signature,
+    } = request;
     // bad practice, prefer to submit number directly
     const gradeNum = Number(grade);
     console.log("This the subjects: ", subjects);
@@ -230,7 +271,27 @@ app.post("/tutorsubmission", async (req: Request, res: Response) => {
   try {
     console.log("This the req body: ", req.body);
     const request = req.body;
-    const { firstName, lastName, pronouns, id, major, yearGrad, phone, email, pairedWithTutee, pairedTutee, numTutees, gradeLevels, comfortableSpecialNeeds, subjects, languageProficiencies, tutoringMode, notes, agreement, signature } = request;
+    const {
+      firstName,
+      lastName,
+      pronouns,
+      id,
+      major,
+      yearGrad,
+      phone,
+      email,
+      pairedWithTutee,
+      pairedTutee,
+      numTutees,
+      gradeLevels,
+      comfortableSpecialNeeds,
+      subjects,
+      languageProficiencies,
+      tutoringMode,
+      notes,
+      agreement,
+      signature,
+    } = request;
     await db.insert(tutorTable).values({
       id: id,
       first_name: firstName,
@@ -280,7 +341,7 @@ const importMatchedData = async () => {
   }
 };
 
-app.post("/move-tutor-to-history/:id", async (req: Request, res: Response) => { 
+app.post("/move-tutor-to-history/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     // const request = req.body;
@@ -289,9 +350,9 @@ app.post("/move-tutor-to-history/:id", async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
-})
+});
 
-app.post("/move-tutee-to-history/:id", async (req: Request, res: Response) => { 
+app.post("/move-tutee-to-history/:id", async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     console.log("id as a string: ", id);
@@ -301,7 +362,7 @@ app.post("/move-tutee-to-history/:id", async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
-})
+});
 
 async function moveTutorToHistory(tutor_id: string) {
   if (tutor_id.length == 7 || tutor_id.length == 8) {
@@ -416,7 +477,6 @@ async function filterTutors(
   return tutors;
 }
 
-
 // filterTutors([10], ["Writing", "Algebra"], false, "In-Person").then(tutors => console.log(tutors));
 // moveToMatched("1000002");
 
@@ -440,7 +500,9 @@ async function moveTutorToMatched(tutor_id: string) {
     if (query.length > 0) {
       await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
 
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
+      await db
+        .delete(unmatchedTable)
+        .where(eq(unmatchedTable.tutor_id, tutor_id));
 
       for (let i = 0; i < query.length - 1; i++) {
         //adding rows back in
