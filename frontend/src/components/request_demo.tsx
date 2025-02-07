@@ -6,6 +6,7 @@ export default function Demo() {
     const id = "Hello!!";
 
     const fetchMessage = async () => {
+      // https://lcs-tutoring.onrender.com/demo/${id}
       const data = await fetch(`https://lcs-tutoring.onrender.com/demo/${id}`);
       const message = await data.text();
       setText(message);

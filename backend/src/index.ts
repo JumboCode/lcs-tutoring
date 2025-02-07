@@ -9,7 +9,7 @@ import {
   approvedMatchesTable,
   adminTable
 } from "./db/schema";
-import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
+import { or, inArray, arrayContains, and, eq, sql } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from 'fs';
@@ -20,7 +20,6 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json());
 
-// const port = process.env.PGPORT || 3000;
 const port = 3000;
 
 app.listen(port, () => {
@@ -72,6 +71,7 @@ app.get("/tutees", async (req: Request, res: Response) => {
 
 /* GET endpoint -- returns all the matched and unmatched tutors */
 app.get("/tutors", async (req: Request, res: Response) => {
+  console.log("im in")
     try {
       const filteredTutors = await filterTutors([11,12], undefined, true, undefined);
       const tutorIds = filteredTutors.map((tutor) => tutor.id).filter((id) => id !== undefined);
@@ -107,6 +107,82 @@ app.get("/tutors", async (req: Request, res: Response) => {
       res.status(500).send("Error fetching tutors");
     }
   });
+
+/* GET endpoint -- returns all the matched and unmatched tutees */
+app.get("/approved-matches", async (req: Request, res: Response) => {
+  try {
+    console.log("Inside approved matches endpoint");
+    // query logic
+    const matches = await db
+      .select({
+        matchId: approvedMatchesTable.id,
+        flagged: approvedMatchesTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          email: tutorTable.email,
+          major: tutorTable.major,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        tutee: {
+          id: tuteeTable.id,
+          tutee_first_name: tuteeTable.tutee_first_name,
+          tutee_last_name: tuteeTable.tutee_last_name,
+          grade: tuteeTable.grade,
+          parent_email: tuteeTable.parent_email,
+          subjects: tuteeTable.subjects,
+          tutoring_mode: tuteeTable.tutoring_mode,
+        },
+      })
+      .from(approvedMatchesTable)
+      .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
+
+      res.send({
+        approvedMatches: matches
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching approved matches");
+  }
+});
+
+/* GET endpoint */
+app.get("/match-suggestions", async (req: Request, res: Response) => {
+  try {
+    console.log("Inside match suggestions endpoint");
+    // query logic
+    // NOTE: Algorithm implementation somewhere here
+    
+    const matches = await db
+      .select({
+        matchId: unmatchedTable.id,
+        flagged: unmatchedTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          phone: tutorTable.phone,
+          email: tutorTable.email,
+          subject: tutorTable.subject_pref,
+          grade_level_pref: tutorTable.grade_level_pref,
+          disability_pref: tutorTable.disability_pref,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        // TUTEE SUGGESTIONS FROM ALGORITHM
+      })
+      .from(unmatchedTable)
+      .innerJoin(tutorTable, eq(unmatchedTable.tutor_id, tutorTable.id));
+
+      res.send({
+        matchSuggestions: matches
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching match suggestions");
+  }
+});
 
   app.post("/admin/:email", async (req: Request, res: Response) => {
     try {

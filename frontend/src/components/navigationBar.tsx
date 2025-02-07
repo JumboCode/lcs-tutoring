@@ -1,15 +1,20 @@
 import { useState } from "react";
-import Mail from "../assets/images/nav_icons/mailing_list_gray.svg";
-import Matching from "../assets/images/nav_icons/match_suggestion_gray.svg";
-import TuteeDB from "../assets/images/nav_icons/tutee_db_gray.svg";
-import ApprovedMatch from "../assets/images/nav_icons/approved_match_gray.svg";
-import TutorDB from "../assets/images/nav_icons/tutor_db_gray.svg";
+import MailGray from "../assets/images/nav_icons/mailing_list_gray.svg";
+import MatchingGray from "../assets/images/nav_icons/match_suggestion_gray.svg";
+import TuteeDBGray from "../assets/images/nav_icons/tutee_db_gray.svg";
+import ApprovedMatchGray from "../assets/images/nav_icons/approved_match_gray.svg";
+import TutorDBGray from "../assets/images/nav_icons/tutor_db_gray.svg";
+import MailBlue from "../assets/images/nav_icons/mailing_list_blue.svg";
+import MatchingBlue from "../assets/images/nav_icons/match_suggestion_blue.svg";
+import TuteeDBBlue from "../assets/images/nav_icons/tutee_db_blue.svg";
+import ApprovedMatchBlue from "../assets/images/nav_icons/approved_match_blue.svg";
+import TutorDBBlue from "../assets/images/nav_icons/tutor_db_blue.svg";
 import Collapse from "../assets/images/nav_icons/collapse.svg";
 
 import TuteeTable from "./TuteeTable";
 import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
-import MatchSuggestionBlock from "./matchSuggestionBlock";
+import MatchSuggestionTable from "./matchSuggestionTable";
 
 import { tutorInfo, tuteeInfo } from "../types";
 
@@ -63,11 +68,19 @@ export default function NavigationBar() {
   };
 
   const menuItems = [
-    { name: "Match Suggestions", icon: Matching },
-    { name: "Approved Matches", icon: ApprovedMatch },
-    { name: "Tutor Database", icon: TutorDB },
-    { name: "Tutee Database", icon: TuteeDB },
-    { name: "Mailing List", icon: Mail },
+    {
+      name: "Match Suggestions",
+      icon_gray: MatchingGray,
+      icon_blue: MatchingBlue,
+    },
+    {
+      name: "Approved Matches",
+      icon_gray: ApprovedMatchGray,
+      icon_blue: ApprovedMatchBlue,
+    },
+    { name: "Tutor Database", icon_gray: TutorDBGray, icon_blue: TutorDBBlue },
+    { name: "Tutee Database", icon_gray: TuteeDBGray, icon_blue: TuteeDBBlue },
+    { name: "Mailing List", icon_gray: MailGray, icon_blue: MailBlue },
   ];
 
   return (
@@ -95,14 +108,20 @@ export default function NavigationBar() {
           {menuItems.map((item) => (
             <div
               key={item.name}
-              className={`rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold cursor-pointer text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68] ${
+              className={`group rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold cursor-pointer text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68] ${
                 currentPage === item.name ? "bg-[#E3EFFB] text-[#1F3A68]" : ""
               }`}
               onClick={() => setCurrentPage(item.name)}
             >
               <img
-                className="ml-2"
-                src={item.icon}
+                className="ml-2 hidden group-hover:block"
+                src={item.icon_blue}
+                alt={`${item.name} Icon`}
+                style={{ width: "24px", height: "24px" }}
+              />
+              <img
+                className="ml-2 block group-hover:hidden"
+                src={item.icon_gray}
                 alt={`${item.name} Icon`}
                 style={{ width: "24px", height: "24px" }}
               />
@@ -113,14 +132,7 @@ export default function NavigationBar() {
       </div>
       <div className="flex-grow p-4 bg-gray-100/50">
         <div className="mt-4">
-          {currentPage === "Match Suggestions" && (
-            <MatchSuggestionBlock
-              tutee1={tutee1}
-              tutee2={tutee2}
-              tutee3={tutee3}
-              tutor_info={tutor1}
-            />
-          )}
+          {currentPage === "Match Suggestions" && <MatchSuggestionTable />}
           {currentPage === "Tutor Database" && <TutorTable />}
           {currentPage === "Tutee Database" && <TuteeTable />}
           {currentPage === "Approved Matches" && <ApprovedMatches />}

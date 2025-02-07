@@ -1,6 +1,7 @@
 import MatchedInfoBox from "./MatchedInfoBox";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BsPlusLg } from "react-icons/bs";
+import { tuteeBoxProps, tutorBoxProps } from "../types";
 // import FilterButton from "./FilterButton";
 
 // Add these constants at the top of the file, after imports
@@ -18,9 +19,16 @@ const COLORS = {
   BORDER: "border-[#F5F5F3]",
 } as const;
 
+interface Match {
+  matchId: number;
+  flagged: boolean;
+  tutor: tutorBoxProps;
+  tutee: tuteeBoxProps;
+}
+
 type TabType = (typeof TABS)[keyof typeof TABS];
 
-export default function TuteeTable() {
+export default function ApprovedMatches() {
   const [isActive, setIsActive] = useState<TabType>(TABS.ACTIVE);
   const date = "11/27/2024";
 
@@ -30,125 +38,30 @@ export default function TuteeTable() {
   //   console.log(`Sending email for index ${index}`);
   // };
 
-  const tutors = [
-    {
-      id: "1234567",
-      date: "2024-11-26",
-      first_name: "John",
-      last_name: "Doe",
-      email: "john.doe@example.com",
-      subject_pref: ["Math", "Science", "English"],
-      pronouns: "he/him",
-      major: "Computer Science",
-      year_grad: "2025",
-      phone: "123-456-7890",
-      previous_tutee: false,
-      grade_level_pref: ["8", "9", "10"],
-      num_tutees: 2,
-      disability_pref: false,
-      tutoring_mode: "In-person",
-    },
-    {
-      id: "1234567",
-      date: "2024-11-26",
-      first_name: "Bill",
-      last_name: "Doe",
-      email: "john.doe@example.commmmm",
-      subject_pref: ["Math", "Science", "English"],
-      pronouns: "he/him",
-      major: "Computer Science",
-      year_grad: "2025",
-      phone: "123-456-7890",
-      previous_tutee: false,
-      grade_level_pref: ["8", "9", "10"],
-      num_tutees: 2,
-      disability_pref: false,
-      tutoring_mode: "In-person",
-    },
-    {
-      id: "1234567",
-      date: "2024-11-26",
-      first_name: "George",
-      last_name: "Doe",
-      email: "john.doe@example.com",
-      subject_pref: ["Math", "Science", "English"],
-      pronouns: "he/him",
-      major: "Computer Science",
-      year_grad: "2025",
-      phone: "123-456-7890",
-      previous_tutee: false,
-      grade_level_pref: ["8", "9", "10"],
-      num_tutees: 2,
-      disability_pref: true,
-      tutoring_mode: "In-person",
-    },
-  ];
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const tutees = [
-    {
-      id: "7890",
-      date: "10/31/2024",
-      tutee_first_name: "Bob",
-      tutee_last_name: "Techakalayatum",
-      tutee_email: "hello@gmail.com",
-      tutor_first_name: "Alice",
-      tutor_last_name: "Bob",
-      tutor_email: "hello@gmail.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      parent_email: "lalala@gmail.com",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      parent_phone: "(123) 456-7890",
-      matched: true,
-      notes: "This is a note",
-    },
-    {
-      id: "7890",
-      date: "10/31/2024",
-      tutee_first_name: "Joe",
-      tutee_last_name: "Techakalayatum",
-      tutee_email: "hello@gmail.com",
-      tutor_first_name: "Alice",
-      tutor_last_name: "Bob",
-      tutor_email: "hello@gmail.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      parent_email: "lalala@gmail.com",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      parent_phone: "(123) 456-7890",
-      matched: true,
-      notes: "This is a note",
-    },
-    {
-      id: "7890",
-      date: "10/31/2024",
-      tutee_first_name: "Alice",
-      tutee_last_name: "Techakalayatum",
-      tutee_email: "hello@gmail.com",
-      tutor_first_name: "Alice",
-      tutor_last_name: "Bob",
-      tutor_email: "hello@gmail.com",
-      subject: "Math, English",
-      grade: "8",
-      special_needs: "Yes",
-      parent_email: "lalala@gmail.com",
-      gender: "Female",
-      tutoring_mode: "Hybrid",
-      parent_first_name: "Alice",
-      parent_last_name: "Bob",
-      parent_phone: "(123) 456-7890",
-      matched: true,
-      notes: "This is a note",
-    },
-  ];
+  useEffect(() => {
+    console.log("im in approved matches useeffect");
+    const fetchMatches = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/approved-matches");
+        if (!response.ok) {
+          throw new Error("Failed to fetch matches");
+        }
+        const data = await response.json();
+        console.log("Matches:", data);
+        setMatches(data.approvedMatches);
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMatches();
+  }, []);
 
   return (
     <div>
@@ -172,114 +85,124 @@ export default function TuteeTable() {
             </div>
           </div>
 
-          <div className="flex flex-row justify-center items-center w-full">
-            <div
-              className={`flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
-            >
-              <div className="flex flex-col">
-                <div className="flex flex-row justify-start space-x-8 py-4 px-4">
-                  <div
-                    className={
-                      "flex flex-row space-x-2 items-center cursor-pointer"
-                    }
-                    onClick={() => setIsActive(TABS.ACTIVE)}
-                  >
-                    <h1
-                      className={
-                        isActive === TABS.ACTIVE
-                          ? COLORS.ACTIVE
-                          : COLORS.INACTIVE
-                      }
-                    >
-                      Active
-                    </h1>
+          {/* When awaiting the fetch */}
+          {loading && (
+            <div className="flex items-center justify-center py-10">
+              <p className="text-lg text-gray-500">Loading matches...</p>
+            </div>
+          )}
+
+          {/* Error if fetch fails */}
+          {error && (
+            <div className="flex items-center justify-center py-10 text-red-500">
+              <p className="text-lg font-semibold">Error: {error}</p>
+            </div>
+          )}
+
+          {/* Successful load and no errors */}
+          {!loading && !error && (
+            <div className="flex flex-row justify-center items-center w-full">
+              <div
+                className={`flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+              >
+                <div className="flex flex-col">
+                  <div className="flex flex-row justify-start space-x-8 py-4 px-4">
                     <div
                       className={
-                        "flex w-8 h-8 rounded-full items-center justify-center " +
-                        (isActive === TABS.ACTIVE
-                          ? COLORS.ACTIVE_BG
-                          : COLORS.INACTIVE_BG)
+                        "flex flex-row space-x-2 items-center cursor-pointer"
                       }
+                      onClick={() => setIsActive(TABS.ACTIVE)}
                     >
-                      {tutees.length}
+                      <h1
+                        className={
+                          isActive === TABS.ACTIVE
+                            ? COLORS.ACTIVE
+                            : COLORS.INACTIVE
+                        }
+                      >
+                        Active
+                      </h1>
+                      <div
+                        className={
+                          "flex w-8 h-8 rounded-full items-center justify-center " +
+                          (isActive === TABS.ACTIVE
+                            ? COLORS.ACTIVE_BG
+                            : COLORS.INACTIVE_BG)
+                        }
+                      >
+                        {matches.length}
+                      </div>
                     </div>
-                  </div>
-                  <div
-                    className={
-                      "flex flex-row space-x-2 items-center cursor-pointer"
-                    }
-                    onClick={() => setIsActive(TABS.INACTIVE)}
-                  >
-                    <h1
-                      className={
-                        isActive === TABS.INACTIVE
-                          ? COLORS.ACTIVE
-                          : COLORS.INACTIVE
-                      }
-                    >
-                      Inactive
-                    </h1>
                     <div
                       className={
-                        "flex w-8 h-8 rounded-full items-center justify-center " +
-                        (isActive === TABS.INACTIVE
-                          ? COLORS.ACTIVE_BG
-                          : COLORS.INACTIVE_BG)
+                        "flex flex-row space-x-2 items-center cursor-pointer"
                       }
+                      onClick={() => setIsActive(TABS.INACTIVE)}
                     >
-                      0
+                      <h1
+                        className={
+                          isActive === TABS.INACTIVE
+                            ? COLORS.ACTIVE
+                            : COLORS.INACTIVE
+                        }
+                      >
+                        Inactive
+                      </h1>
+                      <div
+                        className={
+                          "flex w-8 h-8 rounded-full items-center justify-center " +
+                          (isActive === TABS.INACTIVE
+                            ? COLORS.ACTIVE_BG
+                            : COLORS.INACTIVE_BG)
+                        }
+                      >
+                        0
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <table className="w-full">
-                <thead>
-                  <tr className="h-[35px] bg-gray-100">
-                    <td className="px-3 w-1/5">
-                      <h1 className="text-gray-500 text-lg">Date</h1>
-                    </td>
-                    <td className="w-1/5">
-                      <h1 className="text-gray-500 text-lg">Tutor</h1>
-                    </td>
-                    <td className="w-1/5">
-                      <h1 className="text-gray-500 text-lg">Tutee</h1>
-                    </td>
-                    <td className="w-1/5">
-                      <h1 className="text-gray-500 text-lg text-center">
-                        Status
-                      </h1>
-                    </td>
-                    <td className="w-1/5"></td>
-                  </tr>
-                </thead>
-              </table>
-              {isActive === TABS.INACTIVE && (
-                <div>No inactive functionality yet</div>
-              )}
-              {isActive === TABS.ACTIVE && (
-                <div>
-                  {tutees.map((tutee, index) => {
-                    const tutor = tutors[index];
-                    if (!tutor) return null;
-
-                    return (
+                <table className="w-full">
+                  <thead>
+                    <tr className="h-[35px] bg-gray-100">
+                      <td className="px-3 w-1/5">
+                        <h1 className="text-gray-500 text-lg">Date</h1>
+                      </td>
+                      <td className="w-1/5">
+                        <h1 className="text-gray-500 text-lg">Tutor</h1>
+                      </td>
+                      <td className="w-1/5">
+                        <h1 className="text-gray-500 text-lg">Tutee</h1>
+                      </td>
+                      <td className="w-1/5">
+                        <h1 className="text-gray-500 text-lg text-center">
+                          Status
+                        </h1>
+                      </td>
+                      <td className="w-1/5"></td>
+                    </tr>
+                  </thead>
+                </table>
+                {isActive === TABS.INACTIVE && (
+                  <div>No inactive functionality yet</div>
+                )}
+                {isActive === TABS.ACTIVE && (
+                  <div>
+                    {matches.map((match, index) => (
                       <MatchedInfoBox
-                        tutee_props={{
-                          ...tutee,
-                        }}
-                        tutor_props={{
-                          ...tutor,
-                        }}
+                        key={index}
+                        tutee_props={match.tutee} // Pass the tutee object
+                        tutor_props={match.tutor} // Pass the tutor object
+                        matchId={match.matchId.toString()} // Ensure matchId is a string
+                        flagged={match.flagged}
                         bgColor="bg-white"
                         date={date}
-                        key={index}
                       />
-                    );
-                  })}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

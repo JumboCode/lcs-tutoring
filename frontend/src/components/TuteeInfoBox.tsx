@@ -29,7 +29,7 @@ export default function TuteeInfoBox({
   bgColor,
 }: TuteeInfoBoxProps) {
   const {
-    id,
+    // id, 
     date,
     tutee_first_name,
     tutee_last_name,
@@ -42,6 +42,7 @@ export default function TuteeInfoBox({
     parent_first_name,
     parent_last_name,
     parent_phone,
+    notes,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -183,6 +184,12 @@ export default function TuteeInfoBox({
           </tbody>
         )}
       </table>
+      {notes && (
+        <div className="bg-[#FFD6D6] text-sm flex flex-row">
+          <td className="text-[#D70000] px-3">Special Request:</td>
+          <td className="">{notes}</td>
+        </div>
+      )}
     </div>
   );
 }

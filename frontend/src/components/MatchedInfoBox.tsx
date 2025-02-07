@@ -20,6 +20,8 @@ const STYLES = {
 type MatchedInfoBoxProps = {
   tutee_props: tuteeBoxProps;
   tutor_props: tutorBoxProps;
+  matchId: string;
+  flagged: boolean;
   bgColor: string;
   date: string;
 };
@@ -27,6 +29,8 @@ type MatchedInfoBoxProps = {
 export default function MatchedInfoBoxbox_props({
   tutee_props,
   tutor_props,
+  matchId,
+  flagged,
   bgColor,
   date,
 }: MatchedInfoBoxProps) {
@@ -149,7 +153,7 @@ export default function MatchedInfoBoxbox_props({
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
                 >
-                  {" "}
+                  {/* This is where you will implement the flag functionality */}{" "}
                   ...{" "}
                 </span>
               </div>
