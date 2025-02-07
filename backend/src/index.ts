@@ -53,7 +53,7 @@ app.get("/tutees", async (req: Request, res: Response) => {
       .from(tuteeTable)
       .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
 
-      const historyTutees = await db
+    const historyTutees = await db
       .select()
       .from(tuteeTable)
       .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id));
@@ -83,24 +83,21 @@ app.get("/tutors", async (req: Request, res: Response) => {
         .where(inArray(tutorTable.id, tutorIds));
   
       const unmatchedTutors = await db
-        // .select()
-        // .from(tutorTable)
-        // .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutee_or_tutor_id));
         .select()
         .from(tutorTable) // Getting all tutors but instead want to just get filtered
         .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
         .where(inArray(tutorTable.id, tutorIds));
 
-      const historyTutors = await db
+        const historyTutors = await db
         .select()
         .from(tutorTable)
         .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id))
         .where(inArray(tutorTable.id, tutorIds));
-
+  
       res.send({
         matchedTutors: matchedTutors.map((row) => row.tutor),
         unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
-        historyTutors: historyTutors.map((row) => row.tutor) 
+        historyTutors: historyTutors.map((row) => row.tutor)
       });
     } catch (error) {
       console.error(error);
@@ -261,10 +258,28 @@ app.post("/tutorsubmission", async (req: Request, res: Response) => {
   }
 });
 
-// app.get("/move-tutor-to-history", async (req : Request, res : Response) => {
-//   console.log("move to tutor is being requested");
+const importUnmatchedData = async () => {
+  const jsonData = JSON.parse(fs.readFileSync("src/unmatched.json", "utf-8"));
 
-// })
+  for (const record of jsonData) {
+    await db.insert(unmatchedTable).values({
+      tutee_id: record.tutee_id,
+      tutor_id: record.tutor_id,
+    });
+  }
+};
+
+const importMatchedData = async () => {
+  const jsonData = JSON.parse(fs.readFileSync("src/matched.json", "utf-8"));
+
+  for (const record of jsonData) {
+    await db.insert(matchedTable).values({
+      tutee_id: record.tutee_id,
+      tutor_id: record.tutor_id,
+    });
+  }
+};
+
 app.post("/move-tutor-to-history/:id", async (req: Request, res: Response) => { 
   try {
     const id = req.params.id;
@@ -288,27 +303,54 @@ app.post("/move-tutee-to-history/:id", async (req: Request, res: Response) => {
   }
 })
 
-const importUnmatchedData = async () => {
-  const jsonData = JSON.parse(fs.readFileSync("src/unmatched.json", "utf-8"));
+async function moveTutorToHistory(tutor_id: string) {
+  if (tutor_id.length == 7 || tutor_id.length == 8) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutor_id, tutor_id)); //returns an array with only one element
 
-  for (const record of jsonData) {
-    await db.insert(unmatchedTable).values({
-      tutee_id: record.tutee_id,
-      tutor_id: record.tutor_id,
-    });
+    if (query.length > 0) {
+      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+
+      // for (let i = 0; i < query.length - 1; i++) {
+      //   //adding rows back in
+      //   await db.insert(matchedTable).values(query[0]);
+      // }
+    } else {
+      throw new Error("ID not found in matched table");
+    }
+  } else {
+    throw new Error("Invalid ID");
   }
-};
+}
 
-const importMatchedData = async () => {
-  const jsonData = JSON.parse(fs.readFileSync("src/matched.json", "utf-8"));
+async function moveTuteeToHistory(tutee_id: number) {
+  console.log("in move tutee to history");
+  if (tutee_id > 0) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
 
-  for (const record of jsonData) {
-    await db.insert(matchedTable).values({
-      tutee_id: record.tutee_id,
-      tutor_id: record.tutor_id,
-    });
+    if (query.length > 0) {
+      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+
+      // for (let i = 0; i < query.length - 1; i++) {
+      //   //adding rows back in
+      //   await db.insert(matchedTable).values(query[0]);
+      // }
+    } else {
+      throw new Error("ID not found in matched table");
+    }
+  } else {
+    throw new Error("Invalid ID");
   }
-};
+}
 
 // Execute both functions
 const importData = async () => {
@@ -458,53 +500,4 @@ async function fetchAllTutees() {
   const query = await db.select().from(tuteeTable);
   const tutees = query;
   return tutees;
-}
-
-async function moveTutorToHistory(tutor_id: string) {
-  if (tutor_id.length == 7 || tutor_id.length == 8) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutor_id, tutor_id)); //returns an array with only one element
-      
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
-
-      // for (let i = 0; i < query.length - 1; i++) {
-      //   //adding rows back in
-      //   await db.insert(matchedTable).values(query[0]);
-      // }
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }
-}
-
-async function moveTuteeToHistory(tutee_id: number) {
-  console.log("in move tutee to history");
-  if (tutee_id > 0) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
-      
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-
-      // for (let i = 0; i < query.length - 1; i++) {
-      //   //adding rows back in
-      //   await db.insert(matchedTable).values(query[0]);
-      // }
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }
 }

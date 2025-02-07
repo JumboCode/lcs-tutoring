@@ -119,9 +119,9 @@ export default function TuteeInfoBox({
                 </button>
 
                 <button
-                  onClick={toggleDropdown}
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
+                  onClick={toggleDropdown}
                 >
                   {" "}
                   ...{" "}
