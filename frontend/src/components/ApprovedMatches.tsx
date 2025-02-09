@@ -38,7 +38,8 @@ export default function ApprovedMatches() {
   //   console.log(`Sending email for index ${index}`);
   // };
 
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [active_matches, setActiveMatches] = useState<Match[]>([]);
+  const [inactive_matches, setInactiveMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,8 +52,9 @@ export default function ApprovedMatches() {
           throw new Error("Failed to fetch matches");
         }
         const data = await response.json();
-        console.log("Matches:", data);
-        setMatches(data.approvedMatches);
+        console.log("Fetched approved matches: ", data);
+        setActiveMatches(data.activeApprovedMatches);
+        setInactiveMatches(data.inactiveApprovedMatches);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -125,7 +127,7 @@ export default function ApprovedMatches() {
                       : COLORS.INACTIVE_BG)
                   }
                 >
-                  {matches.length}
+                  {active_matches.length}
                 </div>
               </div>
               <div
@@ -149,7 +151,7 @@ export default function ApprovedMatches() {
                       : COLORS.INACTIVE_BG)
                   }
                 >
-                  0
+                  {inactive_matches.length}
                 </div>
               </div>
             </div>
@@ -174,11 +176,23 @@ export default function ApprovedMatches() {
             </thead>
           </table>
           {isActive === TABS.INACTIVE && (
-            <div>No inactive functionality yet</div>
+            <div>
+              {inactive_matches.map((match, index) => (
+                <MatchedInfoBox
+                  key={index}
+                  tutee_props={match.tutee} // Pass the tutee object
+                  tutor_props={match.tutor} // Pass the tutor object
+                  matchId={match.matchId.toString()} // Ensure matchId is a string
+                  flagged={match.flagged}
+                  bgColor="bg-white"
+                  date={date}
+                />
+              ))}
+            </div>
           )}
           {isActive === TABS.ACTIVE && (
             <div>
-              {matches.map((match, index) => (
+              {active_matches.map((match, index) => (
                 <MatchedInfoBox
                   key={index}
                   tutee_props={match.tutee} // Pass the tutee object

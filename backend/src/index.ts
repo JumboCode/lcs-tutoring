@@ -13,6 +13,10 @@ import { or, inArray, arrayContains, and, eq, sql } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from "fs";
+import { Resend } from "resend";
+
+const RESENDAPIKEY = "re_YZU1YRJK_ASz4YCEUagnzBx3WUcFNdFRv";
+const resend = new Resend(RESENDAPIKEY);
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -139,7 +143,7 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
   try {
     console.log("Inside approved matches endpoint");
     // query logic
-    const matches = await db
+    const active_matches = await db
       .select({
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
@@ -163,10 +167,39 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
       })
       .from(approvedMatchesTable)
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
-      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
+      .where(eq(approvedMatchesTable.active, true));
+
+      const inactive_matches = await db
+      .select({
+        matchId: approvedMatchesTable.id,
+        flagged: approvedMatchesTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          email: tutorTable.email,
+          major: tutorTable.major,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        tutee: {
+          id: tuteeTable.id,
+          tutee_first_name: tuteeTable.tutee_first_name,
+          tutee_last_name: tuteeTable.tutee_last_name,
+          grade: tuteeTable.grade,
+          parent_email: tuteeTable.parent_email,
+          subjects: tuteeTable.subjects,
+          tutoring_mode: tuteeTable.tutoring_mode,
+        },
+      })
+      .from(approvedMatchesTable)
+      .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
+      .where(eq(approvedMatchesTable.active, false));
 
     res.send({
-      approvedMatches: matches,
+      activeApprovedMatches: active_matches,
+      inactiveApprovedMatches: inactive_matches,
     });
   } catch (error) {
     console.error(error);
@@ -282,6 +315,22 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to matched");
+  }
+});
+
+app.get("/email", async (req: Request, res: Response) => {
+  try {
+    console.log("This the req body: ", req.body);
+    const { data, error } = await resend.emails.send({
+      from: "LCSTutoring <onboarding@resend.dev>",
+      to: ["brandon.dionisio@tufts.edu"],
+      subject: "hello world",
+      html: "<strong>it works!</strong>",
+    });
+    console.log("Data: ", data)
+    console.log("Error: ", error)
+  } catch (error) {
+    console.error(error);
   }
 });
 
@@ -428,20 +477,17 @@ async function moveTuteeToUnmatched(tutee_id: number) {
 async function moveToInactive(matchId: number) {
   console.log("moving to inactive");
   const query = await db
-      .select()
-      .from(approvedMatchesTable)
-      .where(eq(approvedMatchesTable.id, matchId));
-    console.log(query); 
+    .select()
+    .from(approvedMatchesTable)
+    .where(eq(approvedMatchesTable.id, matchId));
+  console.log(query); 
 
-    // const tutor = await db
-    //   .select()
-    //   .from()
-    // await db.insert(tutorTable).values(query);
-    // await db.insert(unmatchedTable).values(query);
-
-    moveTutorToUnmatched(query[0].tutor_id);
-    moveTuteeToUnmatched(query[0].tutee_id);
-    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, matchId));
+  moveTutorToUnmatched(query[0].tutor_id);
+  moveTuteeToUnmatched(query[0].tutee_id);
+  await db
+    .update(approvedMatchesTable)
+    .set({ active: false })
+    .where(eq(approvedMatchesTable.id, matchId));
 }
 
 async function moveTuteeToHistory(tutee_id: number) {

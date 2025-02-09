@@ -73,6 +73,24 @@ export default function MatchedInfoBoxbox_props({
     setIsRotated(!isRotated);
   };
 
+  const handleSendEmail = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/email", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const result = await response.json();
+      console.log("Email send result:", result);
+      setEmailSent(true);
+    } catch (error) {
+      console.error("Failed to send email!");
+    }
+  };
+
   const handleToggleFlag = async () => {
     try {
       const response = await fetch(`http://localhost:3000/flag/${matchId}`, {
@@ -148,7 +166,7 @@ export default function MatchedInfoBoxbox_props({
             <th className="w-1/5">
               <div className="flex flex-grow justify-center items-center">
                 <button
-                  onClick={() => setEmailSent(true)}
+                  onClick={handleSendEmail}
                   disabled={emailSent}
                   className={`w-[150px] flex justify-center items-center rounded-full border-2 text-sm py-2 transition-colors duration-150 ${
                     emailSent

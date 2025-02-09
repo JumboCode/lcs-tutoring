@@ -63,6 +63,7 @@ export const approvedMatchesTable = pgTable('approved_matches', {
   tutee_id: integer().notNull().references(() => tuteeTable.id),
   tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
   flagged: boolean('flagged').notNull().default(false),
+  active: boolean('active').notNull().default(true),
 });
 
 export const adminTable = pgTable("admin", {
