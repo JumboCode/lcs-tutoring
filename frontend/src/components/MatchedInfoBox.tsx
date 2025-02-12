@@ -3,7 +3,7 @@ import { useState } from "react";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
-import { BsCheck2, BsTrashFill } from "react-icons/bs";
+import { BsCheck2 } from "react-icons/bs";
 import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
@@ -75,6 +75,7 @@ export default function MatchedInfoBoxbox_props({
 
   const handleSendEmail = async () => {
     try {
+      setEmailSent(true);
       const response = await fetch("http://localhost:3000/email", {
         method: "GET",
       });
@@ -82,10 +83,6 @@ export default function MatchedInfoBoxbox_props({
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-
-      const result = await response.json();
-      console.log("Email send result:", result);
-      setEmailSent(true);
     } catch (error) {
       console.error("Failed to send email!");
     }

@@ -9,14 +9,13 @@ import {
   approvedMatchesTable,
   adminTable,
 } from "./db/schema";
-import { or, inArray, arrayContains, and, eq, sql } from "drizzle-orm";
+import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from "fs";
 import { Resend } from "resend";
 
-const RESENDAPIKEY = "re_YZU1YRJK_ASz4YCEUagnzBx3WUcFNdFRv";
-const resend = new Resend(RESENDAPIKEY);
+const resend = new Resend(process.env.RESENDAPIKEY!);
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -320,7 +319,6 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
 
 app.get("/email", async (req: Request, res: Response) => {
   try {
-    console.log("This the req body: ", req.body);
     const { data, error } = await resend.emails.send({
       from: "LCSTutoring <onboarding@resend.dev>",
       to: ["brandon.dionisio@tufts.edu"],
