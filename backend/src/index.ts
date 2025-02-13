@@ -218,6 +218,7 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
       tutoring_mode: tutoringMode,
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
+      history_date: "",
     });
     console.log("Tutee submitted: ", req.body);
   } catch (error) {
@@ -337,13 +338,18 @@ async function moveTuteeToHistory(tutee_id: number) {
       .from(matchedTable)
       .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
 
+    await db
+      .update(tuteeTable)
+      .set({history_date: new Date().toLocaleDateString("en-CA", {timeZone: "America/New_York"})}) // Object containing only the fields to update
+      .where(eq(tuteeTable.id, tutee_id));
+
     if (query.length > 0) {
       // const rowWithDate = {
       //   ...query[0],   // Spread existing data
       //   history_date: new Date() // Add timestamp
       // };
 
-    // Insert modified row into historyTable
+      // Insert modified row into historyTable
       // await db.insert(historyTable).values(rowWithDate);
       await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
       // console.log(query);
