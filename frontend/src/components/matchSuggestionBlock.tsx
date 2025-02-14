@@ -1,3 +1,12 @@
+/************ MatchSuggestionBlock **************
+ *
+ * This component handles the individual match suggestion blocks and how they
+ * are displayed. For each tutor, uses the MatchedInfoBox component to display
+ * three tutees.
+ *
+ * handles the custom match and approve functionalities.
+ */
+
 "use client";
 
 import TuteeSuggestionBox from "./tuteeSuggestionBox";
@@ -96,22 +105,18 @@ const MatchSuggestionBlock = ({
   const closeModal = () => setModalVisible(false);
 
   return (
-    <div className="border rounded-lg bg-white p-6 m-8">
+    <div className="border rounded-lg bg-white p-6 my-8">
       <div className="flex space-x-6 mx-6">
-        <span className="font-interBlack font-bold text-lg">
+        <span className="font-bold text-lg">
           {first_name} {last_name}
         </span>
         <div className="flex pt-2" style={{ color: "#6B7280" }}>
           <BsEnvelope />
-          <span className="pl-2 text-sm font-interBlack text-gray-500 ">
-            {email}
-          </span>
+          <span className="pl-2 text-sm text-gray-500 ">{email}</span>
         </div>
         <div className="flex pt-2" style={{ color: "#6B7280" }}>
           <FiPhone />
-          <span className="pl-2 text-sm font-interBlack text-gray-500">
-            {phone}
-          </span>
+          <span className="pl-2 text-sm text-gray-500">{phone}</span>
         </div>
 
         <div className="flex flex-1 justify-end">
@@ -121,7 +126,7 @@ const MatchSuggestionBlock = ({
 
       <div
         className={
-          "py-1 font-interBlack flex flex-row text-gray-500 px-2 bg-[#fbfbfb] justify-start items-center mx-3"
+          "py-1 flex flex-row text-gray-500 px-2 bg-[#fbfbfb] justify-start items-center mx-3"
         }
       >
         <span className="w-1/4">Subject</span>
@@ -129,10 +134,10 @@ const MatchSuggestionBlock = ({
         <span className="w-1/4">Open to Disability</span>
         <span className="w-1/4">Tutoring Mode</span>
       </div>
-      <div className="py-2 font-interBlack flex flex-row text-[black] px-2 justify-start items-center mx-3">
+      <div className="py-2 flex flex-row text-[black] px-2 justify-start items-center mx-3">
         <span className="w-1/4">{subject.join(", ")}</span>
         <span className="w-1/4">{grade_level_pref.join(", ")}</span>
-        <span className="w-1/4">{disability_pref}</span>
+        <span className="w-1/4">{disability_pref ? "Yes" : "No"}</span>
         <span className="w-1/4">{tutoring_mode}</span>
       </div>
 

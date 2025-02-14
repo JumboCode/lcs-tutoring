@@ -9,10 +9,13 @@ import {
   approvedMatchesTable,
   adminTable,
 } from "./db/schema";
-import { or, inArray, arrayContains, and, eq, sql } from "drizzle-orm";
+import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from "fs";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESENDAPIKEY!);
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -138,10 +141,16 @@ app.get("/tutors", async (req: Request, res: Response) => {
       .from(tutorTable) // Getting all tutors but instead want to just get filtered
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
+    
+    const historyTutors = await db
+      .select()
+      .from(tutorTable)
+      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id));
 
     res.send({
       matchedTutors: matchedTutors.map((row) => row.tutor),
       unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+      historyTutors: historyTutors.map((row) => row.tutor),
     });
   } catch (error) {
     console.error(error);
@@ -149,13 +158,11 @@ app.get("/tutors", async (req: Request, res: Response) => {
   }
 });
 
-/* GET endpoint -- returns all the matched and unmatched tutees */
-/* GET endpoint -- returns all the matched and unmatched tutees */
 app.get("/approved-matches", async (req: Request, res: Response) => {
   try {
     console.log("Inside approved matches endpoint");
     // query logic
-    const matches = await db
+    const active_matches = await db
       .select({
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
@@ -179,10 +186,39 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
       })
       .from(approvedMatchesTable)
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
-      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
+      .where(eq(approvedMatchesTable.active, true));
+
+      const inactive_matches = await db
+      .select({
+        matchId: approvedMatchesTable.id,
+        flagged: approvedMatchesTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          email: tutorTable.email,
+          major: tutorTable.major,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        tutee: {
+          id: tuteeTable.id,
+          tutee_first_name: tuteeTable.tutee_first_name,
+          tutee_last_name: tuteeTable.tutee_last_name,
+          grade: tuteeTable.grade,
+          parent_email: tuteeTable.parent_email,
+          subjects: tuteeTable.subjects,
+          tutoring_mode: tuteeTable.tutoring_mode,
+        },
+      })
+      .from(approvedMatchesTable)
+      .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
+      .where(eq(approvedMatchesTable.active, false));
 
     res.send({
-      approvedMatches: matches,
+      activeApprovedMatches: active_matches,
+      inactiveApprovedMatches: inactive_matches,
     });
   } catch (error) {
     console.error(error);
@@ -223,6 +259,19 @@ app.get("/match-suggestions", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching match suggestions");
+  }
+});
+
+app.post("/move-to-inactive/:id", async (req: Request, res: Response) => {
+  try {
+    console.log("inside move to inactive");
+    const id = req.params.id;
+  
+    moveToInactive(Number(id));
+    console.log("after function call");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error moving to inactive");
   }
 });
 
@@ -304,6 +353,21 @@ app.post("/tuteesubmission", async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to matched");
+  }
+});
+
+app.get("/email", async (req: Request, res: Response) => {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: "LCSTutoring <onboarding@resend.dev>",
+      to: ["brandon.dionisio@tufts.edu"],
+      subject: "hello world",
+      html: "<strong>it works!</strong>",
+    });
+    console.log("Data: ", data)
+    console.log("Error: ", error)
+  } catch (error) {
+    console.error(error);
   }
 });
 
@@ -426,6 +490,41 @@ async function moveTutorToHistory(tutor_id: string) {
   } else {
     throw new Error("Invalid ID");
   }
+}
+
+async function moveTuteeToUnmatched(tutee_id: number) {
+  const query = await db
+    .select()
+    .from(matchedTable)
+    .where(eq(matchedTable.tutee_id, tutee_id));
+  console.log(query);
+
+  if (!query) {
+    throw new Error("${id} does not exist in matched table");
+  }
+
+  await db
+    .insert(unmatchedTable)
+    .values(query)
+    .onConflictDoNothing(); 
+
+  await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+}
+
+async function moveToInactive(matchId: number) {
+  console.log("moving to inactive");
+  const query = await db
+    .select()
+    .from(approvedMatchesTable)
+    .where(eq(approvedMatchesTable.id, matchId));
+  console.log(query); 
+
+  moveTutorToUnmatched(query[0].tutor_id);
+  moveTuteeToUnmatched(query[0].tutee_id);
+  await db
+    .update(approvedMatchesTable)
+    .set({ active: false })
+    .where(eq(approvedMatchesTable.id, matchId));
 }
 
 async function moveTuteeToHistory(tutee_id: number) {
@@ -580,7 +679,10 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("${id} does not exist in matched table");
     }
 
-    await db.insert(unmatchedTable).values(query);
+    await db
+      .insert(unmatchedTable)
+      .values(query)
+      .onConflictDoNothing(); 
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }

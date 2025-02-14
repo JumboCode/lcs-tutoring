@@ -38,6 +38,7 @@ export default function TutorTable() {
         );
         const data = await response.json();
         const { matchedTutors, unmatchedTutors, historyTutors } = data;
+        console.log("history tutors:", historyTutors);
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
         setHistoryTutors(historyTutors);
@@ -53,7 +54,7 @@ export default function TutorTable() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center w-[70vw]">
+    <div className="flex flex-col justify-center items-center">
       <h1 className="w-full text-3xl font-bold text-left">Tutor Database</h1>
 
       {/* When awaiting the fetch */}
@@ -184,6 +185,17 @@ export default function TutorTable() {
           {isActive === TABS.MATCHED && (
             <div>
               {matchedTutors.map((box_props, index) => (
+                <TutorInfoBox
+                  box_props={box_props}
+                  key={index}
+                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+                />
+              ))}
+            </div>
+          )}
+          {isActive === TABS.HISTORY && (
+            <div>
+              {historyTutors.map((box_props, index) => (
                 <TutorInfoBox
                   box_props={box_props}
                   key={index}

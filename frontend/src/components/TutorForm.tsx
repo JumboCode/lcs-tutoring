@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
+import { useNavigate } from "react-router-dom";
 
 interface FormData {
   firstName: string;
@@ -83,6 +84,8 @@ const tutoring_mode_options = [
 ];
 
 export default function TutorForm() {
+  const navigate = useNavigate();
+
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -117,7 +120,6 @@ export default function TutorForm() {
     phone: "",
     email: "",
     pairedWithTutee: "",
-    pairedTutee: "",
     numTutees: "",
     gradeLevels: "",
     comfortableSpecialNeeds: "",
@@ -221,7 +223,8 @@ export default function TutorForm() {
         // Check required fields, excluding optional ones or empty optional fields
         formData[key as keyof typeof formData] === "" &&
         key !== "languageProficiencies" &&
-        key !== "notes"
+        key !== "notes" &&
+        key !== "pairedTutee"
       ) {
         newErrors[key as keyof FormData] = "Field needs to be filled out.";
       }
@@ -235,11 +238,14 @@ export default function TutorForm() {
     setErrors(newErrors);
 
     console.log(JSON.stringify(formData));
+    console.log(Object.keys(newErrors))
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
       // https://jumbocodegpt.onrender.com/tutorsubmission
       // http://localhost:3000/tutorsubmission
+
+      console.log("before fetching");
       fetch("http://localhost:3000/tutorsubmission", {
         method: "POST",
         headers: {
@@ -251,6 +257,7 @@ export default function TutorForm() {
         .then((data) => console.log(data))
         .catch((error) => console.error(error));
       console.log("Form submitted successfully:", formData);
+
       //reset form
       // setFormData({
       //   childFirstName: "",
@@ -269,7 +276,11 @@ export default function TutorForm() {
       //   agreement: "",
       //   signature: "",
       // });
+
+      setShowTextBox(false);
       alert("Form submitted successfully!");
+
+      navigate("/success-page");
     }
   };
 

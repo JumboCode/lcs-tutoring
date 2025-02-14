@@ -44,7 +44,7 @@ export default function NavigationBar() {
     <div className="flex flex-row">
       <div
         className={`flex flex-col bg-[#FFFFFF] min-h-screen transition-all duration-300 border-r-2 ${
-          isCollapsed ? "w-[50px]" : "w-[250px]"
+          isCollapsed ? "min-w-[50px]" : "min-w-[225px]"
         }`}
       >
         <div

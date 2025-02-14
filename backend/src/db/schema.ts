@@ -66,6 +66,7 @@ export const historyTable = pgTable("history", {
   tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
 });
 
+<<<<<<< HEAD
 export const approvedMatchesTable = pgTable("approved_matches", {
   id: serial("id").primaryKey(),
   tutee_id: integer()
@@ -75,6 +76,14 @@ export const approvedMatchesTable = pgTable("approved_matches", {
     .notNull()
     .references(() => tutorTable.id),
   flagged: boolean("flagged").notNull().default(false),
+=======
+export const approvedMatchesTable = pgTable('approved_matches', {
+  id: serial('id').primaryKey(),
+  tutee_id: integer().notNull().references(() => tuteeTable.id),
+  tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
+  flagged: boolean('flagged').notNull().default(false),
+  active: boolean('active').notNull().default(true),
+>>>>>>> faa6905926d23ef478c478c113ae345cd04defce
 });
 
 export const adminTable = pgTable("admin", {
