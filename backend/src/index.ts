@@ -121,7 +121,7 @@ app.get("/tutors", async (req: Request, res: Response) => {
       .from(tutorTable) // Getting all tutors but instead want to just get filtered
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
-    
+
     const historyTutors = await db
       .select()
       .from(tutorTable)
@@ -169,7 +169,7 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
       .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
       .where(eq(approvedMatchesTable.active, true));
 
-      const inactive_matches = await db
+    const inactive_matches = await db
       .select({
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
@@ -206,6 +206,59 @@ app.get("/approved-matches", async (req: Request, res: Response) => {
   }
 });
 
+app.get("/unmatched-tutees", async (req: Request, res: Response) => {
+  try {
+    console.log("Inside match suggestions endpoint");
+    // query logic
+    // NOTE: Algorithm implementation somewhere here
+
+    const matches = await db
+      .select()
+      .from(unmatchedTable)
+      .innerJoin(tuteeTable, eq(unmatchedTable.tutee_id, tuteeTable.id));
+    // console
+    res.send({
+      unmatchedTutees: matches,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching match suggestions");
+  }
+});
+app.get("/unmatched-tutors", async (req: Request, res: Response) => {
+  try {
+    console.log("Inside match suggestions endpoint");
+    // query logic
+    // NOTE: Algorithm implementation somewhere here
+
+    const matches = await db
+      .select({
+        matchId: unmatchedTable.id,
+        flagged: unmatchedTable.flagged,
+        tutor: {
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          phone: tutorTable.phone,
+          email: tutorTable.email,
+          subject: tutorTable.subject_pref,
+          grade_level_pref: tutorTable.grade_level_pref,
+          disability_pref: tutorTable.disability_pref,
+          tutoring_mode: tutorTable.tutoring_mode,
+        },
+        // TUTEE SUGGESTIONS FROM ALGORITHM
+      })
+      .from(unmatchedTable)
+      .innerJoin(tutorTable, eq(unmatchedTable.tutor_id, tutorTable.id));
+
+    res.send({
+      unmatchedTutors: matches,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error fetching match suggestions");
+  }
+});
 /* GET endpoint */
 app.get("/match-suggestions", async (req: Request, res: Response) => {
   try {
@@ -246,7 +299,7 @@ app.post("/move-to-inactive/:id", async (req: Request, res: Response) => {
   try {
     console.log("inside move to inactive");
     const id = req.params.id;
-  
+
     moveToInactive(Number(id));
     console.log("after function call");
   } catch (error) {
@@ -325,8 +378,8 @@ app.get("/email", async (req: Request, res: Response) => {
       subject: "hello world",
       html: "<strong>it works!</strong>",
     });
-    console.log("Data: ", data)
-    console.log("Error: ", error)
+    console.log("Data: ", data);
+    console.log("Error: ", error);
   } catch (error) {
     console.error(error);
   }
@@ -464,10 +517,7 @@ async function moveTuteeToUnmatched(tutee_id: number) {
     throw new Error("${id} does not exist in matched table");
   }
 
-  await db
-    .insert(unmatchedTable)
-    .values(query)
-    .onConflictDoNothing(); 
+  await db.insert(unmatchedTable).values(query).onConflictDoNothing();
 
   await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
@@ -478,7 +528,7 @@ async function moveToInactive(matchId: number) {
     .select()
     .from(approvedMatchesTable)
     .where(eq(approvedMatchesTable.id, matchId));
-  console.log(query); 
+  console.log(query);
 
   moveTutorToUnmatched(query[0].tutor_id);
   moveTuteeToUnmatched(query[0].tutee_id);
@@ -640,10 +690,7 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("${id} does not exist in matched table");
     }
 
-    await db
-      .insert(unmatchedTable)
-      .values(query)
-      .onConflictDoNothing(); 
+    await db.insert(unmatchedTable).values(query).onConflictDoNothing();
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
