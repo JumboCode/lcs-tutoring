@@ -9,7 +9,6 @@ const TABS = {
   ACTIVE: 0,
   INACTIVE: 1,
 } as const;
-
 const COLORS = {
   ACTIVE: "text-[#8DAADD]",
   INACTIVE: "text-gray-500",

@@ -31,6 +31,7 @@ type MatchedInfoBoxProps = {
 export default function MatchedInfoBoxbox_props({
   tutee_props,
   tutor_props,
+  matchId,
   flagged,
   bgColor,
   date,
@@ -58,7 +59,17 @@ export default function MatchedInfoBoxbox_props({
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
-
+  const moveToInactive = () => {
+    setShowDescription(false);
+    fetch(`http://localhost:3000/move-to-inactive/${matchId}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => console.error(error));
+  };
   const handleToggleFlag = async () => {
     try {
       const response = await fetch(`http://localhost:3000/flag/${matchId}`, {
@@ -210,7 +221,11 @@ export default function MatchedInfoBoxbox_props({
                           </>
                         )}
                       </button>
-                      <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+
+                      <button
+                        onClick={moveToInactive}
+                        className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
                         Move to Inactive
                       </button>
                     </div>
