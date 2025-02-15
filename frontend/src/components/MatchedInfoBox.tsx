@@ -56,10 +56,10 @@ export default function MatchedInfoBoxbox_props({
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const moveToInactive = () => {
+  const unmatchPair = () => {
     setIsDropdownOpen(false);
 
-    fetch(`http://localhost:3000/move-to-inactive/${matchId}`, {
+    fetch(`http://localhost:3000/unmatch-pair/${matchId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -244,13 +244,13 @@ export default function MatchedInfoBoxbox_props({
                       </button>
                       <button
                         className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                        onClick={moveToInactive}
+                        onClick={unmatchPair}
                       >
                         <img
                           src={deleteIcon}
                           className="w-4 h-4 inline-block mr-2"
                         />
-                        Move to Inactive
+                        Unmatch Pair
                       </button>
                     </div>
                   )}
