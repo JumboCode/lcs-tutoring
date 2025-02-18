@@ -37,6 +37,7 @@ export const tuteeTable = pgTable("tutee", {
   tutoring_mode: varchar({ length: 50 }).notNull(),
   notes: text(),
   date: date().notNull(),
+  history_date: date(),
 });
 
 export const unmatchedTable = pgTable('unmatched', {
@@ -69,4 +70,12 @@ export const approvedMatchesTable = pgTable('approved_matches', {
 export const adminTable = pgTable("admin", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 100 }).notNull().unique(),
+  password: varchar({ length: 100 }).notNull(),
+});
+
+export const elist = pgTable('elist', {
+  id: serial('id').primaryKey(),
+  name: varchar({ length: 100 }).notNull(),
+  email: varchar("email", { length: 100 }).notNull().unique(),
+  year_grad: varchar({ length: 4 }).notNull(),
 });

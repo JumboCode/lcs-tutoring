@@ -55,6 +55,7 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
       tutoring_mode: tutoringMode,
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
+      history_date: new Date().toISOString().split("T")[0],
     });
     console.log("Tutee submitted: ", req.body);
   } catch (error) {
@@ -120,6 +121,7 @@ export const adminEmailSubmission = async (req: Request, res: Response) => {
     const email = req.params.email;
     await db.insert(adminTable).values({
       email: email,
+      password: password,
     });
     console.log("Email submitted: ", req.body);
   } catch (error) {

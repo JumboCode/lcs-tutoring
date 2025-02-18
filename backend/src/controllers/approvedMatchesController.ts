@@ -20,7 +20,7 @@ const db = drizzle(process.env.DATABASE_URL!);
 const resend = new Resend(process.env.RESENDAPIKEY!);
 
 /* returns all the approved matches */
-export const getApprovedMatches = async (res: Response) => {
+export const getApprovedMatches = async (req: Request, res: Response) => {
   try {
     console.log("Inside approved matches endpoint");
 

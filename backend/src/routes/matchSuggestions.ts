@@ -7,6 +7,6 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/tutors", getMatchSuggestions);
+router.get("/match-suggestions", getMatchSuggestions);
 
 export default router;
