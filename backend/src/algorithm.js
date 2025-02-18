@@ -11,7 +11,7 @@
  * @property {string} tutoring_mode
  */
 class TutorMatcher {
-  uri = "http://localhost:3000";
+  url = "http://localhost:3000";
   constructor() {
     /**
      * @type {Tutor[]}
@@ -38,7 +38,7 @@ class TutorMatcher {
 
   async fetchTutors() {
     console.log("fetching tutors");
-    const response = await fetch(`${this.uri}/unmatched-tutors`);
+    const response = await fetch(`${this.url}/unmatched-tutors`);
     const {unmatchedTutors} = await response.json();
     for (const unmatchedTutor of unmatchedTutors) {
       this.addTutor(unmatchedTutor.tutor);
@@ -47,7 +47,8 @@ class TutorMatcher {
 
 
   async fetchTutees() {
-    const response = await fetch(`${this.uri}/unmatched-tutees`);
+    console.log("fetching tutees");
+    const response = await fetch(`${this.url}/unmatched-tutees`);
     const {unmatchedTutees} = await response.json();
     for (const unmatchedTutee of unmatchedTutees) {
       this.addTutee(unmatchedTutee.tutee);
@@ -60,8 +61,8 @@ class TutorMatcher {
       (a, b) => b.disability_pref - a.disability_pref
     );
     const modeTutorIndex = this.tutors.reduce((acc, tutor) => {
-      if (!acc[tutor.mode]) {
-        acc[tutor.mode] = [];
+      if (!acc[tutor.tutoring_mode]) {
+        acc[tutor.tutoring_mode] = [];
       }
       acc[tutor.mode].push(tutor);
       return acc;
@@ -125,3 +126,4 @@ class TutorMatcher {
 
 const tutorMatcher = new TutorMatcher();
 tutorMatcher.fetchData();
+
