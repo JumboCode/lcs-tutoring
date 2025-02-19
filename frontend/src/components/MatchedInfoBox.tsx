@@ -4,12 +4,16 @@ import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { BsCheck2 } from "react-icons/bs";
+import FLAG from "../assets/images/admin_view/flag.svg";
+import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
+import deleteIcon from "../assets/images/delete.svg";
 
 const STYLES = {
   colors: {
     textGray: "#888888",
     phoneGray: "#6B7280",
     evenBackground: "#FAFCFE",
+    flaggedBackground: "black",
   },
   transitions: {
     arrow: "transform 0.3s",
@@ -29,8 +33,8 @@ type MatchedInfoBoxProps = {
 export default function MatchedInfoBoxbox_props({
   tutee_props,
   tutor_props,
+  matchId,
   flagged,
-  bgColor,
   date,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
@@ -44,26 +48,74 @@ export default function MatchedInfoBoxbox_props({
     subject,
     grade,
   } = tutee_props;
-
+  const [isCurrentlyFlagged, setIsCurrentlyFlagged] = useState(flagged);
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const unmatchPair = () => {
+    setIsDropdownOpen(false);
+
+    fetch(`http://localhost:3000/unmatch-pair/${matchId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error(error));
+  };
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
 
+  const handleSendEmail = async () => {
+    try {
+      setEmailSent(true);
+      const response = await fetch("http://localhost:3000/email", {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+    } catch (error) {
+      console.error("Failed to send email!");
+    }
+  };
+
+  const handleToggleFlag = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/flag/${matchId}`, {
+        method: "POST",
+      });
+      if (response.ok) {
+        setIsCurrentlyFlagged(!isCurrentlyFlagged);
+        setIsDropdownOpen(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <div
-      className={`odd:bg-[${bgColor}] even:bg-[${STYLES.colors.evenBackground}] w-100 h-auto rounded-lg border-b-1 text-left ${STYLES.transitions.colors} my-2`}
+      className={`${
+        isCurrentlyFlagged ? "bg-red-50" : "odd:bg-gray-50 even:bg-white"
+      } w-full h-auto rounded-lg border-b text-left transition-colors my-2`}
     >
       <table className="table-fixed w-full">
         <thead>
           <tr className={`h-[80px] border-b`}>
-            <th className="w-1/5 px-3 font-normal">{date}</th>
+            <th className="w-1/5 px-3 font-normal">
+              {isCurrentlyFlagged && (
+                <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
+              )}
+              {date}
+            </th>
             <th className="w-1/5 font-normal">
               <p>
                 {first_name} {last_name}
@@ -111,7 +163,7 @@ export default function MatchedInfoBoxbox_props({
             <th className="w-1/5">
               <div className="flex flex-grow justify-center items-center">
                 <button
-                  onClick={() => setEmailSent(true)}
+                  onClick={handleSendEmail}
                   disabled={emailSent}
                   className={`w-[150px] flex justify-center items-center rounded-full border-2 text-sm py-2 transition-colors duration-150 ${
                     emailSent
@@ -148,13 +200,61 @@ export default function MatchedInfoBoxbox_props({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                <span
-                  style={{ color: STYLES.colors.textGray }}
-                  className="mb-2 ml-5 p-0 text-lg"
-                >
-                  {/* This is where you will implement the flag functionality */}{" "}
-                  ...{" "}
-                </span>
+                <div className="relative">
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="mb-2 ml-5 p-0 text-lg text-gray-400"
+                  >
+                    ...
+                    <div
+                      className={`transition-transform duration-300 ${
+                        isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                      }`}
+                    ></div>
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                      {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                        <div className="className=" mr-2 w-4 h-4 inline-block>
+                          <BsTrashFill size={20} />
+                        </div>
+                        Remove Pair
+                      </button> */}
+                      <button
+                        onClick={handleToggleFlag}
+                        className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                      >
+                        {isCurrentlyFlagged ? (
+                          <>
+                            <img
+                              src={RED_FLAG}
+                              className="w-4 h-4 inline-block mr-2"
+                            />
+                            Unflag
+                          </>
+                        ) : (
+                          <>
+                            <img
+                              src={FLAG}
+                              className="w-4 h-4 inline-block mr-2"
+                            />
+                            Flag
+                          </>
+                        )}
+                      </button>
+                      <button
+                        className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                        onClick={unmatchPair}
+                      >
+                        <img
+                          src={deleteIcon}
+                          className="w-4 h-4 inline-block mr-2"
+                        />
+                        Unmatch Pair
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </th>
           </tr>

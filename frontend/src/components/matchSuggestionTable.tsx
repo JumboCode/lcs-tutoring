@@ -1,3 +1,12 @@
+/************ MatchSuggestionTable **************
+ *
+ * This component handles the table aspect of the match suggestions in admin
+ * view.
+ *
+ * Fetches the match suggestions from the backend and passes in all the match
+ * suggestion blocks
+ */
+
 import MatchSuggestionBlock from "./matchSuggestionBlock";
 import { useState, useEffect } from "react";
 import { tuteeInfo, tutorInfo } from "../types";
@@ -101,45 +110,41 @@ export default function MatchSuggestionTable() {
 
   return (
     <div>
-      <div className="w-[70vw] items-center flex justify-center">
-        <div className="w-full items-center justify-center flex flex-col">
-          <div className="flex flex-row w-full justify-between">
-            <h1 className="text-3xl font-bold">Match Suggestions</h1>
+      <div className="w-full flex justify-center flex-col">
+        <h1 className="text-3xl font-bold">Match Suggestions</h1>
+
+        {/* When awaiting the fetch */}
+        {loading && (
+          <div className="flex items-center justify-center py-10">
+            <p className="text-lg text-gray-500">Loading matches...</p>
           </div>
+        )}
 
-          {/* When awaiting the fetch */}
-          {loading && (
-            <div className="flex items-center justify-center py-10">
-              <p className="text-lg text-gray-500">Loading matches...</p>
-            </div>
-          )}
+        {/* Error if fetch fails */}
+        {error && (
+          <div className="flex items-center justify-center py-10 text-red-500">
+            <p className="text-lg font-semibold">Error: {error}</p>
+          </div>
+        )}
 
-          {/* Error if fetch fails */}
-          {error && (
-            <div className="flex items-center justify-center py-10 text-red-500">
-              <p className="text-lg font-semibold">Error: {error}</p>
-            </div>
-          )}
-
-          {/* Successful load and no errors */}
-          {!loading && !error && (
+        {/* Successful load and no errors */}
+        {!loading && !error && (
+          <div>
             <div>
-              <div>
-                {matchsuggestions.map((match, index) => (
-                  <MatchSuggestionBlock
-                    key={index}
-                    tutor_info={match.tutor}
-                    tutee1={tutee1}
-                    tutee2={tutee2}
-                    tutee3={tutee3}
-                    flagged={match.flagged}
-                    unmatched_names={unmatchedNames}
-                  />
-                ))}
-              </div>
+              {matchsuggestions.map((match, index) => (
+                <MatchSuggestionBlock
+                  key={index}
+                  tutor_info={match.tutor}
+                  tutee1={tutee1}
+                  tutee2={tutee2}
+                  tutee3={tutee3}
+                  flagged={match.flagged}
+                  unmatched_names={unmatchedNames}
+                />
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

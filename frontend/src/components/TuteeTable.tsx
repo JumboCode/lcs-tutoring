@@ -71,7 +71,7 @@ export default function TuteeTable() {
   }, []);
 
   return (
-    <div className="flex flex-col justify-center items-center w-[70vw]">
+    <div className="flex flex-col justify-center items-center">
       <h1 className="w-full text-3xl font-bold text-left">Tutee Database</h1>
 
       {/* When awaiting the fetch */}

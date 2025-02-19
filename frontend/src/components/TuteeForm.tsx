@@ -1,5 +1,8 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
+import { useNavigate } from "react-router-dom";
+import validator from "validator";
+
 
 //lets TypeScript know what kind of data
 interface FormData {
@@ -78,6 +81,8 @@ const tutoring_mode_options = [
 ];
 
 export default function TuteeForm() {
+  const navigate = useNavigate();
+
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
     childFirstName: "",
@@ -198,7 +203,7 @@ export default function TuteeForm() {
     const newErrors: FormErrors = {};
 
     // check for empty fields
-    Object.keys(formData).forEach((key) => {
+    Object.keys(formData).forEach((key) => {                                              ``
       if (
         // Check required fields, excluding optional ones or empty optional fields
         formData[key as keyof typeof formData] === "" &&
@@ -214,6 +219,18 @@ export default function TuteeForm() {
     }
     if (formData.specialNeeds === "yes" && !formData.specialNeedsInfo) {
       newErrors.specialNeedsInfo = "Please specify.";
+    }
+
+    if (!validator.isEmail(formData["email"])) {
+      if (formData["email"].length != 0) {
+        newErrors["email"] = "Invalid email";
+      }
+    }
+
+    if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
+      if (formData["phone"].length != 0) {
+        newErrors["phone"] = "Invalid Phone Number"; 
+      }
     }
 
     //check that Yes has been selected for waiver agreement
@@ -240,6 +257,7 @@ export default function TuteeForm() {
         .then((data) => console.log(data))
         .catch((error) => console.error(error));
       console.log("Form submitted successfully:", formData);
+
       //reset form
       // setFormData({
       //   childFirstName: "",
@@ -258,8 +276,11 @@ export default function TuteeForm() {
       //   agreement: "",
       //   signature: "",
       // });
+
       setShowTextBox(false);
       alert("Form submitted successfully!");
+      
+      navigate("/success-page");
     }
   };
 

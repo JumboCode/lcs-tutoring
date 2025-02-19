@@ -4,6 +4,7 @@ export default function AddAdmin() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [errorOutline, setErrorOutline] = useState<string>("");
 
+  const password = "password";
   const handleSubmit = async () => {
     setShowInput(false);
     const email = (document.getElementById("input") as HTMLInputElement | null)
@@ -22,7 +23,7 @@ export default function AddAdmin() {
     setErrorOutline("");
     // http://localhost:3000/admin/${email}
     // https://lcs-tutoring.onrender.com/admin/${email}
-    await fetch(`http://localhost:3000/admin/${email}`, {
+    await fetch(`http://localhost:3000/admin/${email}${password}`, {
       method: "POST",
     });
   };
