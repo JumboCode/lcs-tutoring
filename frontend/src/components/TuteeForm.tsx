@@ -1,6 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
+import validator from "validator";
 
 
 //lets TypeScript know what kind of data
@@ -218,6 +219,18 @@ export default function TuteeForm() {
     }
     if (formData.specialNeeds === "yes" && !formData.specialNeedsInfo) {
       newErrors.specialNeedsInfo = "Please specify.";
+    }
+
+    if (!validator.isEmail(formData["email"])) {
+      if (formData["email"].length != 0) {
+        newErrors["email"] = "Invalid email";
+      }
+    }
+
+    if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
+      if (formData["phone"].length != 0) {
+        newErrors["phone"] = "Invalid Phone Number"; 
+      }
     }
 
     //check that Yes has been selected for waiver agreement
