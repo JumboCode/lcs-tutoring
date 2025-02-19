@@ -10,6 +10,7 @@
  * @property {boolean} disability_pref
  * @property {string} tutoring_mode
  */
+
 class TutorMatcher {
     url = "http://localhost:3000";
     constructor() {
@@ -44,8 +45,7 @@ class TutorMatcher {
         this.addTutor(unmatchedTutor.tutor);
       }
     }
-  
-  
+
     async fetchTutees() {
       console.log("fetching tutees");
       const response = await fetch(`${this.url}/unmatched-tutees`);
