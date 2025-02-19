@@ -28,6 +28,25 @@ export default function TuteeTable() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Update unmatchedTutees and matchedTutees, setting history_date to null
+  useEffect(() => {
+    setUnmatchedTutees((prev) =>
+      prev.map((tutee) => ({
+        ...tutee,
+        history_date: null,
+      }))
+    );
+  
+    setMatchedTutees((prev) =>
+      prev.map((tutee) => ({
+        ...tutee,
+        history_date: null,
+      }))
+    );
+  }, []); // Empty dependency array ensures this runs only once
+  
+
+
   useEffect(() => {
     const fetchTutees = async () => {
       try {

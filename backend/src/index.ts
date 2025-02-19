@@ -35,7 +35,6 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Express + TypeScript Server");
 });
 
-
 // functions for importing the json data into the DB for testing
 const importUnmatchedData = async () => {
   const jsonData = JSON.parse(fs.readFileSync("src/unmatched.json", "utf-8"));
@@ -58,6 +57,7 @@ const importMatchedData = async () => {
     });
   }
 };
+
 
 // Execute both functions
 const importData = async () => {
