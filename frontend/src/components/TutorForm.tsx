@@ -231,26 +231,32 @@ export default function TutorForm() {
 
       if (formData["id"].length != 7 || isNaN(Number(formData["id"]))) {
         // && !isNaN(Number(formData["id"]))
-        if (formData["id"].length != 0) { 
-          newErrors["id"] = "Invalid Tufts ID"; 
-        }
-      } 
-      
-      if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
-        if (formData["phone"].length != 0) { 
-          newErrors["phone"] = "Invalid Phone Number"; 
+        if (formData["id"].length != 0) {
+          newErrors["id"] = "Invalid Tufts ID";
         }
       }
 
-      if (formData["yearGrad"].length != 4 || isNaN(Number(formData["yearGrad"])) || 
-          !(Number(formData["yearGrad"]) >= 2025 && Number(formData["yearGrad"]) <= 2028)) {
-          if (formData["yearGrad"].length != 0) { 
-            newErrors["yearGrad"] = "Invalid Year of Graduation";
-          }
+      if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
+        if (formData["phone"].length != 0) {
+          newErrors["phone"] = "Invalid Phone Number";
+        }
+      }
+
+      if (
+        formData["yearGrad"].length != 4 ||
+        isNaN(Number(formData["yearGrad"])) ||
+        !(
+          Number(formData["yearGrad"]) >= 2025 &&
+          Number(formData["yearGrad"]) <= 2028
+        )
+      ) {
+        if (formData["yearGrad"].length != 0) {
+          newErrors["yearGrad"] = "Invalid Year of Graduation";
+        }
       }
 
       if (!formData["email"].endsWith("@tufts.edu")) {
-        if (formData["email"].length != 0) { 
+        if (formData["email"].length != 0) {
           newErrors["email"] = "Invalid Tufts email";
         }
       }
@@ -264,7 +270,7 @@ export default function TutorForm() {
     setErrors(newErrors);
 
     console.log(JSON.stringify(formData));
-    console.log(Object.keys(newErrors))
+    console.log(Object.keys(newErrors));
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
