@@ -187,6 +187,7 @@ export const emailPair = async (req: Request, res: Response) => {
   try {
     const tuteeParentEmail = req.body.tuteeParentEmail;
     const tutorEmail = req.body.tutorEmail;
+    // TODO: remove all the console.log statements
     console.log("Inside email pair");
     console.log(tuteeParentEmail);
     console.log(tutorEmail);

@@ -77,7 +77,6 @@ export default function MatchedInfoBoxbox_props({
 
   const handleSendEmail = async () => {
     try {
-      setEmailSent(true);
       const response = await fetch(`${BACKEND_URL}/email`, {
         method: "POST",
         headers: {
@@ -92,6 +91,7 @@ export default function MatchedInfoBoxbox_props({
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      setEmailSent(true);
     } catch (error) {
       console.error("Failed to send email!");
     }
