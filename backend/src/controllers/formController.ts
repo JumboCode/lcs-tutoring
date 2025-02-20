@@ -118,12 +118,10 @@ export const tutorSubmission = async (req: Request, res: Response) => {
 
 export const adminEmailSubmission = async (req: Request, res: Response) => {
   try {
-    const email = req.params.email;
-    const password = req.params.password;
+    const { email, password } = req.body;
     await db.insert(adminTable).values({
       email: email,
       password: password,
-      // TODO
     });
     console.log("Email submitted: ", req.body);
   } catch (error) {
