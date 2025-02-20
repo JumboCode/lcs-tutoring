@@ -195,6 +195,7 @@ export default function TuteeTable() {
                   box_props={box_props}
                   key={index}
                   bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+                  isUnmatched={true}
                 />
               ))}
             </div>
@@ -206,6 +207,7 @@ export default function TuteeTable() {
                   box_props={box_props}
                   key={index}
                   bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+                  isUnmatched={false}
                 />
               ))}
             </div>
@@ -217,6 +219,7 @@ export default function TuteeTable() {
                   box_props={box_props}
                   key={index}
                   bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
+                  isUnmatched={false}
                 />
               ))}
             </div>
