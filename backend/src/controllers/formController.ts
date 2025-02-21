@@ -4,6 +4,8 @@
 
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
+
 import {
   tuteeTable,
   tutorTable,
@@ -129,5 +131,68 @@ export const adminEmailSubmission = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error adding new admin");
+  }
+};
+
+
+// // what do we put in here
+// export const adminLoginRequest = async (req: Request, res: Response) => {
+
+// };
+
+// export const adminLogin = async (req: Request, res: Response) => {
+//   const { email, password } = req.body;
+
+//   try {
+//     // Adjust this query according to your actual ORM syntax
+//     const admins = await db.query(adminTable)
+//                            .where(adminTable.email.eq(email))
+//                            .execute();
+
+//     if (admins.length === 0) {
+//       res.status(404).json({ success: false, message: "Incorrect log-in information" });
+//       return;
+//     }
+
+//     const admin = admins[0];  // Assuming the first returned record is the one we need
+//     const isMatch = await db.compare(password, admin.password);
+//     if (isMatch) {
+//       res.json({ success: true, message: "Logged in successfully" });
+//     } else {
+//       res.json({ success: false, message: "Incorrect log-in information" });
+//     }
+//   } catch (error) {
+//     console.error("Login error", error);
+//     res.status(500).send("Server error");
+//   }
+// };
+
+export const adminLogin = async (req: Request, res: Response): Promise<any> => {
+  const { email, password } = req.body;
+
+
+  try {
+    const admins = await db.select().from(adminTable).where(eq(adminTable.email, email));
+
+    console.log(email);
+    console.log(password);
+
+    if (admins.length === 0) {
+      console.log("Here")
+      return res.status(401).json({ success: false, message: "Incorrect email or password" });
+    }
+
+    const admin = admins[0];
+
+    console.log("Password equal: ", (password === admin.password));
+
+    if (password === admin.password) {
+      res.json({ success: true, message: "Logged in successfully" });
+    } else {
+      res.send(401).json({ success: false, message: "Incorrect email or password" });
+    }
+  } catch (error) {
+    console.error("Login error", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
