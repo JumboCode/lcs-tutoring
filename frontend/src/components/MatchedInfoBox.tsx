@@ -77,6 +77,7 @@ export default function MatchedInfoBoxbox_props({
 
   const handleSendEmail = async () => {
     try {
+      
       const response = await fetch(`${BACKEND_URL}/email`, {
         method: "POST",
         headers: {
