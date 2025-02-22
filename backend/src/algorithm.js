@@ -33,7 +33,7 @@ class TutorMatcher {
   
     async fetchData() {
       await Promise.all([this.fetchTutors(), this.fetchTutees()]);
-      console.log(this.tutors);
+      // console.log(this.tutors);
       console.log(this.tutees);
     }
   
@@ -84,7 +84,7 @@ class TutorMatcher {
           }
         }
   
-        if (bestMatch) {
+        if (bestMatch) { 
           matches.push({
             tuteeId: tutee.id,
             tutorId: bestMatch.id,
@@ -126,3 +126,7 @@ class TutorMatcher {
   
   const tutorMatcher = new TutorMatcher();
   tutorMatcher.fetchData();
+
+  //console.log(tutorMatcher.findMatches());
+
+
