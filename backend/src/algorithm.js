@@ -35,7 +35,7 @@ class TutorMatcher {
     async fetchData() {
       await Promise.all([this.fetchTutors(), this.fetchTutees()]);
 //       console.log(this.tutors);
-//       console.log(this.tutees);
+//      console.log(this.tutees);
     }
   
     async fetchTutors() {
@@ -43,12 +43,8 @@ class TutorMatcher {
       const response = await fetch(`${this.url}/unmatched-tutors`);
       const {unmatchedTutors} = await response.json();
       for (const unmatchedTutor of unmatchedTutors) {
-        //console.log(unmatchedTutor.tutor); // Add logging to check the data structure
         if (unmatchedTutor && unmatchedTutor.tutoring_mode) {
-          this.addTutor(unmatchedTutor);
-        } else {
-          console.log("Tutor data is missing 'tutoring_mode':", unmatchedTutor);
-          break;
+            this.addTutor(unmatchedTutor);
         }
         
       }
@@ -59,7 +55,9 @@ class TutorMatcher {
       const response = await fetch(`${this.url}/unmatched-tutees`);
       const {unmatchedTutees} = await response.json();
       for (const unmatchedTutee of unmatchedTutees) {
-        this.addTutee(unmatchedTutee.tutee);
+            if (unmatchedTutee && unmatchedTutee.tutoring_mode) {
+                this.addTutee(unmatchedTutee);
+            }
       }
 
     }
@@ -70,22 +68,24 @@ class TutorMatcher {
         (a, b) => b.disability_pref - a.disability_pref
       );
       const modeTutorIndex = this.tutors.reduce((acc, tutor) => {
-        console.log(tutor.tutoring_mode);
         if (!acc[tutor.tutoring_mode]) {
           acc[tutor.tutoring_mode] = [];
         }
         acc[tutor.tutoring_mode].push(tutor);
         return acc;
       }, {});
+
+          
   
       for (const tutee of sortedTutees) {
         let bestMatch = null;
         let bestScore = -1;
-        const eligibleTutors = modeTutorIndex[tutee.mode] || [];
+        const eligibleTutors = modeTutorIndex[tutee.tutoring_mode] || [];
   
         for (const tutor of eligibleTutors) {
-          if (tutee.specialNeeds && !tutor.specialNeedsCertified) continue;
-          if (tutor.currentTutees >= tutor.maxTutees) continue;
+          //chnage schema
+          if (tutee.has_special_needs && !tutor.specialNeedsCertified) continue;
+          if (tutor.currentTutees >= tutor.maxTutees) continue; 
   
           const score = this._calculateMatchScore(tutor, tutee);
           if (score > bestScore) {
@@ -109,22 +109,23 @@ class TutorMatcher {
   
     _calculateGradeScore(tutor, tutee) {
       let gradeScore = 0;
-      if (tutor.gradeLevels.has(tutee.gradeLevel)) {
+      if (tutor.grade_level_pref.has(tutee.grade)) {
         gradeScore = 1;
       } else {
         const minGradeDiff = Math.min(
-          ...Array.from(tutor.gradeLevels).map((grade) =>
-            Math.abs(grade - tutee.gradeLevel)
+          ...Array.from(tutor.grade_level_pref).map((grade) =>
+            Math.abs(grade - tutee.grade)
           )
         );
         gradeScore = Math.exp(-0.3 * minGradeDiff);
       }
       return gradeScore;
     }
-  
+    
+    // !! currently all tutee subjects are null in schema
     _calculateMatchScore(tutor, tutee) {
       const commonSubjects = new Set(
-        [...tutee.subjects].filter((subject) => tutor.subjects.has(subject))
+        [...tutee.subjects].filter((subject) => tutor.subject_pref.has(subject))
       );
       const subjectScore = commonSubjects.size / tutee.subjects.size;
       const availabilityScore = 1 - tutor.currentTutees / tutor.maxTutees;
@@ -133,11 +134,14 @@ class TutorMatcher {
       return 0.4 * subjectScore + 0.2 * availabilityScore + 0.4 * gradeScore;
     }
   }
+
+
   
   const tutorMatcher = new TutorMatcher();
+
   tutorMatcher.fetchData().then(() => {
     const matches = tutorMatcher.findMatches();
-    console.log(matches);
+    console.log("matches: ", matches);
   });
 
 

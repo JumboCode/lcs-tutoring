@@ -143,7 +143,7 @@ async function filterTutors(
 
   const tutors = await query;
 
-  console.log("Filtered Tutors:", tutors);
+  //console.log("Filtered Tutors:", tutors);
 
   return tutors;
 }
