@@ -55,7 +55,7 @@ export const getUnmatchedTutees = async ( req: Request, res: Response) => {
       .from(tuteeTable)
       .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
 
-    console.log("Unmatched tutees: ", unmatchedTutees);
+    //console.log("Unmatched tutees: ", unmatchedTutees);
 
 
     res.send({

@@ -28,13 +28,14 @@ class TutorMatcher {
   
     addTutee(tutee) {
       this.tutees.push(tutee);
+      
     }
   
   
     async fetchData() {
       await Promise.all([this.fetchTutors(), this.fetchTutees()]);
-      // console.log(this.tutors);
-      console.log(this.tutees);
+//       console.log(this.tutors);
+//       console.log(this.tutees);
     }
   
     async fetchTutors() {
@@ -42,7 +43,14 @@ class TutorMatcher {
       const response = await fetch(`${this.url}/unmatched-tutors`);
       const {unmatchedTutors} = await response.json();
       for (const unmatchedTutor of unmatchedTutors) {
-        this.addTutor(unmatchedTutor.tutor);
+        //console.log(unmatchedTutor.tutor); // Add logging to check the data structure
+        if (unmatchedTutor && unmatchedTutor.tutoring_mode) {
+          this.addTutor(unmatchedTutor);
+        } else {
+          console.log("Tutor data is missing 'tutoring_mode':", unmatchedTutor);
+          break;
+        }
+        
       }
     }
 
@@ -53,6 +61,7 @@ class TutorMatcher {
       for (const unmatchedTutee of unmatchedTutees) {
         this.addTutee(unmatchedTutee.tutee);
       }
+
     }
   
     findMatches() {
@@ -61,10 +70,11 @@ class TutorMatcher {
         (a, b) => b.disability_pref - a.disability_pref
       );
       const modeTutorIndex = this.tutors.reduce((acc, tutor) => {
+        console.log(tutor.tutoring_mode);
         if (!acc[tutor.tutoring_mode]) {
           acc[tutor.tutoring_mode] = [];
         }
-        acc[tutor.mode].push(tutor);
+        acc[tutor.tutoring_mode].push(tutor);
         return acc;
       }, {});
   
@@ -125,8 +135,10 @@ class TutorMatcher {
   }
   
   const tutorMatcher = new TutorMatcher();
-  tutorMatcher.fetchData();
+  tutorMatcher.fetchData().then(() => {
+    const matches = tutorMatcher.findMatches();
+    console.log(matches);
+  });
 
-  //console.log(tutorMatcher.findMatches());
 
 
