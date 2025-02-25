@@ -36,7 +36,7 @@ export default function TuteeTable() {
         history_date: null,
       }))
     );
-  
+
     setMatchedTutees((prev) =>
       prev.map((tutee) => ({
         ...tutee,
@@ -44,8 +44,6 @@ export default function TuteeTable() {
       }))
     );
   }, []); // Empty dependency array ensures this runs only once
-  
-
 
   useEffect(() => {
     const fetchTutees = async () => {
