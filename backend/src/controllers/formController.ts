@@ -132,39 +132,7 @@ export const adminEmailSubmission = async (req: Request, res: Response) => {
   }
 };
 
-
-// // what do we put in here
-// export const adminLoginRequest = async (req: Request, res: Response) => {
-
-// };
-
-// export const adminLogin = async (req: Request, res: Response) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     // Adjust this query according to your actual ORM syntax
-//     const admins = await db.query(adminTable)
-//                            .where(adminTable.email.eq(email))
-//                            .execute();
-
-//     if (admins.length === 0) {
-//       res.status(404).json({ success: false, message: "Incorrect log-in information" });
-//       return;
-//     }
-
-//     const admin = admins[0];  // Assuming the first returned record is the one we need
-//     const isMatch = await db.compare(password, admin.password);
-//     if (isMatch) {
-//       res.json({ success: true, message: "Logged in successfully" });
-//     } else {
-//       res.json({ success: false, message: "Incorrect log-in information" });
-//     }
-//   } catch (error) {
-//     console.error("Login error", error);
-//     res.status(500).send("Server error");
-//   }
-// };
-
+// TODO: add clerk auth
 export const adminLogin = async (req: Request, res: Response): Promise<any> => {
   const { email, password } = req.body;
 

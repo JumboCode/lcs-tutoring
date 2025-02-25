@@ -11,8 +11,6 @@ const router = express.Router();
 router.post("/tuteesubmission", tuteeSubmission);
 router.post("/tutorsubmission", tutorSubmission);
 router.post("/admin", adminEmailSubmission);
-
-//adding this idk what to do
 router.post("/admin-login", adminLogin);
 
 export default router;
