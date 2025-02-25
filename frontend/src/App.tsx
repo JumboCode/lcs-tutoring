@@ -26,6 +26,8 @@ import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 import AddAdmin from "./components/addAdmin";
+import AdminLogin from "./components/adminSignIn"; // Added this
+import MatchSuggestions from "./components/matchSuggestionBlock";
 import AdminHeader from "./components/HeaderAdmin";
 
 import SuccessPage from "./components/SuccessPage";
@@ -188,6 +190,14 @@ function App() {
           element={
             <div>
               <AddAdmin />
+            </div>
+          }
+        ></Route>
+        <Route
+          path="/adminLogin"
+          element={
+            <div>
+              <AdminLogin />
             </div>
           }
         ></Route>
