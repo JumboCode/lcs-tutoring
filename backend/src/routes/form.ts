@@ -9,6 +9,6 @@ const router = express.Router();
 
 router.post("/tuteesubmission", tuteeSubmission);
 router.post("/tutorsubmission", tutorSubmission);
-router.post("/admin", adminEmailSubmission);
+router.post("/admin/:email", adminEmailSubmission);
 
 export default router;

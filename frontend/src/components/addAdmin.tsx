@@ -4,18 +4,12 @@ export default function AddAdmin() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [errorOutline, setErrorOutline] = useState<string>("");
 
+  const password = "password";
   const handleSubmit = async () => {
     setShowInput(false);
-    const email = (document.getElementById("input1") as HTMLInputElement | null)
+    const email = (document.getElementById("input") as HTMLInputElement | null)
       ?.value;
     if (!email) {
-      setShowInput(true);
-      return;
-    }
-    const password = (
-      document.getElementById("input2") as HTMLInputElement | null
-    )?.value;
-    if (!password) {
       setShowInput(true);
       return;
     }
@@ -29,12 +23,8 @@ export default function AddAdmin() {
     setErrorOutline("");
     // http://localhost:3000/admin/${email}
     // https://lcs-tutoring.onrender.com/admin/${email}
-    await fetch("http://localhost:3000/admin", {
+    await fetch(`http://localhost:3000/admin/${email}${password}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
     });
   };
 
@@ -51,15 +41,9 @@ export default function AddAdmin() {
           <div className="flex flex-row items-center space-x-2">
             <input
               type="text"
-              placeholder="Enter Tufts Email"
+              placeholder="Enter Email"
               className={`p-2 border border-gray-300 rounded h-[40px] ${errorOutline}`}
-              id="input1"
-            />
-            <input
-              type="text"
-              placeholder="Enter Password"
-              className={`p-2 border border-gray-300 rounded h-[40px] ${errorOutline}`}
-              id="input2"
+              id="input"
             />
             <button
               className="font-inter bg-[#BFDBF7] hover:bg-blue-300 w-[30px] h-[30px] rounded-full flex items-center justify-center"

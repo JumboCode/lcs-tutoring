@@ -62,38 +62,6 @@ export const getTutors = async (req: Request, res: Response) => {
   }
 };
 
-/* returns all the matched and unmatched tutors with filter */
-export const getUnmatchedTutors = async (req: Request, res: Response) => {
-  try {
-    // applying the filter
-    const filteredTutors = await filterTutors(
-      undefined,
-      undefined,
-      undefined,
-      undefined
-    );
-
-    // getting all ids of the filtered tutors
-    const tutorIds = filteredTutors
-      .map((tutor) => tutor.id)
-      .filter((id) => id !== undefined);
-
-    // getting the unmatched tutors with the filtered ids
-    const unmatchedTutors = await db
-      .select()
-      .from(tutorTable)
-      .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
-      .where(inArray(tutorTable.id, tutorIds));
-
-    res.send({
-      unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error fetching tutors");
-  }
-};
-
 /**** Filter Tutors by grade levels and subject prefs ****
  *
  * Example input: filterTutors([9, 10], undefined)

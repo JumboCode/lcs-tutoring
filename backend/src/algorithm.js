@@ -126,4 +126,3 @@ class TutorMatcher {
   
   const tutorMatcher = new TutorMatcher();
   tutorMatcher.fetchData();
-  tutorMatcher.findMatches();

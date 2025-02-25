@@ -45,25 +45,6 @@ export const getTutees = async ( req: Request, res: Response) => {
   }
 };
 
-/* returns all the unmatched tutees */
-export const getUnmatchedTutees = async ( req: Request, res: Response) => {
-  try {
-    console.log("Inside tutees endpoint");
-
-    const unmatchedTutees = await db
-      .select()
-      .from(tuteeTable)
-      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
-
-    res.send({
-      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error fetching tutees");
-  }
-};
-
 /* Moves a tutee from MATCHED -> HISTORY given their id */
 export const matchedToHistory = async (req: Request, res: Response) => {
   try {
