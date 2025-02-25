@@ -21,6 +21,8 @@ const STYLES = {
   },
 } as const;
 
+const BACKEND_URL = "http://localhost:3000";
+
 type MatchedInfoBoxProps = {
   tutee_props: tuteeBoxProps;
   tutor_props: tutorBoxProps;
@@ -59,7 +61,7 @@ export default function MatchedInfoBoxbox_props({
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
-    fetch(`http://localhost:3000/unmatch-pair/${matchId}`, {
+    fetch(`${BACKEND_URL}/unmatch-pair/${matchId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -75,14 +77,22 @@ export default function MatchedInfoBoxbox_props({
 
   const handleSendEmail = async () => {
     try {
-      setEmailSent(true);
-      const response = await fetch("http://localhost:3000/email", {
-        method: "GET",
+      
+      const response = await fetch(`${BACKEND_URL}/email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tutorEmail: tutor_props.email,
+          tuteeParentEmail: tutee_props.parent_email,
+        }),
       });
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      setEmailSent(true);
     } catch (error) {
       console.error("Failed to send email!");
     }
@@ -90,7 +100,7 @@ export default function MatchedInfoBoxbox_props({
 
   const handleToggleFlag = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/flag/${matchId}`, {
+      const response = await fetch(`${BACKEND_URL}/flag/${matchId}`, {
         method: "POST",
       });
       if (response.ok) {
