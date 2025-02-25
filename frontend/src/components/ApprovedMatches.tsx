@@ -22,6 +22,7 @@ const COLORS = {
 interface Match {
   matchId: number;
   flagged: boolean;
+  sent_email: boolean;
   tutor: tutorBoxProps;
   tutee: tuteeBoxProps;
 }
@@ -184,6 +185,7 @@ export default function ApprovedMatches() {
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
                   flagged={match.flagged}
+                  email_sent={match.sent_email}
                   bgColor="bg-white"
                   date={date}
                   isActive={false}
@@ -200,6 +202,7 @@ export default function ApprovedMatches() {
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
                   flagged={match.flagged}
+                  email_sent={match.sent_email}
                   bgColor="bg-white"
                   date={date}
                   isActive={true}

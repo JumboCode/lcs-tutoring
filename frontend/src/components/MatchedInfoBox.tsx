@@ -31,6 +31,7 @@ type MatchedInfoBoxProps = {
   bgColor: string;
   date: string;
   isActive: boolean;
+  email_sent: boolean;
 };
 
 export default function MatchedInfoBoxbox_props({
@@ -40,6 +41,7 @@ export default function MatchedInfoBoxbox_props({
   flagged,
   date,
   isActive,
+  email_sent,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
 
@@ -55,7 +57,7 @@ export default function MatchedInfoBoxbox_props({
   const [isCurrentlyFlagged, setIsCurrentlyFlagged] = useState(flagged);
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
+  const [emailSent, setEmailSent] = useState(email_sent);
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -79,13 +81,13 @@ export default function MatchedInfoBoxbox_props({
 
   const handleSendEmail = async () => {
     try {
-      
       const response = await fetch(`${BACKEND_URL}/email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          matchId: matchId,
           tutorEmail: tutor_props.email,
           tuteeParentEmail: tutee_props.parent_email,
         }),
@@ -213,62 +215,63 @@ export default function MatchedInfoBoxbox_props({
                 </button>
 
                 {isActive && (
-                <div className="relative">
-                  <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="mb-2 ml-5 p-0 text-lg text-gray-400"
-                  >
-                    ...
-                    <div
-                      className={`transition-transform duration-300 ${
-                        isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
-                      }`}
-                    ></div>
-                  </button>
-                  {isDropdownOpen && (
-                    <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
-                      {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="mb-2 ml-5 p-0 text-lg text-gray-400"
+                    >
+                      ...
+                      <div
+                        className={`transition-transform duration-300 ${
+                          isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                        }`}
+                      ></div>
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                        {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
                         <div className="className=" mr-2 w-4 h-4 inline-block>
                           <BsTrashFill size={20} />
                         </div>
                         Remove Pair
                       </button> */}
-                      <button
-                        onClick={handleToggleFlag}
-                        className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                      >
-                        {isCurrentlyFlagged ? (
-                          <>
-                            <img
-                              src={RED_FLAG}
-                              className="w-4 h-4 inline-block mr-2"
-                            />
-                            Unflag
-                          </>
-                        ) : (
-                          <>
-                            <img
-                              src={FLAG}
-                              className="w-4 h-4 inline-block mr-2"
-                            />
-                            Flag
-                          </>
-                        )}
-                      </button>
-                      <button
-                        className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                        onClick={unmatchPair}
-                      >
-                        <img
-                          src={deleteIcon}
-                          className="w-4 h-4 inline-block mr-2"
-                        />
-                        Unmatch Pair
-                      </button>
-                    </div>
-                  )}
-                </div>
-                )}</div>
+                        <button
+                          onClick={handleToggleFlag}
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                        >
+                          {isCurrentlyFlagged ? (
+                            <>
+                              <img
+                                src={RED_FLAG}
+                                className="w-4 h-4 inline-block mr-2"
+                              />
+                              Unflag
+                            </>
+                          ) : (
+                            <>
+                              <img
+                                src={FLAG}
+                                className="w-4 h-4 inline-block mr-2"
+                              />
+                              Flag
+                            </>
+                          )}
+                        </button>
+                        <button
+                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          onClick={unmatchPair}
+                        >
+                          <img
+                            src={deleteIcon}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          Unmatch Pair
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </th>
           </tr>
         </thead>

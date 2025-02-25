@@ -185,6 +185,8 @@ async function moveTuteeToUnmatched(tutee_id: number) {
 
 export const emailPair = async (req: Request, res: Response) => {
   try {
+    // Aray and Sheza TODO: get the MatchId from the request and set the
+    //  `sent_email` field for that match to true.
     const tuteeParentEmail = req.body.tuteeParentEmail;
     const tutorEmail = req.body.tutorEmail;
     // TODO: remove all the console.log statements
