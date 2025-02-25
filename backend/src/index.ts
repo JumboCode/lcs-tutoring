@@ -23,7 +23,13 @@ const db = drizzle(process.env.DATABASE_URL!);
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
-app.use(tutor_router, tutee_router, approved_matches_router, match_suggestions_router, form_router);
+app.use(
+  tutor_router,
+  tutee_router,
+  approved_matches_router,
+  match_suggestions_router,
+  form_router
+);
 
 const port = 3000;
 
@@ -32,7 +38,7 @@ app.listen(port, () => {
 });
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Express + TypeScript Server");
+  res.send("Express + TypeScript Serverss");
 });
 
 // functions for importing the json data into the DB for testing
@@ -57,7 +63,6 @@ const importMatchedData = async () => {
     });
   }
 };
-
 
 // Execute both functions
 const importData = async () => {
