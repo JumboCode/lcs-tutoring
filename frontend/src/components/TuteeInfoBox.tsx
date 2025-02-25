@@ -22,11 +22,13 @@ const STYLES = {
 type TuteeInfoBoxProps = {
   box_props: tuteeBoxProps;
   bgColor: string;
+  isUnmatched: boolean;
 };
 
 export default function TuteeInfoBox({
   box_props,
   bgColor,
+  isUnmatched,
 }: TuteeInfoBoxProps) {
   const {
     id,
@@ -125,6 +127,8 @@ export default function TuteeInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
+                {isUnmatched && (
+                  <>
                 <button
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
@@ -146,6 +150,8 @@ export default function TuteeInfoBox({
                     </button>
                     <img src={TrashCan} className="mx-2" />
                   </div>
+                )}
+                </>
                 )}
               </div>
             </th>

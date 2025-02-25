@@ -186,6 +186,7 @@ export default function ApprovedMatches() {
                   flagged={match.flagged}
                   bgColor="bg-white"
                   date={date}
+                  isActive={false}
                 />
               ))}
             </div>
@@ -201,6 +202,7 @@ export default function ApprovedMatches() {
                   flagged={match.flagged}
                   bgColor="bg-white"
                   date={date}
+                  isActive={true}
                 />
               ))}
             </div>
