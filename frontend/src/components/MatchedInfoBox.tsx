@@ -30,6 +30,7 @@ type MatchedInfoBoxProps = {
   flagged: boolean;
   bgColor: string;
   date: string;
+  isActive: boolean;
 };
 
 export default function MatchedInfoBoxbox_props({
@@ -38,6 +39,7 @@ export default function MatchedInfoBoxbox_props({
   matchId,
   flagged,
   date,
+  isActive,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
 
@@ -210,6 +212,7 @@ export default function MatchedInfoBoxbox_props({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
+                {isActive && (
                 <div className="relative">
                   <button
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -265,7 +268,7 @@ export default function MatchedInfoBoxbox_props({
                     </div>
                   )}
                 </div>
-              </div>
+                )}</div>
             </th>
           </tr>
         </thead>

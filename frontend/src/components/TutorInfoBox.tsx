@@ -22,11 +22,13 @@ const STYLES = {
 type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   bgColor: string;
+  isUnmatched: boolean;
 };
 
 export default function TutorInfoBox({
   box_props,
   bgColor,
+  isUnmatched,
 }: TutorInfoBoxProps) {
   const {
     id,
@@ -117,7 +119,9 @@ export default function TutorInfoBox({
                   </div>
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
-                {/* Here is where you will implement the delete button ticket */}
+
+                {isUnmatched && (
+                  <>
                 <button
                   style={{ color: STYLES.colors.textGray }}
                   className="mb-2 ml-5 p-0 text-lg"
@@ -137,6 +141,8 @@ export default function TutorInfoBox({
                     <button onClick={handleSubmit}>Delete Tutor</button>
                     <img src={TrashCan} className="mx-2" />
                   </div>
+                )}
+                </>
                 )}
               </div>
             </th>
