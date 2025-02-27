@@ -61,7 +61,7 @@ export default function MatchedInfoBoxbox_props({
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [active, setActive] = useState(isActive);
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
@@ -73,13 +73,29 @@ export default function MatchedInfoBoxbox_props({
       .then((data) => console.log(data))
       .catch((error) => console.error(error));
   };
-
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
-
+  const handleMoveToInactive = async () => {
+    try {
+      console.log(matchId);
+      const response = await fetch(`${BACKEND_URL}/move-to-inactive/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matchId: matchId }),
+      });
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsDropdownOpen(false);
+      setActive(false);
+    }
+  };
   const handleSendEmail = async () => {
+    setIsDropdownOpen(false);
     try {
       const response = await fetch(`${BACKEND_URL}/email`, {
         method: "POST",
@@ -104,8 +120,10 @@ export default function MatchedInfoBoxbox_props({
 
   const handleToggleFlag = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/flag/${matchId}`, {
+      const response = await fetch(`${BACKEND_URL}/flag/`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matchId: matchId }),
       });
       if (response.ok) {
         setIsCurrentlyFlagged(!isCurrentlyFlagged);
@@ -116,183 +134,195 @@ export default function MatchedInfoBoxbox_props({
     }
   };
   return (
-    <div
-      className={`${
-        isCurrentlyFlagged ? "bg-red-50" : "odd:bg-gray-50 even:bg-white"
-      } w-full h-auto rounded-lg border-b text-left transition-colors my-2`}
-    >
-      <table className="table-fixed w-full">
-        <thead>
-          <tr className={`h-[80px] border-b`}>
-            <th className="w-1/5 px-3 font-normal">
-              {isCurrentlyFlagged && (
-                <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
-              )}
-              {date}
-            </th>
-            <th className="w-1/5 font-normal">
-              <p>
-                {first_name} {last_name}
-              </p>
-              <div className="text-[#888888] relative flex items-center gap-x-2">
-                <div className="flex-shrink-0">
-                  <BsEnvelope />
-                </div>
-                <p
-                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-                  onMouseEnter={() => setShowStudentPopup(true)}
-                  onMouseLeave={() => setShowStudentPopup(false)}
-                >
-                  {email}
-                </p>
-                {showStudentPopup && (
-                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
-                    {email}
-                  </div>
+    active && (
+      <div
+        className={`${
+          isCurrentlyFlagged ? "bg-red-50" : "odd:bg-gray-50 even:bg-white"
+        } w-full h-auto rounded-lg border-b text-left transition-colors my-2`}
+      >
+        <table className="table-fixed w-full">
+          <thead>
+            <tr className={`h-[80px] border-b`}>
+              <th className="w-1/5 px-3 font-normal">
+                {isCurrentlyFlagged && (
+                  <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
                 )}
-              </div>
-            </th>
-            <th className="w-1/5 font-normal">
-              <p>
-                {tutee_first_name} {tutee_last_name}
-              </p>
-              <div className="text-[#888888] relative flex items-center gap-x-2">
-                <div className="flex-shrink-0">
-                  <BsEnvelope />
-                </div>
-                <p
-                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-                  onMouseEnter={() => setShowParentPopup(true)}
-                  onMouseLeave={() => setShowParentPopup(false)}
-                >
-                  {parent_email}
+                {date}
+              </th>
+              <th className="w-1/5 font-normal">
+                <p>
+                  {first_name} {last_name}
                 </p>
-                {showParentPopup && (
-                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
-                    {parent_email}
+                <div className="text-[#888888] relative flex items-center gap-x-2">
+                  <div className="flex-shrink-0">
+                    <BsEnvelope />
                   </div>
-                )}
-              </div>
-            </th>
-            <th className="w-1/5">
-              <div className="flex flex-grow justify-center items-center">
-                <button
-                  onClick={handleSendEmail}
-                  disabled={emailSent}
-                  className={`w-[150px] flex justify-center items-center rounded-full border-2 text-sm py-2 transition-colors duration-150 ${
-                    emailSent
-                      ? "bg-gray-200 border-gray-400 text-gray-500 cursor-not-allowed"
-                      : "border-[#1F3A68] text-[#1F3A68] bg-[#f1f7fd] hover:bg-[#e5f1fc]"
-                  }`}
-                >
-                  {emailSent ? (
-                    <BsCheck2 size={20} />
-                  ) : (
-                    <BsEnvelope size={20} />
-                  )}
-
-                  <p className="font-medium ml-2">
-                    {emailSent ? "Sent Email" : "Send Email"}
-                  </p>
-                </button>
-              </div>
-            </th>
-            <th className="w-1/5">
-              <div className="flex items-center justify-center flex-row">
-                <button
-                  className="flex items-center text-[#888888] hover:text-gray-600"
-                  onClick={handleToggleDescription}
-                >
-                  <div
-                    style={{
-                      transition: STYLES.transitions.arrow,
-                    }}
-                    className={`transform ${isRotated ? "rotate-90" : ""}`}
+                  <p
+                    className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                    onMouseEnter={() => setShowStudentPopup(true)}
+                    onMouseLeave={() => setShowStudentPopup(false)}
                   >
-                    <IoIosArrowForward size={20} />
+                    {email}
+                  </p>
+                  {showStudentPopup && (
+                    <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
+                      {email}
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th className="w-1/5 font-normal">
+                <p>
+                  {tutee_first_name} {tutee_last_name}
+                </p>
+                <div className="text-[#888888] relative flex items-center gap-x-2">
+                  <div className="flex-shrink-0">
+                    <BsEnvelope />
                   </div>
-                  <span className="ml-2 p-0 font-normal">Details</span>
-                </button>
+                  <p
+                    className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                    onMouseEnter={() => setShowParentPopup(true)}
+                    onMouseLeave={() => setShowParentPopup(false)}
+                  >
+                    {parent_email}
+                  </p>
+                  {showParentPopup && (
+                    <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
+                      {parent_email}
+                    </div>
+                  )}
+                </div>
+              </th>
+              <th className="w-1/5">
+                <div className="flex flex-grow justify-center items-center">
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={emailSent}
+                    className={`w-[150px] flex justify-center items-center rounded-full border-2 text-sm py-2 transition-colors duration-150 ${
+                      emailSent
+                        ? "bg-gray-200 border-gray-400 text-gray-500 cursor-not-allowed"
+                        : "border-[#1F3A68] text-[#1F3A68] bg-[#f1f7fd] hover:bg-[#e5f1fc]"
+                    }`}
+                  >
+                    {emailSent ? (
+                      <BsCheck2 size={20} />
+                    ) : (
+                      <BsEnvelope size={20} />
+                    )}
 
-                {isActive && (
-                  <div className="relative">
-                    <button
-                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="mb-2 ml-5 p-0 text-lg text-gray-400"
+                    <p className="font-medium ml-2">
+                      {emailSent ? "Sent Email" : "Send Email"}
+                    </p>
+                  </button>
+                </div>
+              </th>
+              <th className="w-1/5">
+                <div className="flex items-center justify-center flex-row">
+                  <button
+                    className="flex items-center text-[#888888] hover:text-gray-600"
+                    onClick={handleToggleDescription}
+                  >
+                    <div
+                      style={{
+                        transition: STYLES.transitions.arrow,
+                      }}
+                      className={`transform ${isRotated ? "rotate-90" : ""}`}
                     >
-                      ...
-                      <div
-                        className={`transition-transform duration-300 ${
-                          isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
-                        }`}
-                      ></div>
-                    </button>
-                    {isDropdownOpen && (
-                      <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
-                        {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                      <IoIosArrowForward size={20} />
+                    </div>
+                    <span className="ml-2 p-0 font-normal">Details</span>
+                  </button>
+
+                  {isActive && (
+                    <div className="relative">
+                      <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        className="mb-2 ml-5 p-0 text-lg text-gray-400"
+                      >
+                        ...
+                        <div
+                          className={`transition-transform duration-300 ${
+                            isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                          }`}
+                        ></div>
+                      </button>
+                      {isDropdownOpen && (
+                        <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                          {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
                         <div className="className=" mr-2 w-4 h-4 inline-block>
                           <BsTrashFill size={20} />
                         </div>
                         Remove Pair
                       </button> */}
-                        <button
-                          onClick={handleToggleFlag}
-                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                        >
-                          {isCurrentlyFlagged ? (
-                            <>
-                              <img
-                                src={RED_FLAG}
-                                className="w-4 h-4 inline-block mr-2"
-                              />
-                              Unflag
-                            </>
-                          ) : (
-                            <>
-                              <img
-                                src={FLAG}
-                                className="w-4 h-4 inline-block mr-2"
-                              />
-                              Flag
-                            </>
-                          )}
-                        </button>
-                        <button
-                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                          onClick={unmatchPair}
-                        >
-                          <img
-                            src={deleteIcon}
-                            className="w-4 h-4 inline-block mr-2"
-                          />
-                          Unmatch Pair
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            </th>
-          </tr>
-        </thead>
-        {showDescription && (
-          <tbody className="bg-inherit">
-            <tr className={`h-[35px] bg-gray-100/50 border-b`}>
-              <td className="text-gray-400 px-3 w-1/5">Subject</td>
-              <td className="text-gray-400 w-1/5">Grade</td>
-              <td className="text-gray-400 w-1/5">Special Needs</td>
-              <td className="text-gray-400 w-1/5">Tutoring Mode</td>
-              <td className="text-gray-400 w-1/5"></td>
+                          <button
+                            onClick={handleToggleFlag}
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          >
+                            {isCurrentlyFlagged ? (
+                              <>
+                                <img
+                                  src={RED_FLAG}
+                                  className="w-4 h-4 inline-block mr-2"
+                                />
+                                Unflag
+                              </>
+                            ) : (
+                              <>
+                                <img
+                                  src={FLAG}
+                                  className="w-4 h-4 inline-block mr-2"
+                                />
+                                Flag
+                              </>
+                            )}
+                          </button>
+                          <button
+                            onClick={handleMoveToInactive}
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          >
+                            <img
+                              src={FLAG}
+                              className="w-4 h-4 inline-block mr-2"
+                            />{" "}
+                            Inactive
+                          </button>
+                          <button
+                            className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                            onClick={unmatchPair}
+                          >
+                            <img
+                              src={deleteIcon}
+                              className="w-4 h-4 inline-block mr-2"
+                            />
+                            Unmatch Pair
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </th>
             </tr>
-            <tr className={`h-[55px] border-b`}>
-              <td className="px-3 w-1/5">{subject}</td>
-              <td className="w-1/5">{grade}</td>
-              <td className="w-1/5">{special_needs}</td>
-              <td className="w-1/5">{tutoring_mode}</td>
-            </tr>
-          </tbody>
-        )}
-      </table>
-    </div>
+          </thead>
+          {showDescription && (
+            <tbody className="bg-inherit">
+              <tr className={`h-[35px] bg-gray-100/50 border-b`}>
+                <td className="text-gray-400 px-3 w-1/5">Subject</td>
+                <td className="text-gray-400 w-1/5">Grade</td>
+                <td className="text-gray-400 w-1/5">Special Needs</td>
+                <td className="text-gray-400 w-1/5">Tutoring Mode</td>
+                <td className="text-gray-400 w-1/5"></td>
+              </tr>
+              <tr className={`h-[55px] border-b`}>
+                <td className="px-3 w-1/5">{subject}</td>
+                <td className="w-1/5">{grade}</td>
+                <td className="w-1/5">{special_needs}</td>
+                <td className="w-1/5">{tutoring_mode}</td>
+              </tr>
+            </tbody>
+          )}
+        </table>
+      </div>
+    )
   );
 }
