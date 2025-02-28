@@ -45,13 +45,11 @@ const MatchSuggestionBlock = ({
   unmatched_names: TuteeName[];
   // onMatchApproved: (tutorId: string, tuteeId: string) => void;
 }) => {
-  const [selectedTuteeEmail, setselectedTuteeEmail] = useState<string | null>(
-    null
-  );
+  const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleApprove = async () => {
-    if (!selectedTuteeEmail) {
+    if (!selectedTuteeId) {
       alert("Please select a tutee first");
       return;
     }
@@ -61,16 +59,16 @@ const MatchSuggestionBlock = ({
       console.log("approve match");
       console.log(tutor_info);
 
-      console.log(selectedTuteeEmail);
-      const response = await fetch("/api/matches/approve", {
+      console.log(selectedTuteeId);
+
+      // TODO: Fix the route; should pass in the tutor id and selectedTuteeId
+      const response = await fetch("[Rachel & Hunter fix route]", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          // tutorId: tutor_info.id,
-          tuteeId: selectedTuteeEmail,
-        }),
+        // TODO: fix what is passed in
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {
@@ -145,18 +143,18 @@ const MatchSuggestionBlock = ({
       <div className="flex flex-row m-6 space-x-6 items-center justify-center ">
         <TuteeSuggestionBox
           tutee_info={tutee1}
-          isSelected={selectedTuteeEmail === tutee1.email}
-          onSelect={() => setselectedTuteeEmail(tutee1.email)}
+          isSelected={selectedTuteeId === tutee1.id}
+          onSelect={() => setselectedTuteeId(tutee1.id)}
         />
         <TuteeSuggestionBox
           tutee_info={tutee2}
-          isSelected={selectedTuteeEmail === tutee2.email}
-          onSelect={() => setselectedTuteeEmail(tutee2.email)}
+          isSelected={selectedTuteeId === tutee2.id}
+          onSelect={() => setselectedTuteeId(tutee2.id)}
         />
         <TuteeSuggestionBox
           tutee_info={tutee3}
-          isSelected={selectedTuteeEmail === tutee3.email}
-          onSelect={() => setselectedTuteeEmail(tutee3.email)}
+          isSelected={selectedTuteeId === tutee3.id}
+          onSelect={() => setselectedTuteeId(tutee3.id)}
         />
       </div>
 
@@ -166,7 +164,7 @@ const MatchSuggestionBlock = ({
           className="rounded-xl bg-[#1E3B68] px-5 py-3 text-white text-lg hover:bg-blue-700 disabled:opacity-50"
           type="button"
           onClick={handleApprove}
-          disabled={!selectedTuteeEmail || isSubmitting}
+          disabled={!selectedTuteeId || isSubmitting}
         >
           <span className="inline-block ml-0.5">
             <FaCheck />
@@ -192,6 +190,7 @@ const MatchSuggestionBlock = ({
         <Modal.Body>
           <div>
             <ul>
+              {/* TODO: Make selectable! */}
               {unmatched_names.map((name, index) => (
                 <li key={index}>
                   {name.firstName} {name.lastName}

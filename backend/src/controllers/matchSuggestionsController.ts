@@ -8,6 +8,8 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
+  matchedTable,
+  approvedMatchesTable,
 } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";

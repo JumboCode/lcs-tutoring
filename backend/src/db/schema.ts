@@ -68,6 +68,7 @@ export const approvedMatchesTable = pgTable('approved_matches', {
   flagged: boolean('flagged').notNull().default(false),
   active: boolean('active').notNull().default(true),
   sent_email: boolean('sent_email').notNull().default(false),
+  date: date(),
 });
 
 export const adminTable = pgTable("admin", {
