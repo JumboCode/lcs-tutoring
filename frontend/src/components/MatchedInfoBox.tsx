@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
@@ -31,7 +31,7 @@ type MatchedInfoBoxProps = {
   bgColor: string;
   date: string;
   isActive: boolean;
-  email_sent: boolean;
+  sent_email: boolean;
 };
 
 export default function MatchedInfoBoxbox_props({
@@ -41,9 +41,10 @@ export default function MatchedInfoBoxbox_props({
   flagged,
   date,
   isActive,
-  email_sent,
+  sent_email,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
+  
 
   const {
     tutee_first_name,
@@ -57,11 +58,11 @@ export default function MatchedInfoBoxbox_props({
   const [isCurrentlyFlagged, setIsCurrentlyFlagged] = useState(flagged);
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
-  const [emailSent, setEmailSent] = useState(email_sent);
+  const [emailSent, setEmailSent] = useState(sent_email);
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
@@ -90,6 +91,7 @@ export default function MatchedInfoBoxbox_props({
           matchId: matchId,
           tutorEmail: tutor_props.email,
           tuteeParentEmail: tutee_props.parent_email,
+          //email_sent: true,
         }),
       });
 
@@ -97,10 +99,20 @@ export default function MatchedInfoBoxbox_props({
         throw new Error("Network response was not ok");
       }
       setEmailSent(true);
+      localStorage.setItem(`emailSent-${matchId}`, 'true');
     } catch (error) {
       console.error("Failed to send email!");
     }
   };
+
+  useEffect(() => {
+    const sentStatus = localStorage.getItem(`emailSent-${matchId}`);
+    if (sentStatus === 'true') {
+        setEmailSent(true);
+    }
+}, [matchId]);
+
+
 
   const handleToggleFlag = async () => {
     try {
@@ -235,6 +247,7 @@ export default function MatchedInfoBoxbox_props({
                         </div>
                         Remove Pair
                       </button> */}
+                        {emailSent && (
                         <button
                           onClick={handleToggleFlag}
                           className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
@@ -256,7 +269,7 @@ export default function MatchedInfoBoxbox_props({
                               Flag
                             </>
                           )}
-                        </button>
+                        </button>)}
                         <button
                           className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
                           onClick={unmatchPair}

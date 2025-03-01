@@ -185,7 +185,7 @@ export default function ApprovedMatches() {
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
                   flagged={match.flagged}
-                  email_sent={match.sent_email}
+                  sent_email={match.sent_email}
                   bgColor="bg-white"
                   date={date}
                   isActive={false}
@@ -202,7 +202,7 @@ export default function ApprovedMatches() {
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
                   flagged={match.flagged}
-                  email_sent={match.sent_email}
+                  sent_email={match.sent_email}
                   bgColor="bg-white"
                   date={date}
                   isActive={true}

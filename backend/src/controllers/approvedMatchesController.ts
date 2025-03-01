@@ -194,6 +194,9 @@ export const emailPair = async (req: Request, res: Response) => {
     console.log(tuteeParentEmail);
     console.log(tutorEmail);
 
+    
+
+
     const { data, error } = await resend.emails.send({
       from: "LCSTutoring <onboarding@resend.dev>",
       // TODO: change this to the actual emails
@@ -208,6 +211,10 @@ export const emailPair = async (req: Request, res: Response) => {
     });
     console.log("Data: ", data);
     if (data?.id !== null) {
+      await db
+      .update(approvedMatchesTable)
+      .set({ sent_email: true })
+      .where(eq(approvedMatchesTable.id, req.body.matchId));
       console.log("Email sent successfully");
     }
     console.log("Error: ", error);
