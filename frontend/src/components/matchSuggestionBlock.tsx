@@ -57,18 +57,19 @@ const MatchSuggestionBlock = ({
     setIsSubmitting(true);
     try {
       console.log("approve match");
-      console.log(tutor_info);
+      console.log(tutor_info.id);
+      const tutorId = tutor_info.id;
 
       console.log(selectedTuteeId);
 
       // TODO: Fix the route; should pass in the tutor id and selectedTuteeId
-      const response = await fetch("[Rachel & Hunter fix route]", {
+      const response = await fetch("http://localhost:3000/approve-match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         // TODO: fix what is passed in
-        body: JSON.stringify({}),
+        body: JSON.stringify({tutorId, selectedTuteeId}),
       });
 
       if (!response.ok) {

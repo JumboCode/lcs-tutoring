@@ -56,3 +56,43 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     res.status(500).send("Error fetching match suggestions");
   }
 };
+
+export const approveMatch = async (req: Request, res: Response) => {
+  const { tutorId, selectedTuteeId } = req.body;
+  if (tutorId > 0 && selectedTuteeId > 0) {
+
+    await db.insert(matchedTable).values({tutee_id: selectedTuteeId, tutor_id: tutorId});
+
+    await db.insert(approvedMatchesTable).values({tutee_id: selectedTuteeId, tutor_id: tutorId});
+
+    await db
+    .update(approvedMatchesTable)
+    .set({date: new Date().toLocaleDateString("en-CA", {timeZone: "America/New_York"})}) // Object containing only the fields to update
+    .where(eq(approvedMatchesTable.tutee_id, selectedTuteeId));
+    
+    await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutorId) || eq(unmatchedTable.tutee_id, selectedTuteeId));
+
+  } else {
+    throw new Error("Invalid Match");
+  }
+  
+};
+
+/*
+if (tutee_id > 0) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
+
+    if (query.length > 0) {
+      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+
+    } else {
+      throw new Error("ID not found in matched table");
+    }
+  } else {
+    throw new Error("Invalid ID");
+  }*/
