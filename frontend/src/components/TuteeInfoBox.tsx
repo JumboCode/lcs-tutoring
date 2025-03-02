@@ -37,7 +37,7 @@ export default function TuteeInfoBox({
     tutee_first_name,
     tutee_last_name,
     parent_email,
-    subject,
+    subjects,
     grade,
     gender,
     tutoring_mode,
@@ -76,12 +76,15 @@ export default function TuteeInfoBox({
         <thead>
           <tr className={`h-[80px] ${bgColor} border-b`}>
             <th className="font-normal w-1/5 px-3">
-            <div className="flex flex-col">
-            {history_date && (
-              <span className="text-red-500 font-medium">Inactive {history_date}</span>
-            )}
-              <span className="text-gray-500">Joined {date}</span>
-            </div> </th>
+              <div className="flex flex-col">
+                {history_date && (
+                  <span className="text-red-500 font-medium">
+                    Inactive {history_date}
+                  </span>
+                )}
+                <span className="text-gray-500">Joined {date}</span>
+              </div>{" "}
+            </th>
             <th className="font-normal w-1/5">
               <p className="">
                 {tutee_first_name} {tutee_last_name}
@@ -104,7 +107,7 @@ export default function TuteeInfoBox({
                 )}
               </div>
             </th>
-            <th className="font-normal w-1/5">{subject}</th>
+            <th className="font-normal w-1/5">{subjects.join(", ")}</th>
             <th className="w-1/5">
               <div className="font-normal items-center justify-center">
                 <span>{grade}</span>
@@ -129,29 +132,29 @@ export default function TuteeInfoBox({
 
                 {isUnmatched && (
                   <>
-                <button
-                  style={{ color: STYLES.colors.textGray }}
-                  className="mb-2 ml-5 p-0 text-lg"
-                  onClick={toggleDropdown}
-                >
-                  {" "}
-                  ...{" "}
-                  <div
-                    className={`transition-transform duration-300 ${
-                      isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
-                    }`}
-                  ></div>
-                </button>
-
-                {isDropdownOpen && (
-                  <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                    <button onClick={handleSubmit} className="">
-                      Delete Tutee
+                    <button
+                      style={{ color: STYLES.colors.textGray }}
+                      className="mb-2 ml-5 p-0 text-lg"
+                      onClick={toggleDropdown}
+                    >
+                      {" "}
+                      ...{" "}
+                      <div
+                        className={`transition-transform duration-300 ${
+                          isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                        }`}
+                      ></div>
                     </button>
-                    <img src={TrashCan} className="mx-2" />
-                  </div>
-                )}
-                </>
+
+                    {isDropdownOpen && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handleSubmit} className="">
+                          Delete Tutee
+                        </button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </th>

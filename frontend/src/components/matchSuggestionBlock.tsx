@@ -35,15 +35,13 @@ const MatchSuggestionBlock = ({
   tutee3,
   flagged,
   unmatched_names,
-}: // onMatchApproved,
-{
+}: {
   tutor_info: tutorInfo;
   tutee1: tuteeInfo;
   tutee2: tuteeInfo;
   tutee3: tuteeInfo;
   flagged: Boolean;
   unmatched_names: TuteeName[];
-  // onMatchApproved: (tutorId: string, tuteeId: string) => void;
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,21 +60,17 @@ const MatchSuggestionBlock = ({
 
       console.log(selectedTuteeId);
 
-      // TODO: Fix the route; should pass in the tutor id and selectedTuteeId
       const response = await fetch("http://localhost:3000/approve-match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        // TODO: fix what is passed in
-        body: JSON.stringify({tutorId, selectedTuteeId}),
+        body: JSON.stringify({ tutorId, selectedTuteeId }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to approve match");
       }
-
-      // onMatchApproved(tutor_info.id, selectedTuteeEmail);
     } catch (error) {
       console.error("Error approving match:", error);
       alert("Failed to approve match. Please try again.");

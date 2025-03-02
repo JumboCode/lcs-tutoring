@@ -44,7 +44,6 @@ export default function MatchedInfoBoxbox_props({
   sent_email,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
-  
 
   const {
     tutee_first_name,
@@ -52,7 +51,7 @@ export default function MatchedInfoBoxbox_props({
     parent_email,
     tutoring_mode,
     special_needs,
-    subject,
+    subjects,
     grade,
   } = tutee_props;
   const [isCurrentlyFlagged, setIsCurrentlyFlagged] = useState(flagged);
@@ -62,7 +61,7 @@ export default function MatchedInfoBoxbox_props({
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
+
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
@@ -99,7 +98,7 @@ export default function MatchedInfoBoxbox_props({
         throw new Error("Network response was not ok");
       }
       setEmailSent(true);
-      localStorage.setItem(`emailSent-${matchId}`, 'true');
+      localStorage.setItem(`emailSent-${matchId}`, "true");
     } catch (error) {
       console.error("Failed to send email!");
     }
@@ -107,12 +106,10 @@ export default function MatchedInfoBoxbox_props({
 
   useEffect(() => {
     const sentStatus = localStorage.getItem(`emailSent-${matchId}`);
-    if (sentStatus === 'true') {
-        setEmailSent(true);
+    if (sentStatus === "true") {
+      setEmailSent(true);
     }
-}, [matchId]);
-
-
+  }, [matchId]);
 
   const handleToggleFlag = async () => {
     try {
@@ -248,28 +245,29 @@ export default function MatchedInfoBoxbox_props({
                         Remove Pair
                       </button> */}
                         {emailSent && (
-                        <button
-                          onClick={handleToggleFlag}
-                          className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                        >
-                          {isCurrentlyFlagged ? (
-                            <>
-                              <img
-                                src={RED_FLAG}
-                                className="w-4 h-4 inline-block mr-2"
-                              />
-                              Unflag
-                            </>
-                          ) : (
-                            <>
-                              <img
-                                src={FLAG}
-                                className="w-4 h-4 inline-block mr-2"
-                              />
-                              Flag
-                            </>
-                          )}
-                        </button>)}
+                          <button
+                            onClick={handleToggleFlag}
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          >
+                            {isCurrentlyFlagged ? (
+                              <>
+                                <img
+                                  src={RED_FLAG}
+                                  className="w-4 h-4 inline-block mr-2"
+                                />
+                                Unflag
+                              </>
+                            ) : (
+                              <>
+                                <img
+                                  src={FLAG}
+                                  className="w-4 h-4 inline-block mr-2"
+                                />
+                                Flag
+                              </>
+                            )}
+                          </button>
+                        )}
                         <button
                           className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
                           onClick={unmatchPair}
@@ -291,14 +289,14 @@ export default function MatchedInfoBoxbox_props({
         {showDescription && (
           <tbody className="bg-inherit">
             <tr className={`h-[35px] bg-gray-100/50 border-b`}>
-              <td className="text-gray-400 px-3 w-1/5">Subject</td>
+              <td className="text-gray-400 px-3 w-1/5">Subjects</td>
               <td className="text-gray-400 w-1/5">Grade</td>
               <td className="text-gray-400 w-1/5">Special Needs</td>
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
               <td className="text-gray-400 w-1/5"></td>
             </tr>
             <tr className={`h-[55px] border-b`}>
-              <td className="px-3 w-1/5">{subject}</td>
+              <td className="px-3 w-1/5">{subjects.join(", ")}</td>
               <td className="w-1/5">{grade}</td>
               <td className="w-1/5">{special_needs}</td>
               <td className="w-1/5">{tutoring_mode}</td>

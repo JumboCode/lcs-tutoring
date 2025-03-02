@@ -27,9 +27,9 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
     // query to get all active matches
     const active_matches = await db
       .select({
-        // TODO: do we need matchID and flagged?
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
+        sent_email: approvedMatchesTable.sent_email,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -46,6 +46,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           parent_email: tuteeTable.parent_email,
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
+          special_needs: tuteeTable.special_needs,
         },
       })
       .from(approvedMatchesTable)
@@ -58,6 +59,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       .select({
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
+        sent_email: approvedMatchesTable.sent_email,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,

@@ -5,7 +5,7 @@ export type tuteeBoxProps = {
   tutee_first_name: string;
   tutee_last_name: string;
   parent_email: string;
-  subject: string;
+  subjects: string[];
   grade: string;
   special_needs: string;
   gender: string;
