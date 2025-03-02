@@ -19,6 +19,32 @@ const db = drizzle(process.env.DATABASE_URL!);
 
 const resend = new Resend(process.env.RESENDAPIKEY!);
 
+export const moveToInactive = async (req: Request, res: Response) => {
+  // return res.send("inside move to inactive");
+  console.log(req.params);
+  console.log(req.body);
+  try {
+    console.log(req.body);
+    const match_id = parseInt(req.body.matchId);
+    const [match] = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, match_id));
+    if (!match) {
+      res.status(404).json("Match not found");
+    }
+    await db
+      .update(approvedMatchesTable)
+      .set({ active: false })
+      .where(eq(approvedMatchesTable.id, match_id));
+    console.log("Match moved to inactive");
+    res.status(200).json("Match moved to inactive");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("Error updating flag status");
+  }
+};
+
 /* returns all the approved matches */
 export const getApprovedMatches = async (req: Request, res: Response) => {
   try {
@@ -93,7 +119,10 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
 
 // backend/src/index.ts
 export const flagApprovedMatch = async (req: Request, res: Response) => {
-  const id = parseInt(req.params.id);
+  console.log("Flagging approved match");
+  console.log(req.body);
+  const id = parseInt(req.body.matchId);
+  console.log("Match id: ", id);
   try {
     const [match] = await db
       .select()
