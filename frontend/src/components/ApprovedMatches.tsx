@@ -103,7 +103,7 @@ export default function ApprovedMatches() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
@@ -206,6 +206,24 @@ export default function ApprovedMatches() {
                   bgColor="bg-white"
                   date={date}
                   isActive={true}
+                  onUnpair={(deletedMatchId) => {
+                    // Remove the deleted match from active matches
+                    setActiveMatches((prev) =>
+                      prev.filter(
+                        (pair) => pair.matchId.toString() !== deletedMatchId
+                      )
+                    );
+
+                    // Find the match to move
+                    const matchToMove = active_matches.find(
+                      (pair) => pair.matchId.toString() === deletedMatchId
+                    );
+
+                    // Only add the match if it's found
+                    if (matchToMove) {
+                      setInactiveMatches((prev) => [...prev, matchToMove]);
+                    }
+                  }}
                 />
               ))}
             </div>

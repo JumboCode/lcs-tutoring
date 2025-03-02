@@ -105,7 +105,7 @@ const MatchSuggestionBlock = ({
   return (
     <>
       {!finishedSubmitting && (
-        <div className="border rounded-lg bg-white p-6 my-8">
+        <div className="border rounded-lg bg-white p-6 my-6">
           <div className="flex space-x-6 mx-6">
             <span className="font-bold text-lg">
               {first_name} {last_name}

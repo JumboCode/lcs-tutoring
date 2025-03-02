@@ -8,8 +8,8 @@ import express from "express";
 const router = express.Router();
 
 router.get("/approved-matches", getApprovedMatches);
-router.post("/flag/:match-id", flagApprovedMatch);
-router.post("/unmatch-pair/:match-id", unmatchPair);
+router.post("/flag/:id", flagApprovedMatch);
+router.post("/unmatch-pair/:id", unmatchPair);
 router.post("/email", emailPair);
 
 export default router;

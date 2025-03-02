@@ -92,7 +92,10 @@ export default function NavigationBar() {
       </div>
 
       {/* Main content with left margin equal to the nav bar width */}
-      <div className="p-4 bg-gray-100/50" style={{ marginLeft: navBarWidth }}>
+      <div
+        className="p-4 bg-gray-100/50 min-h-screen"
+        style={{ marginLeft: navBarWidth }}
+      >
         <div className="mt-4">
           {currentPage === "Match Suggestions" && <MatchSuggestionTable />}
           {currentPage === "Tutor Database" && <TutorTable />}

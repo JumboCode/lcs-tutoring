@@ -136,6 +136,8 @@ export const unmatchPair = async (req: Request, res: Response) => {
       .update(approvedMatchesTable)
       .set({ active: false })
       .where(eq(approvedMatchesTable.id, Number(match_id)));
+    
+    res.json({ success: true, message: "Pair unmatched" });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to inactive");
@@ -164,7 +166,10 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("Tutor id does not exist in matched table");
     }
 
-    await db.insert(unmatchedTable).values(query).onConflictDoNothing();
+    const row = query[0];
+    await db.insert(unmatchedTable).values({
+      tutor_id: row.tutor_id,
+    });
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
@@ -180,7 +185,10 @@ async function moveTuteeToUnmatched(tutee_id: number) {
     throw new Error("Tutee id does not exist in matched table");
   }
 
-  await db.insert(unmatchedTable).values(query).onConflictDoNothing();
+  const row = query[0];
+  await db.insert(unmatchedTable).values({
+    tutee_id: row.tutee_id,
+  });
 
   await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }

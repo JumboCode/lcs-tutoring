@@ -74,7 +74,7 @@ export default function TutorTable() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`w-full flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">

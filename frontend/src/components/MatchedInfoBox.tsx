@@ -32,6 +32,7 @@ type MatchedInfoBoxProps = {
   date: string;
   isActive: boolean;
   sent_email: boolean;
+  onUnpair?: (matchId: string) => void;
 };
 
 export default function MatchedInfoBoxbox_props({
@@ -42,6 +43,7 @@ export default function MatchedInfoBoxbox_props({
   date,
   isActive,
   sent_email,
+  onUnpair,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
 
@@ -65,12 +67,17 @@ export default function MatchedInfoBoxbox_props({
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
+    console.log("about to fetch unmatch pair");
+
     fetch(`${BACKEND_URL}/unmatch-pair/${matchId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data);
+        if (onUnpair) onUnpair(matchId);
+      })
       .catch((error) => console.error(error));
   };
 

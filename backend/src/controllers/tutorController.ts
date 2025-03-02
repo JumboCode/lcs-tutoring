@@ -157,6 +157,10 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
         .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
   
       if (query.length > 0) {
+        await db.update(tutorTable)
+          .set({ history_date: new Date().toISOString().split("T")[0], })
+          .where(eq(tutorTable.id, tutor_id));
+
         await db.insert(historyTable).values(query[0]);
   
         await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));

@@ -91,9 +91,10 @@ export default function TuteeInfoBox({
               </div>{" "}
             </th>
             <th className="font-normal w-1/5">
-              <p className="">
+              <span>
                 {tutee_first_name} {tutee_last_name}
-              </p>
+              </span>
+              <span className="text-[#D70000]">{notes && `    *`}</span>
               <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />
@@ -193,15 +194,16 @@ export default function TuteeInfoBox({
                 </div>
               </td>
             </tr>
+            {notes && (
+              <tr className="bg-[#FFD6D6] text-sm">
+                <td className="text-[#D70000] px-3" colSpan={5}>
+                  <strong>Special Request:</strong> {notes}
+                </td>
+              </tr>
+            )}
           </tbody>
         )}
       </table>
-      {notes && (
-        <div className="bg-[#FFD6D6] text-sm flex flex-row">
-          <td className="text-[#D70000] px-3">Special Request:</td>
-          <td className="">{notes}</td>
-        </div>
-      )}
     </div>
   );
 }
