@@ -38,7 +38,7 @@ export default function TutorTable() {
         );
         const data = await response.json();
         const { matchedTutors, unmatchedTutors, historyTutors } = data;
-        console.log("history tutors:", historyTutors);
+        // console.log("history tutors:", historyTutors);
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
         setHistoryTutors(historyTutors);

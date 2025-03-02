@@ -36,7 +36,7 @@ export default function TuteeTable() {
         history_date: null,
       }))
     );
-  
+
     setMatchedTutees((prev) =>
       prev.map((tutee) => ({
         ...tutee,
@@ -44,8 +44,6 @@ export default function TuteeTable() {
       }))
     );
   }, []); // Empty dependency array ensures this runs only once
-  
-
 
   useEffect(() => {
     const fetchTutees = async () => {
@@ -56,9 +54,11 @@ export default function TuteeTable() {
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
         // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
-        setMatchedTutees(matchedTutees);
-        setUnmatchedTutees(unmatchedTutees);
-        setHistoryTutees(historyTutees);
+        setMatchedTutees(matchedTutees.map((row: { tutee: any }) => row.tutee));
+        setUnmatchedTutees(
+          unmatchedTutees.map((row: { tutee: any }) => row.tutee)
+        );
+        setHistoryTutees(historyTutees.map((row: { tutee: any }) => row.tutee));
       } catch (error) {
         console.error("Error fetching tutees:", error);
         setError((error as Error).message);

@@ -8,7 +8,6 @@ import express from "express";
 const router = express.Router();
 
 router.get("/match-suggestions", getMatchSuggestions);
-
 router.post("/approve-match", approveMatch);
 
 export default router;

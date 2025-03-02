@@ -22,7 +22,7 @@ export const getTutors = async (req: Request, res: Response) => {
     const filteredTutors = await filterTutors(
       undefined,
       undefined,
-      true,
+      undefined,
       undefined
     );
 
@@ -31,25 +31,23 @@ export const getTutors = async (req: Request, res: Response) => {
       .map((tutor) => tutor.id)
       .filter((id) => id !== undefined);
 
-    // getting the matched tutors with the filtered ids
     const matchedTutors = await db
-      .select()
+      .selectDistinct()
       .from(tutorTable)
       .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
 
-    // getting the unmatched tutors with the filtered ids
     const unmatchedTutors = await db
-      .select()
+      .selectDistinct()
       .from(tutorTable)
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
     
-    // getting the history tutors with the filtered ids
     const historyTutors = await db
-      .select()
+      .selectDistinct()
       .from(tutorTable)
-      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id));
+      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id))
+      .where(inArray(tutorTable.id, tutorIds));
 
     res.send({
       matchedTutors: matchedTutors.map((row) => row.tutor),
@@ -143,7 +141,7 @@ async function filterTutors(
 
   const tutors = await query;
 
-  console.log("Filtered Tutors:", tutors);
+  // console.log("Filtered Tutors:", tutors);
 
   return tutors;
 }

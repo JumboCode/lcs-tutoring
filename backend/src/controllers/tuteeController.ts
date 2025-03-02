@@ -19,25 +19,26 @@ const db = drizzle(process.env.DATABASE_URL!);
 export const getTutees = async ( req: Request, res: Response) => {
   try {
     console.log("Inside tutees endpoint");
+
     const matchedTutees = await db
       .select()
       .from(tuteeTable)
       .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id));
 
     const unmatchedTutees = await db
-      .select()
+      .selectDistinct()
       .from(tuteeTable)
       .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
 
     const historyTutees = await db
-      .select()
+      .selectDistinct()
       .from(tuteeTable)
       .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id));
 
     res.send({
-      matchedTutees: matchedTutees.map((row) => row.tutee),
-      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
-      historyTutees: historyTutees.map((row) => row.tutee),
+      matchedTutees: matchedTutees,
+      unmatchedTutees: unmatchedTutees,
+      historyTutees: historyTutees,
     });
   } catch (error) {
     console.error(error);
@@ -48,7 +49,7 @@ export const getTutees = async ( req: Request, res: Response) => {
 /* returns all the unmatched tutees */
 export const getUnmatchedTutees = async ( req: Request, res: Response) => {
   try {
-    console.log("Inside tutees endpoint");
+    console.log("Inside unmatched tutees endpoint");
 
     const unmatchedTutees = await db
       .select()
