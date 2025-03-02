@@ -40,12 +40,15 @@ export default function NavigationBar() {
     { name: "Mailing List", icon_gray: MailGray, icon_blue: MailBlue },
   ];
 
+  // Define the nav bar width based on collapsed state
+  const navBarWidth = isCollapsed ? "50px" : "225px";
+
   return (
-    <div className="flex flex-row">
+    <div>
+      {/* Fixed navigation bar */}
       <div
-        className={`flex flex-col bg-[#FFFFFF] min-h-screen transition-all duration-300 border-r-2 ${
-          isCollapsed ? "min-w-[50px]" : "min-w-[225px]"
-        }`}
+        className="fixed top-0 left-0 flex flex-col bg-[#FFFFFF] min-h-screen transition-all duration-300 border-r-2"
+        style={{ width: navBarWidth }}
       >
         <div
           onClick={toggleCollapse}
@@ -57,7 +60,7 @@ export default function NavigationBar() {
             }`}
             src={Collapse}
             alt="Collapse Icon"
-            style={{ width: "15px", height: "15px" }}
+            style={{ width: "20px", height: "20px" }}
           />
         </div>
 
@@ -87,7 +90,12 @@ export default function NavigationBar() {
           ))}
         </div>
       </div>
-      <div className="flex-grow p-4 bg-gray-100/50">
+
+      {/* Main content with left margin equal to the nav bar width */}
+      <div
+        className="p-4 bg-gray-100/50 min-h-screen"
+        style={{ marginLeft: navBarWidth }}
+      >
         <div className="mt-4">
           {currentPage === "Match Suggestions" && <MatchSuggestionTable />}
           {currentPage === "Tutor Database" && <TutorTable />}

@@ -36,7 +36,7 @@ export default function TuteeTable() {
         history_date: null,
       }))
     );
-  
+
     setMatchedTutees((prev) =>
       prev.map((tutee) => ({
         ...tutee,
@@ -44,8 +44,6 @@ export default function TuteeTable() {
       }))
     );
   }, []); // Empty dependency array ensures this runs only once
-  
-
 
   useEffect(() => {
     const fetchTutees = async () => {
@@ -56,9 +54,11 @@ export default function TuteeTable() {
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
         // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
-        setMatchedTutees(matchedTutees);
-        setUnmatchedTutees(unmatchedTutees);
-        setHistoryTutees(historyTutees);
+        setMatchedTutees(matchedTutees.map((row: { tutee: any }) => row.tutee));
+        setUnmatchedTutees(
+          unmatchedTutees.map((row: { tutee: any }) => row.tutee)
+        );
+        setHistoryTutees(historyTutees.map((row: { tutee: any }) => row.tutee));
       } catch (error) {
         console.error("Error fetching tutees:", error);
         setError((error as Error).message);
@@ -91,7 +91,7 @@ export default function TuteeTable() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`w-full flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
@@ -196,6 +196,14 @@ export default function TuteeTable() {
                   key={index}
                   bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={true}
+                  onDelete={(deletedTutee) => {
+                    // Remove the deleted tutee from unmatched tutees
+                    setUnmatchedTutees((prev) =>
+                      prev.filter((tutee) => tutee.id !== deletedTutee.id)
+                    );
+                    // Add the deleted tutee to history tutees
+                    setHistoryTutees((prev) => [...prev, deletedTutee]);
+                  }}
                 />
               ))}
             </div>

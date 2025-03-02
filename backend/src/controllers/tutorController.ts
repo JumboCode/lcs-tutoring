@@ -22,7 +22,7 @@ export const getTutors = async (req: Request, res: Response) => {
     const filteredTutors = await filterTutors(
       undefined,
       undefined,
-      true,
+      undefined,
       undefined
     );
 
@@ -31,25 +31,23 @@ export const getTutors = async (req: Request, res: Response) => {
       .map((tutor) => tutor.id)
       .filter((id) => id !== undefined);
 
-    // getting the matched tutors with the filtered ids
     const matchedTutors = await db
-      .select()
+      .selectDistinct()
       .from(tutorTable)
       .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
 
-    // getting the unmatched tutors with the filtered ids
     const unmatchedTutors = await db
-      .select()
+      .selectDistinct()
       .from(tutorTable)
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
     
-    // getting the history tutors with the filtered ids
     const historyTutors = await db
-      .select()
+      .selectDistinct()
       .from(tutorTable)
-      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id));
+      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id))
+      .where(inArray(tutorTable.id, tutorIds));
 
     res.send({
       matchedTutors: matchedTutors.map((row) => row.tutor),
@@ -143,45 +141,43 @@ async function filterTutors(
 
   const tutors = await query;
 
-  console.log("Filtered Tutors:", tutors);
+  // console.log("Filtered Tutors:", tutors);
 
   return tutors;
 }
 
-export const matchedToHistory = async (req: Request, res: Response) => {
+export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const tutor_id = req.params.id;
     // const request = req.body;
-    moveTutorToHistory(id);
+    if (tutor_id.length == 7 || tutor_id.length == 8) {
+      const query = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
+  
+      if (query.length > 0) {
+        await db.update(tutorTable)
+          .set({ history_date: new Date().toISOString().split("T")[0], })
+          .where(eq(tutorTable.id, tutor_id));
+
+        await db.insert(historyTable).values(query[0]);
+  
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
+        
+        res.json({ success: true, message: "Tutor moved" });
+
+      } else {
+        throw new Error("ID not found in matched table");
+      }
+    } else {
+      throw new Error("Invalid ID");
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
 };
-
-async function moveTutorToHistory(tutor_id: string) {
-  if (tutor_id.length == 7 || tutor_id.length == 8) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutor_id, tutor_id)); //returns an array with only one element
-
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
-
-      // for (let i = 0; i < query.length - 1; i++) {
-      //   //adding rows back in
-      //   await db.insert(matchedTable).values(query[0]);
-      // }
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }
-}
 
 export const unmatchedToMatched = async (req: Request, res: Response) => {
     // TODO: Implement logic

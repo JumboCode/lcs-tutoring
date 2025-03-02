@@ -23,6 +23,7 @@ interface MatchSuggestion {
 
 export default function MatchSuggestionTable() {
   const tutee1: tuteeInfo = {
+    id: "12",
     first_name: "Bill",
     last_name: "Smith",
     email: "bill.smith@hi.com",
@@ -33,6 +34,7 @@ export default function MatchSuggestionTable() {
   };
 
   const tutee2: tuteeInfo = {
+    id: "13",
     first_name: "Bob",
     last_name: "Jones",
     email: "bob.jones@hi.com",
@@ -43,6 +45,7 @@ export default function MatchSuggestionTable() {
   };
 
   const tutee3: tuteeInfo = {
+    id: "14",
     first_name: "Ana",
     last_name: "Todd",
     email: "ana.todd@hi.com",

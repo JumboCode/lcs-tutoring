@@ -14,6 +14,7 @@ export const tutorTable = pgTable("tutor", {
   subject_pref: varchar({ length: 50 }).array(),
   tutoring_mode: varchar({ length: 50 }).notNull(),
   date: date().notNull(),
+  history_date: date(),
   previous_tutee: boolean('previous_tutee').default(false).notNull(),
   continuing_tutee_name: varchar({ length: 50 }),
   num_tutees: integer().default(0).notNull(),
@@ -44,30 +45,31 @@ export const tuteeTable = pgTable("tutee", {
 
 export const unmatchedTable = pgTable('unmatched', {
   id: serial('id').primaryKey(),
-  tutee_id: integer().references(() => tuteeTable.id),
-  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
+  tutee_id: integer(),
+  tutor_id: varchar({ length: 7 }),
   flagged: boolean('flagged').notNull().default(false),
 });
 
 export const matchedTable = pgTable('matched', {
   id: serial('id').primaryKey(),
-  tutee_id: integer().references(() => tuteeTable.id),
-  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
+  tutee_id: integer(),
+  tutor_id: varchar({ length: 7 }),
 });
 
 export const historyTable = pgTable('history', {
   id: serial('id').primaryKey(),
-  tutee_id: integer().references(() => tuteeTable.id),
-  tutor_id: varchar({ length: 7 }).references(() => tutorTable.id),
+  tutee_id: integer(),
+  tutor_id: varchar({ length: 7 }),
 });
 
 export const approvedMatchesTable = pgTable('approved_matches', {
   id: serial('id').primaryKey(),
-  tutee_id: integer().notNull().references(() => tuteeTable.id),
-  tutor_id: varchar({ length: 7 }).notNull().references(() => tutorTable.id),
+  tutee_id: integer().notNull(),
+  tutor_id: varchar({ length: 7 }).notNull(),
   flagged: boolean('flagged').notNull().default(false),
   active: boolean('active').notNull().default(true),
   sent_email: boolean('sent_email').notNull().default(false),
+  date: date(),
 });
 
 export const adminTable = pgTable("admin", {

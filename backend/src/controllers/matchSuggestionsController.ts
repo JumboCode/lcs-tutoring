@@ -8,6 +8,8 @@ import {
   tuteeTable,
   tutorTable,
   unmatchedTable,
+  matchedTable,
+  approvedMatchesTable,
 } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
@@ -54,3 +56,66 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     res.status(500).send("Error fetching match suggestions");
   }
 };
+
+export const approveMatch = async (req: Request, res: Response) => {
+  console.log("IN APPROVE MATCH");
+  try {
+    const { tutorId, selectedTuteeId } = req.body;
+    
+    if (tutorId > 0 && selectedTuteeId > 0) {
+      await db.insert(matchedTable).values({
+        tutee_id: selectedTuteeId,
+        tutor_id: tutorId,
+      });
+      console.log("Are we inserting into matched table??");
+
+      await db.insert(approvedMatchesTable).values({
+        tutee_id: selectedTuteeId,
+        tutor_id: tutorId,
+      });
+
+      await db
+        .update(approvedMatchesTable)
+        .set({
+          date: new Date().toLocaleDateString("en-CA", {
+            timeZone: "America/New_York",
+          }),
+        })
+        .where(eq(approvedMatchesTable.tutee_id, selectedTuteeId));
+
+      await db
+        .delete(unmatchedTable)
+        .where(
+          eq(unmatchedTable.tutor_id, tutorId) ||
+            eq(unmatchedTable.tutee_id, selectedTuteeId)
+        );
+
+      res.status(200).json({ success: true });
+    } else {
+      throw new Error("Invalid Match");
+    }
+  } catch (error: any) {
+    console.error("Error in approveMatch:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+/*
+if (tutee_id > 0) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
+
+    if (query.length > 0) {
+      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+
+    } else {
+      throw new Error("ID not found in matched table");
+    }
+  } else {
+    throw new Error("Invalid ID");
+  }*/

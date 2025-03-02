@@ -19,25 +19,26 @@ const db = drizzle(process.env.DATABASE_URL!);
 export const getTutees = async ( req: Request, res: Response) => {
   try {
     console.log("Inside tutees endpoint");
+
     const matchedTutees = await db
       .select()
       .from(tuteeTable)
       .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id));
 
     const unmatchedTutees = await db
-      .select()
+      .selectDistinct()
       .from(tuteeTable)
       .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
 
     const historyTutees = await db
-      .select()
+      .selectDistinct()
       .from(tuteeTable)
       .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id));
 
     res.send({
-      matchedTutees: matchedTutees.map((row) => row.tutee),
-      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
-      historyTutees: historyTutees.map((row) => row.tutee),
+      matchedTutees: matchedTutees,
+      unmatchedTutees: unmatchedTutees,
+      historyTutees: historyTutees,
     });
   } catch (error) {
     console.error(error);
@@ -48,7 +49,7 @@ export const getTutees = async ( req: Request, res: Response) => {
 /* returns all the unmatched tutees */
 export const getUnmatchedTutees = async ( req: Request, res: Response) => {
   try {
-    console.log("Inside tutees endpoint");
+    console.log("Inside unmatched tutees endpoint");
 
     const unmatchedTutees = await db
       .select()
@@ -64,36 +65,38 @@ export const getUnmatchedTutees = async ( req: Request, res: Response) => {
   }
 };
 
-/* Moves a tutee from MATCHED -> HISTORY given their id */
-export const matchedToHistory = async (req: Request, res: Response) => {
+/* Moves a tutee from UNMATCHED -> HISTORY given their id */
+export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     console.log("id as a string: ", id);
     console.log(Number(id));
-    moveTuteeToHistory(Number(id));
+    const tutee_id = (Number(id));
+    if (tutee_id > 0) {
+      const query = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutee_id, tutee_id)); //returns an array with only one element
+  
+      if (query.length > 0) {
+        await db.update(tuteeTable)
+          .set({ history_date: new Date().toISOString().split("T")[0], })
+          .where(eq(tuteeTable.id, tutee_id));
+
+        await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+  
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, tutee_id));
+
+        res.json({ success: true, message: "Tutee moved" });
+  
+      } else {
+        throw new Error("ID not found in matched table");
+      }
+    } else {
+      throw new Error("Invalid ID");
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
 };
-
-async function moveTuteeToHistory(tutee_id: number) {
-  console.log("in move tutee to history");
-  if (tutee_id > 0) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
-
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }
-}

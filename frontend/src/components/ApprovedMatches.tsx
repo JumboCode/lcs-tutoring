@@ -108,7 +108,7 @@ export default function ApprovedMatches() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`flex-grow border-2 ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
@@ -190,7 +190,7 @@ export default function ApprovedMatches() {
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
                   flagged={match.flagged}
-                  email_sent={match.sent_email}
+                  sent_email={match.sent_email}
                   bgColor="bg-white"
                   date={date}
                   isActive={true}
@@ -207,10 +207,28 @@ export default function ApprovedMatches() {
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
                   flagged={match.flagged}
-                  email_sent={match.sent_email}
+                  sent_email={match.sent_email}
                   bgColor="bg-white"
                   date={date}
                   isActive={true}
+                  onUnpair={(deletedMatchId) => {
+                    // Remove the deleted match from active matches
+                    setActiveMatches((prev) =>
+                      prev.filter(
+                        (pair) => pair.matchId.toString() !== deletedMatchId
+                      )
+                    );
+
+                    // Find the match to move
+                    const matchToMove = active_matches.find(
+                      (pair) => pair.matchId.toString() === deletedMatchId
+                    );
+
+                    // Only add the match if it's found
+                    if (matchToMove) {
+                      setInactiveMatches((prev) => [...prev, matchToMove]);
+                    }
+                  }}
                 />
               ))}
             </div>

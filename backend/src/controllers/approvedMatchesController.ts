@@ -53,9 +53,9 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
     // query to get all active matches
     const active_matches = await db
       .select({
-        // TODO: do we need matchID and flagged?
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
+        sent_email: approvedMatchesTable.sent_email,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -72,6 +72,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           parent_email: tuteeTable.parent_email,
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
+          special_needs: tuteeTable.special_needs,
         },
       })
       .from(approvedMatchesTable)
@@ -84,6 +85,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       .select({
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
+        sent_email: approvedMatchesTable.sent_email,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -163,6 +165,8 @@ export const unmatchPair = async (req: Request, res: Response) => {
       .update(approvedMatchesTable)
       .set({ active: false })
       .where(eq(approvedMatchesTable.id, Number(match_id)));
+    
+    res.json({ success: true, message: "Pair unmatched" });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to inactive");
@@ -191,7 +195,10 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("Tutor id does not exist in matched table");
     }
 
-    await db.insert(unmatchedTable).values(query).onConflictDoNothing();
+    const row = query[0];
+    await db.insert(unmatchedTable).values({
+      tutor_id: row.tutor_id,
+    });
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
@@ -207,7 +214,10 @@ async function moveTuteeToUnmatched(tutee_id: number) {
     throw new Error("Tutee id does not exist in matched table");
   }
 
-  await db.insert(unmatchedTable).values(query).onConflictDoNothing();
+  const row = query[0];
+  await db.insert(unmatchedTable).values({
+    tutee_id: row.tutee_id,
+  });
 
   await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
@@ -223,6 +233,9 @@ export const emailPair = async (req: Request, res: Response) => {
     console.log(tuteeParentEmail);
     console.log(tutorEmail);
 
+    
+
+
     const { data, error } = await resend.emails.send({
       from: "LCSTutoring <onboarding@resend.dev>",
       // TODO: change this to the actual emails
@@ -237,6 +250,10 @@ export const emailPair = async (req: Request, res: Response) => {
     });
     console.log("Data: ", data);
     if (data?.id !== null) {
+      await db
+      .update(approvedMatchesTable)
+      .set({ sent_email: true })
+      .where(eq(approvedMatchesTable.id, req.body.matchId));
       console.log("Email sent successfully");
     }
     console.log("Error: ", error);

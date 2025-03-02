@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.get("/approved-matches", getApprovedMatches);
 router.post("/flag/", flagApprovedMatch);
-router.post("/unmatch-pair/:match-id", unmatchPair);
+router.post("/unmatch-pair/:id", unmatchPair);
 router.post("/email", emailPair);
 router.post("/move-to-inactive/", moveToInactive);
 

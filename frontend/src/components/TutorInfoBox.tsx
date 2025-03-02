@@ -23,12 +23,14 @@ type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   bgColor: string;
   isUnmatched: boolean;
+  onDelete?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
   box_props,
   bgColor,
   isUnmatched,
+  onDelete,
 }: TutorInfoBoxProps) {
   const {
     id,
@@ -65,7 +67,10 @@ export default function TutorInfoBox({
       method: "POST",
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
       .catch((error) => console.error(error));
   };
 
@@ -122,27 +127,27 @@ export default function TutorInfoBox({
 
                 {isUnmatched && (
                   <>
-                <button
-                  style={{ color: STYLES.colors.textGray }}
-                  className="mb-2 ml-5 p-0 text-lg"
-                  onClick={toggleDropdown}
-                >
-                  {" "}
-                  ...{" "}
-                  <div
-                    className={`transition-transform duration-300 ${
-                      isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
-                    }`}
-                  ></div>
-                </button>
+                    <button
+                      style={{ color: STYLES.colors.textGray }}
+                      className="mb-2 ml-5 p-0 text-lg"
+                      onClick={toggleDropdown}
+                    >
+                      {" "}
+                      ...{" "}
+                      <div
+                        className={`transition-transform duration-300 ${
+                          isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                        }`}
+                      ></div>
+                    </button>
 
-                {isDropdownOpen && (
-                  <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                    <button onClick={handleSubmit}>Delete Tutor</button>
-                    <img src={TrashCan} className="mx-2" />
-                  </div>
-                )}
-                </>
+                    {isDropdownOpen && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handleSubmit}>Delete Tutor</button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </th>
