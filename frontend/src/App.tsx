@@ -27,8 +27,7 @@ import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 import AddAdmin from "./components/addAdmin";
 import AdminLogin from "./components/adminSignIn"; // Added this
-import MatchSuggestions from "./components/matchSuggestionBlock";
-import AdminHeader from "./components/HeaderAdmin";
+// import AdminHeader from "./components/HeaderAdmin";
 
 import SuccessPage from "./components/SuccessPage";
 
@@ -140,15 +139,7 @@ function App() {
             </div>
           }
         ></Route>
-        <Route
-          path="/adminview"
-          element={
-            <div>
-              <AdminHeader />
-              <NavigationBar />
-            </div>
-          }
-        ></Route>
+        <Route path="/adminview" element={<NavigationBar />}></Route>
 
         <Route
           path="/tuteetable"
