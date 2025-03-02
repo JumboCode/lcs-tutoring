@@ -65,36 +65,34 @@ export const getUnmatchedTutees = async ( req: Request, res: Response) => {
   }
 };
 
-/* Moves a tutee from MATCHED -> HISTORY given their id */
-export const matchedToHistory = async (req: Request, res: Response) => {
+/* Moves a tutee from UNMATCHED -> HISTORY given their id */
+export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
     console.log("id as a string: ", id);
     console.log(Number(id));
-    moveTuteeToHistory(Number(id));
+    const tutee_id = (Number(id));
+    if (tutee_id > 0) {
+      const query = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutee_id, tutee_id)); //returns an array with only one element
+  
+      if (query.length > 0) {
+        await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
+  
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, tutee_id));
+
+        res.json({ success: true, message: "Tutee moved" });
+  
+      } else {
+        throw new Error("ID not found in matched table");
+      }
+    } else {
+      throw new Error("Invalid ID");
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
 };
-
-async function moveTuteeToHistory(tutee_id: number) {
-  console.log("in move tutee to history");
-  if (tutee_id > 0) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
-
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }
-}

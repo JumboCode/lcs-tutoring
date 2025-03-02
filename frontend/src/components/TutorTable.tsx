@@ -179,6 +179,15 @@ export default function TutorTable() {
                   key={index}
                   bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={true}
+                  onDelete={(deletedTutor) => {
+                    console.log("Deleted tutor id: ", deletedTutor.id);
+                    // Remove the deleted tutor from unmatched tutors
+                    setUnmatchedTutors((prev) =>
+                      prev.filter((tutor) => tutor.id !== deletedTutor.id)
+                    );
+                    // Add the deleted tutor to history tutors
+                    setHistoryTutors((prev) => [...prev, deletedTutor]);
+                  }}
                 />
               ))}
             </div>

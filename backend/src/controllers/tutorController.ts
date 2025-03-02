@@ -146,40 +146,34 @@ async function filterTutors(
   return tutors;
 }
 
-export const matchedToHistory = async (req: Request, res: Response) => {
+export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
-    const id = req.params.id;
+    const tutor_id = req.params.id;
     // const request = req.body;
-    moveTutorToHistory(id);
+    if (tutor_id.length == 7 || tutor_id.length == 8) {
+      const query = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
+  
+      if (query.length > 0) {
+        await db.insert(historyTable).values(query[0]);
+  
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
+        
+        res.json({ success: true, message: "Tutor moved" });
+
+      } else {
+        throw new Error("ID not found in matched table");
+      }
+    } else {
+      throw new Error("Invalid ID");
+    }
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
 };
-
-async function moveTutorToHistory(tutor_id: string) {
-  if (tutor_id.length == 7 || tutor_id.length == 8) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutor_id, tutor_id)); //returns an array with only one element
-
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
-
-      // for (let i = 0; i < query.length - 1; i++) {
-      //   //adding rows back in
-      //   await db.insert(matchedTable).values(query[0]);
-      // }
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }
-}
 
 export const unmatchedToMatched = async (req: Request, res: Response) => {
     // TODO: Implement logic

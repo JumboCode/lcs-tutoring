@@ -23,12 +23,14 @@ type TuteeInfoBoxProps = {
   box_props: tuteeBoxProps;
   bgColor: string;
   isUnmatched: boolean;
+  onDelete?: (tutee: tuteeBoxProps) => void;
 };
 
 export default function TuteeInfoBox({
   box_props,
   bgColor,
   isUnmatched,
+  onDelete,
 }: TuteeInfoBoxProps) {
   const {
     id,
@@ -66,7 +68,10 @@ export default function TuteeInfoBox({
       method: "POST",
     })
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
       .catch((error) => console.error(error));
   };
 

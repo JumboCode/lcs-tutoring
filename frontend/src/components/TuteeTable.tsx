@@ -196,6 +196,14 @@ export default function TuteeTable() {
                   key={index}
                   bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={true}
+                  onDelete={(deletedTutee) => {
+                    // Remove the deleted tutee from unmatched tutees
+                    setUnmatchedTutees((prev) =>
+                      prev.filter((tutee) => tutee.id !== deletedTutee.id)
+                    );
+                    // Add the deleted tutee to history tutees
+                    setHistoryTutees((prev) => [...prev, deletedTutee]);
+                  }}
                 />
               ))}
             </div>
