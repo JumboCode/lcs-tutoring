@@ -10,6 +10,7 @@ import {
   approvedMatchesTable,
   matchedTable,
   unmatchedTable,
+  historyTable,
 } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
@@ -43,6 +44,72 @@ export const moveToInactive = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json("Error updating flag status");
   }
+};
+
+export const deletePair = async (req: Request, res: Response) => {
+  try {
+    console.log(req.body);
+    const match_id = Number(req.body.matchId);
+    if (Number.isNaN(match_id)) {
+      return res.status(400).json({ error: "Invalid matchId" });
+    }
+
+    const match = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, match_id));
+    if (!match) {
+      res.status(404).json("Match not found");
+    }
+    console.log("here");
+    await db
+      .update(approvedMatchesTable)
+      .set({ active: false })
+      .where(eq(approvedMatchesTable.id, match_id));
+    console.log("Match moved to inactive");
+    res.status(200).json("Match moved to inactive");
+
+    const tutor_id = match[0].tutor_id;
+    console.log(tutor_id);
+    if (tutor_id.length == 7) {
+      const query = await db
+        .select()
+        .from(matchedTable)
+        .where(eq(matchedTable.tutor_id, tutor_id));
+      console.log(query);
+  
+      if (!query) {
+        throw new Error("Tutor id does not exist in matched table");
+      }
+  
+      const row = query[0];
+      await db.insert(historyTable).values({
+        tutor_id: row.tutor_id,
+      });
+      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+    }
+
+    const tutee_id = match[0].tutee_id;
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id));
+    console.log(query);
+
+    if (!query) {
+      throw new Error("Tutor id does not exist in matched table");
+    }
+
+    const row = query[0];
+    await db.insert(historyTable).values({
+      tutee_id: row.tutee_id,
+    });
+    await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("Error updating flag status");
+  }
+  
 };
 
 /* returns all the approved matches */
