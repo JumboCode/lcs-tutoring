@@ -13,6 +13,7 @@ import {
 } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import TutorMatcher from "../algorithm.js";
 
 const db = drizzle(process.env.DATABASE_URL!);
 

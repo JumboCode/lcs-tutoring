@@ -39,7 +39,7 @@
  * @property {string} history_date
  */
 
-class TutorMatcher {
+export default class TutorMatcher {
     url = "http://localhost:3000";
     constructor() {
       /**
