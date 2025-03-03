@@ -27,9 +27,12 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 
     // Step 1: Pull all unmatched tutees
     // Step 2: Pull all unmatched tutors
+    const tutorMatcher = new TutorMatcher();
+    await tutorMatcher.fetchData();
     // Step 3: For each tutor, call the algorithm on all the tutees to find the top 3
+    await tutorMatcher.findMatches();
     // Step 4: Pass in all of the {tutor, tutee1, tutee2, tutee3} suggestions into the res.send
-
+    // wait for Brandon to reformat the findmatches output
     const matches = await db
       .select({
         flagged: unmatchedTable.flagged,
