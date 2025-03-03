@@ -29,7 +29,8 @@ type MatchedInfoBoxProps = {
   matchId: string;
   flagged: boolean;
   bgColor: string;
-  date: string;
+  pair_date: string;
+  inactive_date?: string;
   isActive: boolean;
   sent_email: boolean;
   onUnpair?: (matchId: string) => void;
@@ -40,7 +41,8 @@ export default function MatchedInfoBoxbox_props({
   tutor_props,
   matchId,
   flagged,
-  date,
+  pair_date,
+  inactive_date,
   isActive,
   sent_email,
   onUnpair,
@@ -135,8 +137,8 @@ export default function MatchedInfoBoxbox_props({
   return (
     <div
       className={`${
-        isCurrentlyFlagged ? "bg-red-50" : "odd:bg-gray-50 even:bg-white"
-      } w-full h-auto border-b text-left transition-colors my-2`}
+        isCurrentlyFlagged ? "bg-red-50" : "odd:bg-white even:bg-gray-50"
+      } w-full h-auto border-b text-left transition-colors`}
     >
       <table className="table-fixed w-full">
         <thead>
@@ -145,7 +147,12 @@ export default function MatchedInfoBoxbox_props({
               {isCurrentlyFlagged && (
                 <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
               )}
-              {date}
+              <div className="flex flex-col">
+                {inactive_date && (
+                  <span className="font-medium">Inactive {inactive_date}</span>
+                )}
+                <span className="text-gray-500">Active {pair_date}</span>
+              </div>
             </th>
             <th className="w-1/5 font-normal">
               <p>
@@ -214,9 +221,7 @@ export default function MatchedInfoBoxbox_props({
                     </p>
                   </button>
                 )}
-                {!isActive && (
-                  <span className="font-normal">Match Inactive</span>
-                )}
+                {!isActive && <span className="font-normal">N/A</span>}
               </div>
             </th>
             <th className="w-1/5">
@@ -311,7 +316,7 @@ export default function MatchedInfoBoxbox_props({
             <tr className={`h-[55px] border-b`}>
               <td className="px-3 w-1/5">{subjects.join(", ")}</td>
               <td className="w-1/5">{grade}</td>
-              <td className="w-1/5">{special_needs}</td>
+              <td className="w-1/5">{special_needs ? special_needs : "No"}</td>
               <td className="w-1/5">{tutoring_mode}</td>
             </tr>
           </tbody>

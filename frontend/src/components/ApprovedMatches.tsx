@@ -23,6 +23,8 @@ interface Match {
   matchId: number;
   flagged: boolean;
   sent_email: boolean;
+  pair_date: string;
+  inactive_date: string;
   tutor: tutorBoxProps;
   tutee: tuteeBoxProps;
 }
@@ -31,7 +33,6 @@ type TabType = (typeof TABS)[keyof typeof TABS];
 
 export default function ApprovedMatches() {
   const [isActive, setIsActive] = useState<TabType>(TABS.ACTIVE);
-  const date = "11/27/2024";
 
   // Add state to track which emails have been sent
   // const handleEmailSend = (index: number) => {
@@ -158,7 +159,7 @@ export default function ApprovedMatches() {
           </div>
           <table className="w-full">
             <thead>
-              <tr className="h-[35px] bg-gray-100">
+              <tr className="h-[35px] bg-gray-100 border">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>
@@ -186,7 +187,8 @@ export default function ApprovedMatches() {
                   flagged={match.flagged}
                   sent_email={match.sent_email}
                   bgColor="bg-white"
-                  date={date}
+                  pair_date={match.pair_date}
+                  inactive_date={match.inactive_date}
                   isActive={false}
                 />
               ))}
@@ -203,7 +205,7 @@ export default function ApprovedMatches() {
                   flagged={match.flagged}
                   sent_email={match.sent_email}
                   bgColor="bg-white"
-                  date={date}
+                  pair_date={match.pair_date}
                   isActive={true}
                   onUnpair={(deletedMatchId) => {
                     // Remove the deleted match from active matches

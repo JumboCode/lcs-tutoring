@@ -86,16 +86,10 @@ export const approveMatch = async (req: Request, res: Response) => {
       await db.insert(approvedMatchesTable).values({
         tutee_id: selectedTuteeId,
         tutor_id: tutorId,
+        pair_date: new Date().toLocaleDateString("en-CA", {
+          timeZone: "America/New_York",
+        }),
       });
-
-      await db
-        .update(approvedMatchesTable)
-        .set({
-          date: new Date().toLocaleDateString("en-CA", {
-            timeZone: "America/New_York",
-          }),
-        })
-        .where(eq(approvedMatchesTable.tutee_id, selectedTuteeId));
 
       await db
         .delete(unmatchedTable)

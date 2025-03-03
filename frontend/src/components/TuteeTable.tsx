@@ -171,7 +171,7 @@ export default function TuteeTable() {
           </div>
           <table className="w-full">
             <thead>
-              <tr className="h-[35px] bg-gray-100/50">
+              <tr className="h-[35px] bg-gray-100 border">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>

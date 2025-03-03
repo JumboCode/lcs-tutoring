@@ -60,7 +60,7 @@ export default function TutorTable() {
       {/* When awaiting the fetch */}
       {loading && (
         <div className="flex items-center justify-center py-10">
-          <p className="text-lg text-gray-500">Loading tutees...</p>
+          <p className="text-lg text-gray-500">Loading tutors...</p>
         </div>
       )}
 
@@ -154,7 +154,7 @@ export default function TutorTable() {
           </div>
           <table className="w-full">
             <thead>
-              <tr className="h-[35px] bg-gray-100/50">
+              <tr className="h-[35px] bg-gray-100 border">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>

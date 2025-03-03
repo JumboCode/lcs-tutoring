@@ -86,7 +86,7 @@ export default function TuteeInfoBox({
                   <span className="font-medium">Inactive {history_date}</span>
                 )}
                 <span className="text-gray-500">Joined {date}</span>
-              </div>{" "}
+              </div>
             </th>
             <th className="font-normal w-1/5">
               <span>

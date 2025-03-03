@@ -56,6 +56,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
         sent_email: approvedMatchesTable.sent_email,
+        pair_date: approvedMatchesTable.pair_date,
+        inactive_date: approvedMatchesTable.inactive_date,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -86,6 +88,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
         sent_email: approvedMatchesTable.sent_email,
+        pair_date: approvedMatchesTable.pair_date,
+        inactive_date: approvedMatchesTable.inactive_date,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -163,7 +167,7 @@ export const unmatchPair = async (req: Request, res: Response) => {
     // Move the pair to inactive in Approved Matches Table
     await db
       .update(approvedMatchesTable)
-      .set({ active: false })
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0]})
       .where(eq(approvedMatchesTable.id, Number(match_id)));
     
     res.json({ success: true, message: "Pair unmatched" });
