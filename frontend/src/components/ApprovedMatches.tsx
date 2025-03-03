@@ -67,25 +67,19 @@ export default function ApprovedMatches() {
   }, []);
 
   useEffect(() => {
-        console.log("Active matches: ", active_matches); // Added logging
-        console.log("Inactive matches: ", inactive_matches); // Added logging
-      }, [active_matches, inactive_matches]);
+    console.log("Active matches: ", active_matches); // Added logging
+    console.log("Inactive matches: ", inactive_matches); // Added logging
+  }, [active_matches, inactive_matches]);
 
   return (
     <div className="w-full flex justify-end flex-col">
       <div className="flex flex-row justify-between">
         <h1 className="text-3xl font-bold">Approved Matches</h1>
         <div className="gap-x-2 flex flex-row items-center">
-          <button className="px-6 py-2 bg-white border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
-            <div className="flex flex-row gap-x-2 items-center justify-center ">
+          <button className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]">
+            <div className="flex flex-row gap-x-2 items-center justify-center">
               <BsPlusLg color="gray" size={20} />
               <p>Filters</p>
-            </div>
-          </button>
-          <button className="px-6 py-2 bg-white border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
-            <div className="flex flex-row gap-x-2 items-center justify-center ">
-              <BsPlusLg color="gray" size={20} />
-              <p>Add</p>
             </div>
           </button>
         </div>
@@ -193,7 +187,7 @@ export default function ApprovedMatches() {
                   sent_email={match.sent_email}
                   bgColor="bg-white"
                   date={date}
-                  isActive={true}
+                  isActive={false}
                 />
               ))}
             </div>

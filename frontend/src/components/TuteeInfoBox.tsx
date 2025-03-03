@@ -83,9 +83,7 @@ export default function TuteeInfoBox({
             <th className="font-normal w-1/5 px-3">
               <div className="flex flex-col">
                 {history_date && (
-                  <span className="text-red-500 font-medium">
-                    Inactive {history_date}
-                  </span>
+                  <span className="font-medium">Inactive {history_date}</span>
                 )}
                 <span className="text-gray-500">Joined {date}</span>
               </div>{" "}
@@ -94,7 +92,7 @@ export default function TuteeInfoBox({
               <span>
                 {tutee_first_name} {tutee_last_name}
               </span>
-              <span className="text-[#D70000]">{notes && `    *`}</span>
+              <span className="text-[#D70000]">{notes && ` *`}</span>
               <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />

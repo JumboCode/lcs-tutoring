@@ -13,6 +13,7 @@ import {
 } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import TutorMatcher from "../algorithm";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -26,8 +27,21 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 
     // Step 1: Pull all unmatched tutees
     // Step 2: Pull all unmatched tutors
-    // Step 3: For each tutor, call the algorithm on all the tutees to find the top 3
-    // Step 4: Pass in all of the {tutor, tutee1, tutee2, tutee3} suggestions into the res.send
+    //      Form: {tutor, tutee1, tutee2, tutee3}
+    // Step 3: Run algorithm with all unmatched tutees and tutors
+    // Step 4: res.send() what the algorithm spits back out
+
+
+    /*
+     { tuteeId: 9, tutorId: '1000003', matchScore: 0.6000000000000001 },
+    { tuteeId: 11, tutorId: '1000003', matchScore: 0.6000000000000001 },
+    {
+
+    {tutorId: '1000003', tuteeId1: 9, tuteeId2: 11, tuteeId3: NULL}
+    */
+    const tutorMatcher: any = new TutorMatcher();
+    await tutorMatcher.fetchData();
+    await tutorMatcher.findMatches();
 
     const matches = await db
       .select({

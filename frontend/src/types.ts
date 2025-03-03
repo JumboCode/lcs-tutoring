@@ -19,6 +19,7 @@ export type tuteeBoxProps = {
 export type tutorBoxProps = {
   id: string;
   date: string;
+  history_date: string | null;
   first_name: string;
   last_name: string;
   email: string;
@@ -32,6 +33,7 @@ export type tutorBoxProps = {
   tutoring_mode: string;
   previous_tutee: boolean;
   num_tutees: number;
+  notes: string;
 };
 
 export interface tutorInfo {
