@@ -14,7 +14,6 @@ import TuteeSuggestionBox from "./tuteeSuggestionBox";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa6";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { BsPlusLg } from "react-icons/bs";
 import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
@@ -48,11 +47,6 @@ const MatchSuggestionBlock = ({
   const [finishedSubmitting, setFinishedSubmitting] = useState(false);
 
   const handleApprove = async () => {
-    if (!selectedTuteeId) {
-      alert("Please select a tutee first");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       console.log("approve match");
@@ -106,7 +100,7 @@ const MatchSuggestionBlock = ({
     <>
       {!finishedSubmitting && (
         <div className="border rounded-lg bg-white p-6 my-6">
-          <div className="flex space-x-6 mx-6">
+          <div className="flex space-x-6 mx-6 my-3">
             <span className="font-bold text-lg">
               {first_name} {last_name}
             </span>
@@ -117,10 +111,6 @@ const MatchSuggestionBlock = ({
             <div className="flex pt-2" style={{ color: "#6B7280" }}>
               <FiPhone />
               <span className="pl-2 text-sm text-gray-500">{phone}</span>
-            </div>
-
-            <div className="flex flex-1 justify-end">
-              <RiArrowDropDownLine size={40} />
             </div>
           </div>
 
@@ -163,26 +153,34 @@ const MatchSuggestionBlock = ({
           {/*buttons*/}
           <div className="flex flex-row-reverse space-x-6 space-x-reverse">
             <button
-              className="rounded-xl bg-[#1E3B68] px-5 py-3 text-white text-lg hover:bg-blue-700 disabled:opacity-50"
+              className={`rounded-xl px-5 py-3 text-lg w-[200px] ${
+                selectedTuteeId
+                  ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2]"
+                  : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
+              }`}
               type="button"
               onClick={handleApprove}
               disabled={!selectedTuteeId || isSubmitting}
             >
-              <span className="inline-block ml-0.5">
-                <FaCheck />
-              </span>{" "}
-              {isSubmitting ? "Processing..." : "Approve"}
+              <span
+                className={`${
+                  selectedTuteeId ? "flex flex-row gap-x-2 items-center" : ""
+                }`}
+              >
+                {selectedTuteeId && <FaCheck />}
+                {isSubmitting ? "Processing..." : "Approve"}
+              </span>
             </button>
             <button
               onClick={openModal}
-              className="rounded-xl bg-white px-5 py-3 border text-gray-700 text-lg hover:bg-gray-200"
+              className="rounded-xl bg-[#ffffff] hover:bg-gray-100 px-5 py-3 border text-gray-700 text-lg "
               type="button"
             >
               {/* This is where you will complete your ticket */}
-              <span className="inline-block ml-0.5">
+              <span className="flex flex-row items-center gap-x-2">
                 <BsPlusLg />
-              </span>{" "}
-              Custom Match
+                Custom Match
+              </span>
             </button>
           </div>
           <Modal show={modalVisible} onHide={closeModal}>
