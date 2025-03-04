@@ -1,6 +1,6 @@
 import MatchedInfoBox from "./MatchedInfoBox";
 import { useState, useEffect } from "react";
-import { BsPlusLg } from "react-icons/bs";
+import filtersIcon from "../assets/images/filter/filter.svg";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 // import FilterButton from "./FilterButton";
 
@@ -76,14 +76,12 @@ export default function ApprovedMatches() {
     <div className="w-full flex justify-end flex-col">
       <div className="flex flex-row justify-between">
         <h1 className="text-3xl font-bold">Approved Matches</h1>
-        <div className="gap-x-2 flex flex-row items-center">
-          <button className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]">
-            <div className="flex flex-row gap-x-2 items-center justify-center">
-              <BsPlusLg color="gray" size={20} />
-              <p>Filters</p>
-            </div>
-          </button>
-        </div>
+        <button className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]">
+          <div className="flex flex-row gap-x-2 items-center justify-center">
+            <img src={filtersIcon} />
+            <p>Filters</p>
+          </div>
+        </button>
       </div>
 
       {/* When awaiting the fetch */}
@@ -109,7 +107,7 @@ export default function ApprovedMatches() {
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
               <div
                 className={
-                  "flex flex-row space-x-2 items-center cursor-pointer"
+                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
                 }
                 onClick={() => setIsActive(TABS.ACTIVE)}
               >
@@ -133,7 +131,7 @@ export default function ApprovedMatches() {
               </div>
               <div
                 className={
-                  "flex flex-row space-x-2 items-center cursor-pointer"
+                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
                 }
                 onClick={() => setIsActive(TABS.INACTIVE)}
               >

@@ -1,5 +1,6 @@
 import TuteeInfoBox from "./TuteeInfoBox";
 import { useState, useEffect } from "react";
+import filtersIcon from "../assets/images/filter/filter.svg";
 import { tuteeBoxProps } from "../types";
 
 // Add these constants at the top of the file, after imports
@@ -72,7 +73,15 @@ export default function TuteeTable() {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <h1 className="w-full text-3xl font-bold text-left">Tutee Database</h1>
+      <div className="w-full flex flex-row justify-between">
+        <h1 className="text-3xl font-bold text-left">Tutee Database</h1>
+        <button className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]">
+          <div className="flex flex-row gap-x-2 items-center justify-center">
+            <img src={filtersIcon} />
+            <p>Filters</p>
+          </div>
+        </button>
+      </div>
 
       {/* When awaiting the fetch */}
       {loading && (
@@ -91,7 +100,7 @@ export default function TuteeTable() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">

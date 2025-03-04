@@ -1,6 +1,8 @@
 import TutorInfoBox from "./TutorInfoBox";
 import { useState, useEffect } from "react";
+import filtersIcon from "../assets/images/filter/filter.svg";
 import { tutorBoxProps } from "../types";
+import FilterModal from "./filters";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -20,6 +22,13 @@ const COLORS = {
 
 type TabType = (typeof TABS)[keyof typeof TABS];
 
+interface FilterValues {
+  gradeLevels?: number[];
+  selectedSubjects?: string[];
+  tutoringMode?: string;
+  disability?: boolean;
+}
+
 export default function TutorTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
   const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
@@ -27,14 +36,26 @@ export default function TutorTable() {
   const [historyTutors, setHistoryTutors] = useState<tutorBoxProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalShow, setModalShow] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<FilterValues | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchTutors = async () => {
       try {
+        const queryFilter = new URLSearchParams(
+          appliedFilters as any
+        ).toString();
         const response = await fetch(
           // https://jumbocodegpt.onrender.com/tutors
-          // http://localhost:3000/tutors
-          "http://localhost:3000/tutors"
+          `http://localhost:3000/tutors?${queryFilter}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         const data = await response.json();
         const { matchedTutors, unmatchedTutors, historyTutors } = data;
@@ -51,11 +72,31 @@ export default function TutorTable() {
     };
 
     fetchTutors();
-  }, []);
+  }, [appliedFilters]);
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <h1 className="w-full text-3xl font-bold text-left">Tutor Database</h1>
+      <div className="w-full flex flex-row justify-between">
+        <h1 className="text-3xl font-bold text-left">Tutor Database</h1>
+        <button
+          className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]"
+          onClick={() => setModalShow(true)}
+        >
+          <div className="flex flex-row gap-x-2 items-center justify-center">
+            <img src={filtersIcon} />
+            <p>Filters</p>
+          </div>
+        </button>
+        <FilterModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          onApply={(filters) => {
+            setAppliedFilters(filters);
+            setModalShow(false);
+            console.log("FILTERS ARE: ", filters);
+          }}
+        />
+      </div>
 
       {/* When awaiting the fetch */}
       {loading && (
@@ -74,7 +115,7 @@ export default function TutorTable() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
