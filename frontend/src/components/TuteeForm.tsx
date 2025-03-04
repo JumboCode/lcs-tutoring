@@ -8,7 +8,7 @@ interface FormData {
   childFirstName: string;
   childLastName: string;
   gender: string;
-  grade: string;
+  grade: number | undefined;
   specialNeeds: string;
   specialNeedsInfo: string;
   parentFirstName: string;
@@ -58,7 +58,7 @@ const gender_options = [
 ];
 
 const grade_options = [
-  { value: "K", label: "Kindergarten" },
+  { value: "0", label: "Kindergarten" },
   { value: "1", label: "1st" },
   { value: "2", label: "2nd" },
   { value: "3", label: "3rd" },
@@ -74,9 +74,10 @@ const grade_options = [
 ];
 
 const tutoring_mode_options = [
-  { value: "Virtual only", label: "Virtual only" },
-  { value: "In-person only", label: "In-person only" },
-  { value: "Either is fine", label: "Either is fine" },
+  { value: "Online", label: "Virtual only" },
+  { value: "In-person", label: "In-person only" },
+  { value: "Hybrid", label: "Hybrid" },
+  { value: "Anything", label: "Either is fine" },
 ];
 
 export default function TuteeForm() {
@@ -87,7 +88,7 @@ export default function TuteeForm() {
     childFirstName: "",
     childLastName: "",
     gender: "",
-    grade: "",
+    grade: undefined,
     specialNeeds: "",
     specialNeedsInfo: "",
     parentFirstName: "",
@@ -357,7 +358,7 @@ export default function TuteeForm() {
                   placeholder="Select one"
                   value={
                     grade_options.find(
-                      (option) => option.value === formData.grade
+                      (option) => option.value === formData.grade?.toString()
                     ) || null
                   }
                   onChange={handleSelectChange}

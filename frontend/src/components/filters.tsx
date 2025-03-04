@@ -441,9 +441,9 @@ export default function FilterModal(props: FilterModalProps) {
               Virtual Only
             </button>
             <button
-              onClick={() => handleToggleMode("In-Person")}
+              onClick={() => handleToggleMode("In-person")}
               className={
-                selectedButtonMode === "In-Person"
+                selectedButtonMode === "In-person"
                   ? buttonStyleActive
                   : buttonStyle
               }

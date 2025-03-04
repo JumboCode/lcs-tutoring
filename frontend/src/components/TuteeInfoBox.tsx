@@ -114,7 +114,17 @@ export default function TuteeInfoBox({
             <th className="font-normal w-1/5">{subjects.join(", ")}</th>
             <th className="w-1/5">
               <div className="font-normal items-center justify-center">
-                <span>{grade}</span>
+                <span>
+                  {grade == "0"
+                    ? "Kindergarten"
+                    : grade == "1"
+                    ? "1st"
+                    : grade == "2"
+                    ? "2nd"
+                    : grade == "3"
+                    ? "3rd"
+                    : grade + "th"}
+                </span>
               </div>
             </th>
             <th className="w-1/5">
@@ -176,7 +186,7 @@ export default function TuteeInfoBox({
             <tr className="h-[55px] border-b text-sm">
               <td className="px-3 w-1/5">{gender}</td>
               <td className="w-1/5">{tutoring_mode}</td>
-              <td className="w-1/5">{special_needs}</td>
+              <td className="w-1/5">{special_needs ? special_needs : "N/A"}</td>
               <td className="w-1/5">
                 <div className="flex flex-col">
                   <span>

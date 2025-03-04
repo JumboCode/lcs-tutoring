@@ -315,7 +315,17 @@ export default function MatchedInfoBoxbox_props({
             </tr>
             <tr className={`h-[55px] border-b`}>
               <td className="px-3 w-1/5">{subjects.join(", ")}</td>
-              <td className="w-1/5">{grade}</td>
+              <td className="w-1/5">
+                {grade == "0"
+                  ? "Kindergarten"
+                  : grade == "1"
+                  ? "1st"
+                  : grade == "2"
+                  ? "2nd"
+                  : grade == "3"
+                  ? "3rd"
+                  : grade + "th"}
+              </td>
               <td className="w-1/5">{special_needs ? special_needs : "No"}</td>
               <td className="w-1/5">{tutoring_mode}</td>
             </tr>

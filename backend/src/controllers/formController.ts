@@ -39,14 +39,13 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
       signature,
     } = request;
     // bad practice, prefer to submit number directly
-    const gradeNum = Number(grade);
     console.log("This the subjects: ", subjects);
     await db.insert(tuteeTable).values({
       id: id,
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
       gender: gender,
-      grade: gradeNum,
+      grade: grade,
       has_special_needs: specialNeeds === "yes",
       special_needs: specialNeedsInfo,
       parent_first_name: parentFirstName,

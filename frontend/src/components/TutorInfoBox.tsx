@@ -188,7 +188,7 @@ export default function TutorInfoBox({
             </tr>
             <tr className="h-[35px] bg-gray-100/50 border-b text-sm">
               <td className="text-gray-400 px-3 w-1/5">Previous Tutee</td>
-              <td className="text-gray-400 w-1/5">Grade Level</td>
+              <td className="text-gray-400 w-1/5">Grade Level Preferences</td>
               <td className="text-gray-400 w-1/5"># of Tutees</td>
               <td className="text-gray-400 w-1/5">Open to Disability</td>
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
