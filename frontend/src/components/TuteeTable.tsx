@@ -1,6 +1,8 @@
 import TuteeInfoBox from "./TuteeInfoBox";
 import { useState, useEffect } from "react";
+import filtersIcon from "../assets/images/filter/filter.svg";
 import { tuteeBoxProps } from "../types";
+import FilterModal from "./filters";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -20,6 +22,13 @@ const COLORS = {
 
 type TabType = (typeof TABS)[keyof typeof TABS];
 
+interface FilterValues {
+  gradeLevels?: number[];
+  selectedSubjects?: string[];
+  tutoringMode?: string;
+  disability?: boolean;
+}
+
 export default function TuteeTable() {
   const [isActive, setIsActive] = useState<TabType>(TABS.UNMATCHED);
   const [unmatchedTutees, setUnmatchedTutees] = useState<tuteeBoxProps[]>([]);
@@ -27,38 +36,34 @@ export default function TuteeTable() {
   const [historyTutees, setHistoryTutees] = useState<tuteeBoxProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Update unmatchedTutees and matchedTutees, setting history_date to null
-  useEffect(() => {
-    setUnmatchedTutees((prev) =>
-      prev.map((tutee) => ({
-        ...tutee,
-        history_date: null,
-      }))
-    );
-
-    setMatchedTutees((prev) =>
-      prev.map((tutee) => ({
-        ...tutee,
-        history_date: null,
-      }))
-    );
-  }, []); // Empty dependency array ensures this runs only once
+  const [modalShow, setModalShow] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<FilterValues | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchTutees = async () => {
       try {
+        const queryFilter = new URLSearchParams(
+          appliedFilters as any
+        ).toString();
         // https://jumbocodegpt.onrender.com/tutees
         // http://localhost:3000/tutees
-        const response = await fetch("http://localhost:3000/tutees");
+        const response = await fetch(
+          `http://localhost:3000/tutees?${queryFilter}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
         // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
-        setMatchedTutees(matchedTutees.map((row: { tutee: any }) => row.tutee));
-        setUnmatchedTutees(
-          unmatchedTutees.map((row: { tutee: any }) => row.tutee)
-        );
-        setHistoryTutees(historyTutees.map((row: { tutee: any }) => row.tutee));
+        setMatchedTutees(matchedTutees);
+        setUnmatchedTutees(unmatchedTutees);
+        setHistoryTutees(historyTutees);
       } catch (error) {
         console.error("Error fetching tutees:", error);
         setError((error as Error).message);
@@ -68,11 +73,31 @@ export default function TuteeTable() {
     };
 
     fetchTutees();
-  }, []);
+  }, [appliedFilters]);
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <h1 className="w-full text-3xl font-bold text-left">Tutee Database</h1>
+      <div className="w-full flex flex-row justify-between">
+        <h1 className="text-3xl font-bold text-left">Tutee Database</h1>
+        <button
+          className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]"
+          onClick={() => setModalShow(true)}
+        >
+          <div className="flex flex-row gap-x-2 items-center justify-center">
+            <img src={filtersIcon} />
+            <p>Filters</p>
+          </div>
+        </button>
+        <FilterModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          onApply={(filters) => {
+            setAppliedFilters(filters);
+            setModalShow(false);
+            console.log("FILTERS ARE: ", filters);
+          }}
+        />
+      </div>
 
       {/* When awaiting the fetch */}
       {loading && (
@@ -91,7 +116,7 @@ export default function TuteeTable() {
       {/* Successful load and no errors */}
       {!loading && !error && (
         <div
-          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-4`}
+          className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
@@ -171,7 +196,7 @@ export default function TuteeTable() {
           </div>
           <table className="w-full">
             <thead>
-              <tr className="h-[35px] bg-gray-100/50">
+              <tr className="h-[35px] bg-gray-100 border">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>

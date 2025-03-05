@@ -39,7 +39,7 @@
  * @property {string} history_date
  */
 
-class TutorMatcher {
+export default class TutorMatcher {
     url = "http://localhost:3000";
     constructor() {
       /**
@@ -173,7 +173,3 @@ class TutorMatcher {
       return 0.4 * subjectScore + 0.2 * gradeScore;
     }
   }
-  
-  const tutorMatcher = new TutorMatcher();
-  await tutorMatcher.fetchData();
-  await tutorMatcher.findMatches();

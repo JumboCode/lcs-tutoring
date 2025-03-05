@@ -119,7 +119,7 @@ export default function MatchSuggestionTable() {
         {/* When awaiting the fetch */}
         {loading && (
           <div className="flex items-center justify-center py-10">
-            <p className="text-lg text-gray-500">Loading matches...</p>
+            <p className="text-lg text-gray-500">Loading suggestions...</p>
           </div>
         )}
 

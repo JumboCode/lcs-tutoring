@@ -77,10 +77,10 @@ const num_tutees_options = [
 ];
 
 const tutoring_mode_options = [
-  { value: "Virtual", label: "Virtual only" },
+  { value: "Online", label: "Virtual only" },
   { value: "In-person", label: "In-person only" },
   { value: "Hybrid", label: "Hybrid" },
-  { value: "Anything", label: "Anything is fine" },
+  { value: "Anything", label: "Either is fine" },
 ];
 
 export default function TutorForm() {

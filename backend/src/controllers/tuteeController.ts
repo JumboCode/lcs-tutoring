@@ -10,7 +10,7 @@ import {
   unmatchedTable,
   historyTable,
 } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
 
 const db = drizzle(process.env.DATABASE_URL!);
@@ -18,27 +18,89 @@ const db = drizzle(process.env.DATABASE_URL!);
 /* returns all the matched and unmatched tutees with the filter applied */
 export const getTutees = async ( req: Request, res: Response) => {
   try {
+    let { gradeLevels, selectedSubjects, tutoringMode, disability } = req.query;
+
+    // converting URL query string to arrays
+    let grades: number[] | undefined = [];
+    if (typeof gradeLevels === "string") {
+      grades = gradeLevels.split(",").map(Number);
+    } else if (Array.isArray(gradeLevels)) {
+      grades = gradeLevels.map(Number);
+    }
+    // set to undefined if grades == 0
+    if (grades[0] === 0) {
+      grades = undefined;
+    } else {
+      // kindergarten is -1 because query url default undefined is [0]
+      grades = grades.map((grade) => (grade === -1 ? 0 : grade))
+    }
+
+    // converting URL query string to arrays
+    let subjects: string[] | undefined = [];
+    if (typeof selectedSubjects === "string") {
+      subjects = selectedSubjects.split(",").map((subject) => subject.trim());
+    } else if (Array.isArray(selectedSubjects)) {
+      subjects = selectedSubjects.map(String);
+    }
+    // set to undefined if subjects is [""]
+    subjects = subjects.filter((subject) => subject.trim() !== "");
+    subjects = subjects.length > 0 ? subjects : undefined;
+
+    if (!tutoringMode) {
+      tutoringMode = undefined;
+    }
+
+    let disability_pref: boolean | undefined = false;
+    if (disability === "true") {
+      disability_pref = true;
+    } else if (disability === "false") {
+      disability_pref = false;
+    } else {
+      disability_pref = undefined;
+    }
+    
+    console.log("grades:", grades);
+    console.log("subjects:", subjects);
+    console.log("tutoring mode:", tutoringMode);
+    console.log("disability:", disability_pref);
     console.log("Inside tutees endpoint");
 
+    const filteredTutees = await filterTutees(
+      grades,
+      subjects,
+      disability_pref,
+      tutoringMode?.toString(),
+    );
+
+    // console.log(filteredTutees);
+
+    // getting all ids of the filtered tutors
+    const tuteeIds = filteredTutees
+      .map((tutee) => tutee.id)
+      .filter((id) => id !== undefined);
+
     const matchedTutees = await db
-      .select()
+      .selectDistinct()
       .from(tuteeTable)
-      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id));
+      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id))
+      .where(inArray(tuteeTable.id, tuteeIds));
 
     const unmatchedTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id));
+      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id))
+      .where(inArray(tuteeTable.id, tuteeIds));
 
     const historyTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id));
+      .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id))
+      .where(inArray(tuteeTable.id, tuteeIds));
 
     res.send({
-      matchedTutees: matchedTutees,
-      unmatchedTutees: unmatchedTutees,
-      historyTutees: historyTutees,
+      matchedTutees: matchedTutees.map((row) => row.tutee),
+      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
+      historyTutees: historyTutees.map((row) => row.tutee),
     });
   } catch (error) {
     console.error(error);
@@ -64,6 +126,57 @@ export const getUnmatchedTutees = async ( req: Request, res: Response) => {
     res.status(500).send("Error fetching tutees");
   }
 };
+
+/**** Filter Tutees by grade levels and subjects ****
+ *
+ * Example input: filterTutors([9, 10], undefined)
+ *  - Should return all tutors that have selected 9th or
+ *    10th graders in their grade preferences
+ *
+ * Pass in "undefined" to not filter by something
+ *
+ * You can console.log all the tutors that the query returns
+ * to verify a correct output
+ *********************************************************/
+async function filterTutees(
+  grades?: number[],
+  subjects?: string[],
+  disabilityPref?: boolean,
+  tutoringMode?: string
+) {
+  const query = db.select().from(tuteeTable);
+
+  const conditions: any[] = [];
+
+  if (subjects && subjects.length > 0) {
+    const condition_subject = subjects.map((subject) =>
+      arrayContains(tuteeTable.subjects, [subject])
+    );
+    conditions.push(or(...condition_subject));
+  }
+
+  if (grades && grades.length > 0) {
+    conditions.push(or(inArray(tuteeTable.grade, grades)));
+  }
+
+  if (disabilityPref != undefined) {
+    conditions.push(or(eq(tuteeTable.has_special_needs, disabilityPref)));
+  }
+
+  if (tutoringMode != undefined) {
+    conditions.push(or(eq(tuteeTable.tutoring_mode, tutoringMode)));
+  }
+
+  if (conditions.length > 0) {
+    query.where(and(...conditions));
+  }
+
+  const tutees = await query;
+
+  console.log("Filtered Tutees:", tutees);
+
+  return tutees;
+}
 
 /* Moves a tutee from UNMATCHED -> HISTORY given their id */
 export const unmatchedToHistory = async (req: Request, res: Response) => {

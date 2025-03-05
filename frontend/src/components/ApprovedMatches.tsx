@@ -1,8 +1,8 @@
 import MatchedInfoBox from "./MatchedInfoBox";
 import { useState, useEffect } from "react";
-import { BsPlusLg } from "react-icons/bs";
+import filtersIcon from "../assets/images/filter/filter.svg";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
-// import FilterButton from "./FilterButton";
+import FilterModal from "./filters";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -23,37 +23,53 @@ interface Match {
   matchId: number;
   flagged: boolean;
   sent_email: boolean;
+  pair_date: string;
+  inactive_date: string;
   tutor: tutorBoxProps;
   tutee: tuteeBoxProps;
 }
 
 type TabType = (typeof TABS)[keyof typeof TABS];
 
+interface FilterValues {
+  gradeLevels?: number[];
+  selectedSubjects?: string[];
+  tutoringMode?: string;
+  disability?: boolean;
+}
+
 export default function ApprovedMatches() {
   const [isActive, setIsActive] = useState<TabType>(TABS.ACTIVE);
-  const date = "11/27/2024";
-
-  // Add state to track which emails have been sent
-  // const handleEmailSend = (index: number) => {
-  //   // Here you would typically implement the actual email sending logic
-  //   console.log(`Sending email for index ${index}`);
-  // };
-
   const [active_matches, setActiveMatches] = useState<Match[]>([]);
   const [inactive_matches, setInactiveMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalShow, setModalShow] = useState(false);
+  const [appliedFilters, setAppliedFilters] = useState<FilterValues | null>(
+    null
+  );
 
   useEffect(() => {
     console.log("im in approved matches useeffect");
     const fetchMatches = async () => {
       try {
-        const response = await fetch("http://localhost:3000/approved-matches");
+        const queryFilter = new URLSearchParams(
+          appliedFilters as any
+        ).toString();
+        const response = await fetch(
+          `http://localhost:3000/approved-matches?${queryFilter}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch matches");
         }
         const data = await response.json();
-        console.log("Fetched approved matches: ", data);
+        // console.log("Fetched approved matches: ", data);
         setActiveMatches(data.activeApprovedMatches);
         setInactiveMatches(data.inactiveApprovedMatches);
       } catch (error) {
@@ -64,31 +80,35 @@ export default function ApprovedMatches() {
     };
 
     fetchMatches();
-  }, []);
+  }, [appliedFilters]);
 
-  useEffect(() => {
-        console.log("Active matches: ", active_matches); // Added logging
-        console.log("Inactive matches: ", inactive_matches); // Added logging
-      }, [active_matches, inactive_matches]);
+  // useEffect(() => {
+  //   console.log("Active matches: ", active_matches); // Added logging
+  //   console.log("Inactive matches: ", inactive_matches); // Added logging
+  // }, [active_matches, inactive_matches]);
 
   return (
     <div className="w-full flex justify-end flex-col">
       <div className="flex flex-row justify-between">
         <h1 className="text-3xl font-bold">Approved Matches</h1>
-        <div className="gap-x-2 flex flex-row items-center">
-          <button className="px-6 py-2 bg-white border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
-            <div className="flex flex-row gap-x-2 items-center justify-center ">
-              <BsPlusLg color="gray" size={20} />
-              <p>Filters</p>
-            </div>
-          </button>
-          <button className="px-6 py-2 bg-white border-2 border-[#E7E7E7] rounded-lg text-[#888888]">
-            <div className="flex flex-row gap-x-2 items-center justify-center ">
-              <BsPlusLg color="gray" size={20} />
-              <p>Add</p>
-            </div>
-          </button>
-        </div>
+        <button
+          className="px-6 py-2 bg-[#ffffff] hover:bg-gray-200/50 border border-[#E7E7E7] rounded-lg text-[#888888]"
+          onClick={() => setModalShow(true)}
+        >
+          <div className="flex flex-row gap-x-2 items-center justify-center">
+            <img src={filtersIcon} />
+            <p>Filters</p>
+          </div>
+        </button>
+        <FilterModal
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          onApply={(filters) => {
+            setAppliedFilters(filters);
+            setModalShow(false);
+            console.log("FILTERS ARE: ", filters);
+          }}
+        />
       </div>
 
       {/* When awaiting the fetch */}
@@ -114,7 +134,7 @@ export default function ApprovedMatches() {
             <div className="flex flex-row justify-start space-x-8 py-4 px-4">
               <div
                 className={
-                  "flex flex-row space-x-2 items-center cursor-pointer"
+                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
                 }
                 onClick={() => setIsActive(TABS.ACTIVE)}
               >
@@ -138,7 +158,7 @@ export default function ApprovedMatches() {
               </div>
               <div
                 className={
-                  "flex flex-row space-x-2 items-center cursor-pointer"
+                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
                 }
                 onClick={() => setIsActive(TABS.INACTIVE)}
               >
@@ -164,7 +184,7 @@ export default function ApprovedMatches() {
           </div>
           <table className="w-full">
             <thead>
-              <tr className="h-[35px] bg-gray-100">
+              <tr className="h-[35px] bg-gray-100 border">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>
@@ -192,8 +212,9 @@ export default function ApprovedMatches() {
                   flagged={match.flagged}
                   sent_email={match.sent_email}
                   bgColor="bg-white"
-                  date={date}
-                  isActive={true}
+                  pair_date={match.pair_date}
+                  inactive_date={match.inactive_date}
+                  isActive={false}
                 />
               ))}
             </div>
@@ -209,7 +230,7 @@ export default function ApprovedMatches() {
                   flagged={match.flagged}
                   sent_email={match.sent_email}
                   bgColor="bg-white"
-                  date={date}
+                  pair_date={match.pair_date}
                   isActive={true}
                   onUnpair={(deletedMatchId) => {
                     // Remove the deleted match from active matches
