@@ -7,6 +7,7 @@ import { BsCheck2 } from "react-icons/bs";
 import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
+import unmatch_pair from "../assets/images/approved_matches/unmatch_pair.svg";
 
 const STYLES = {
   colors: {
@@ -81,6 +82,26 @@ export default function MatchedInfoBoxbox_props({
       })
       .catch((error) => console.error(error));
   };
+  
+  const deletePair = async () => {
+      try {
+        console.log(matchId);
+        const response = await fetch(`${BACKEND_URL}/delete-pair/${matchId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ matchId: matchId }),
+        });
+        const data = await response.json();
+        if (onUnpair) onUnpair(matchId);
+        console.log(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsDropdownOpen(false);
+        setActive(false);
+      }
+  };
+  
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
@@ -296,6 +317,16 @@ export default function MatchedInfoBoxbox_props({
                           />
                           Unmatch Pair
                         </button>
+                        <button
+                            className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                            onClick={deletePair}
+                          >
+                            <img
+                              src={deleteIcon}
+                              className="w-4 h-4 inline-block mr-2"
+                            />
+                            Delete Pair
+                          </button>
                       </div>
                     )}
                   </div>
