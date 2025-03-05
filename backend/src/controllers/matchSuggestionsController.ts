@@ -11,7 +11,7 @@ import {
   matchedTable,
   approvedMatchesTable,
 } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { Request, Response } from "express";
 import TutorMatcher from "../algorithm";
 
@@ -30,7 +30,6 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     //      Form: {tutor, tutee1, tutee2, tutee3}
     // Step 3: Run algorithm with all unmatched tutees and tutors
     // Step 4: res.send() what the algorithm spits back out
-
 
     /*
      { tuteeId: 9, tutorId: '1000003', matchScore: 0.6000000000000001 },
@@ -58,8 +57,39 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
           tutoring_mode: tutorTable.tutoring_mode,
         },
         // TUTEE SUGGESTIONS FROM ALGORITHM
+        // tutee1: {
+        //   id: tuteeTable.id,
+        //   tutee_first_name: tuteeTable.tutee_first_name,
+        //   tutee_last_name: tuteeTable.tutee_last_name,
+        //   parent_email: tuteeTable.parent_email,
+        //   grade: tuteeTable.grade,
+        //   subjects: tuteeTable.subjects,
+        //   special_needs: tuteeTable.special_needs,
+        //   tutoring_mode: tuteeTable.tutoring_mode
+        // },
+        // tutee2: {
+        //   id: tuteeTable.id,
+        //   tutee_first_name: tuteeTable.tutee_first_name,
+        //   tutee_last_name: tuteeTable.tutee_last_name,
+        //   parent_email: tuteeTable.parent_email,
+        //   grade: tuteeTable.grade,
+        //   subjects: tuteeTable.subjects,
+        //   special_needs: tuteeTable.special_needs,
+        //   tutoring_mode: tuteeTable.tutoring_mode
+        // },
+        // tutee3: {
+        //   id: tuteeTable.id,
+        //   tutee_first_name: tuteeTable.tutee_first_name,
+        //   tutee_last_name: tuteeTable.tutee_last_name,
+        //   parent_email: tuteeTable.parent_email,
+        //   grade: tuteeTable.grade,
+        //   subjects: tuteeTable.subjects,
+        //   special_needs: tuteeTable.special_needs,
+        //   tutoring_mode: tuteeTable.tutoring_mode
+        // }
       })
       .from(unmatchedTable)
+      // .where(and(tutee1.id))
       .innerJoin(tutorTable, eq(unmatchedTable.tutor_id, tutorTable.id));
 
     res.send({

@@ -40,55 +40,55 @@
  */
 
 export default class TutorMatcher {
-    url = "http://localhost:3000";
-    constructor() {
-      /**
-       * @type {Tutor[]}
-       */
-      this.tutors = [];
-      /**
-       * @type {Tutee[]}
-       */
-      this.tutees = [];
-    }
-  
-  
-    addTutor(tutor) {
-      this.tutors.push(tutor);
-    }
-  
-    addTutee(tutee) {
-      this.tutees.push(tutee);
-    }
-  
-  
-    async fetchData() {
-      await Promise.all([this.fetchTutors(), this.fetchTutees()]);
-      // console.log(this.tutors);
-      // console.log(this.tutees);
-      // console.log("TUtees: ", this.tutees);
-    }
-  
-    async fetchTutors() {
-      console.log("fetching tutors");
-      const response = await fetch(`${this.url}/unmatched-tutors`);
-      const {unmatchedTutors} = await response.json();
-      // console.log(unmatchedTutors);
-      for (const unmatchedTutor of unmatchedTutors) {
-        this.addTutor(unmatchedTutor);
-      }
-      // console.log("All tutees: ", this.tutees);
-    }
+  url = "http://localhost:3000";
+  constructor() {
+    /**
+     * @type {Tutor[]}
+     */
+    this.tutors = [];
+    /**
+     * @type {Tutee[]}
+     */
+    this.tutees = [];
+  }
 
-    async fetchTutees() {
-      console.log("fetching tutees");
-      const response = await fetch(`${this.url}/unmatched-tutees`);
-      const {unmatchedTutees} = await response.json();
-      // console.log(unmatchedTutees);
-      for (const unmatchedTutee of unmatchedTutees) {
-        this.addTutee(unmatchedTutee);
-      }
+
+  addTutor(tutor) {
+    this.tutors.push(tutor);
+  }
+
+  addTutee(tutee) {
+    this.tutees.push(tutee);
+  }
+
+
+  async fetchData() {
+    await Promise.all([this.fetchTutors(), this.fetchTutees()]);
+    // console.log(this.tutors);
+    // console.log(this.tutees);
+    // console.log("TUtees: ", this.tutees);
+  }
+
+  async fetchTutors() {
+    console.log("fetching tutors");
+    const response = await fetch(`${this.url}/unmatched-tutors`);
+    const {unmatchedTutors} = await response.json();
+    // console.log(unmatchedTutors);
+    for (const unmatchedTutor of unmatchedTutors) {
+      this.addTutor(unmatchedTutor);
     }
+    // console.log("All tutees: ", this.tutees);
+  }
+
+  async fetchTutees() {
+    console.log("fetching tutees");
+    const response = await fetch(`${this.url}/unmatched-tutees`);
+    const {unmatchedTutees} = await response.json();
+    // console.log(unmatchedTutees);
+    for (const unmatchedTutee of unmatchedTutees) {
+      this.addTutee(unmatchedTutee);
+    }
+  }
   
   findMatches() {
     const matches = [];

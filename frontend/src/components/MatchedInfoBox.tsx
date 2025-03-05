@@ -66,6 +66,7 @@ export default function MatchedInfoBoxbox_props({
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
@@ -82,26 +83,21 @@ export default function MatchedInfoBoxbox_props({
       })
       .catch((error) => console.error(error));
   };
-  
-  const deletePair = async () => {
-      try {
-        console.log(matchId);
-        const response = await fetch(`${BACKEND_URL}/delete-pair/${matchId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ matchId: matchId }),
-        });
-        const data = await response.json();
-        if (onUnpair) onUnpair(matchId);
+
+  const deletePair = () => {
+    setIsDropdownOpen(false);
+    fetch(`${BACKEND_URL}/delete-pair/${matchId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
         console.log(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsDropdownOpen(false);
-        setActive(false);
-      }
+        if (onUnpair) onUnpair(matchId);
+      })
+      .catch((error) => console.error(error));
   };
-  
+
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
@@ -312,21 +308,21 @@ export default function MatchedInfoBoxbox_props({
                           onClick={unmatchPair}
                         >
                           <img
-                            src={deleteIcon}
+                            src={unmatch_pair}
                             className="w-4 h-4 inline-block mr-2"
                           />
                           Unmatch Pair
                         </button>
                         <button
-                            className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                            onClick={deletePair}
-                          >
-                            <img
-                              src={deleteIcon}
-                              className="w-4 h-4 inline-block mr-2"
-                            />
-                            Delete Pair
-                          </button>
+                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          onClick={deletePair}
+                        >
+                          <img
+                            src={deleteIcon}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          Delete Pair
+                        </button>
                       </div>
                     )}
                   </div>

@@ -48,11 +48,7 @@ export const moveToInactive = async (req: Request, res: Response) => {
 
 export const deletePair = async (req: Request, res: Response) => {
   try {
-    console.log(req.body);
-    const match_id = Number(req.body.matchId);
-    if (Number.isNaN(match_id)) {
-      return res.status(400).json({ error: "Invalid matchId" });
-    }
+    const match_id = Number(req.params.id);
 
     const match = await db
       .select()
@@ -70,41 +66,28 @@ export const deletePair = async (req: Request, res: Response) => {
     res.status(200).json("Match moved to inactive");
 
     const tutor_id = match[0].tutor_id;
-    console.log(tutor_id);
-    if (tutor_id.length == 7) {
-      const query = await db
-        .select()
-        .from(matchedTable)
-        .where(eq(matchedTable.tutor_id, tutor_id));
-      console.log(query);
-  
-      if (!query) {
-        throw new Error("Tutor id does not exist in matched table");
-      }
-  
-      const row = query[0];
-      await db.insert(historyTable).values({
-        tutor_id: row.tutor_id,
-      });
-      await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
-    }
-
     const tutee_id = match[0].tutee_id;
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutee_id, tutee_id));
-    console.log(query);
 
-    if (!query) {
-      throw new Error("Tutor id does not exist in matched table");
-    }
-
-    const row = query[0];
     await db.insert(historyTable).values({
-      tutee_id: row.tutee_id,
+      tutor_id: tutor_id,
     });
+
+    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+
+    await db.update(tutorTable)
+      .set({ history_date: new Date().toISOString().split("T")[0], })
+      .where(eq(tutorTable.id, tutor_id));
+
+    await db.insert(historyTable).values({
+      tutee_id: tutee_id,
+    });
+
     await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+
+    await db.update(tuteeTable)
+      .set({ history_date: new Date().toISOString().split("T")[0], })
+      .where(eq(tuteeTable.id, tutee_id));
+
   } catch (error) {
     console.error(error);
     res.status(500).json("Error updating flag status");
