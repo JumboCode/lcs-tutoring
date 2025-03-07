@@ -49,6 +49,7 @@ export default function ApprovedMatches() {
     const fetchMatches = async () => {
       try {
         const response = await fetch("http://localhost:3000/approved-matches");
+        //console.log(response);
         if (!response.ok) {
           throw new Error("Failed to fetch matches");
         }

@@ -37,9 +37,9 @@ const MatchSuggestionBlock = ({
   unmatched_names,
 }: {
   tutor_info: tutorInfo;
-  tutee1: tuteeInfo;
-  tutee2: tuteeInfo;
-  tutee3: tuteeInfo;
+  tutee1: tuteeInfo | null;
+  tutee2: tuteeInfo | null;
+  tutee3: tuteeInfo | null;
   flagged: Boolean;
   unmatched_names: TuteeName[];
 }) => {
@@ -143,21 +143,27 @@ const MatchSuggestionBlock = ({
 
           {/*tutee info in below div*/}
           <div className="flex flex-row m-6 space-x-6 items-center justify-center ">
+            {tutee1 && (
             <TuteeSuggestionBox
               tutee_info={tutee1}
               isSelected={selectedTuteeId === tutee1.id}
               onSelect={() => setselectedTuteeId(tutee1.id)}
             />
+          )}
+          {tutee2 && (
             <TuteeSuggestionBox
               tutee_info={tutee2}
               isSelected={selectedTuteeId === tutee2.id}
               onSelect={() => setselectedTuteeId(tutee2.id)}
             />
+          )}
+          {tutee3 && (
             <TuteeSuggestionBox
               tutee_info={tutee3}
               isSelected={selectedTuteeId === tutee3.id}
               onSelect={() => setselectedTuteeId(tutee3.id)}
             />
+          )}
           </div>
 
           {/*buttons*/}

@@ -123,18 +123,27 @@ export default class TutorMatcher {
   
       // Select the top 3 matches (or fewer if capacity is reached)
       let assignedCount = 0;
+      let tuteeIds = [null, null, null];
+      let tuteeIndex = 0;
+
       for (const candidate of candidateMatches) {
         if (assignedCount >= 3) break;
         if (tutor.currentTutees >= tutor.maxTutees) break;
   
-        matches.push({
-          tuteeId: candidate.tutee.id,
-          tutorId: tutor.id,
-          matchScore: candidate.score,
-        });
+        // matches.push({
+        //   tuteeId: candidate.tutee.id,
+        //   tutorId: tutor.id,
+        //   matchScore: candidate.score,
+        // });
+        tuteeIds[tuteeIndex++] = candidate.tutee.id;
         tutor.currentTutees++;
         assignedCount++;
       }
+      matches.push({
+        tutorId: tutor.id, 
+        tuteeId1: tuteeIds[0],
+        tuteeId2: tuteeIds[1],
+        tuteeId3: tuteeIds[2]});
     }
     console.log("Matches: ", matches);
     return matches;
@@ -174,6 +183,6 @@ export default class TutorMatcher {
     }
   }
   
-  const tutorMatcher = new TutorMatcher();
-  await tutorMatcher.fetchData();
-  await tutorMatcher.findMatches();
+  // const tutorMatcher = new TutorMatcher();
+  // await tutorMatcher.fetchData();
+  // await tutorMatcher.findMatches();
