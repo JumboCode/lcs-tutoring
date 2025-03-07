@@ -20,11 +20,13 @@ import { tuteeInfo } from "../types";
 
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
+import Select from "react-select/base";
 
 // const BG_COLOR = "#fbfbfb";
 interface TuteeName {
   firstName: string;
   lastName: string;
+  unmatchedTuteeId: string;
 }
 
 const MatchSuggestionBlock = ({
@@ -43,6 +45,7 @@ const MatchSuggestionBlock = ({
   unmatched_names: TuteeName[];
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
+  const [selectedCustomId, setselectedCustomId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [finishedSubmitting, setFinishedSubmitting] = useState(false);
 
@@ -54,13 +57,24 @@ const MatchSuggestionBlock = ({
       const tutorId = tutor_info.id;
 
       console.log(selectedTuteeId);
+      let idToSend = selectedTuteeId;
+      console.log(`start: ${idToSend}`);
+      if (selectedTuteeId == null) {
+        console.log(`here 1: ${idToSend}`);
+        if (selectedCustomId != null) {
+          idToSend = selectedCustomId;
+          console.log(`here 2: ${idToSend}`);
+        }
+      }
+      console.log(`final: ${idToSend}`);
+
 
       const response = await fetch("http://localhost:3000/approve-match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tutorId, selectedTuteeId }),
+        body: JSON.stringify({ tutorId, selectedTuteeId: idToSend }),
       });
 
       console.log("Got response");
@@ -94,7 +108,10 @@ const MatchSuggestionBlock = ({
   const openModal = () => setModalVisible(true);
 
   // Modal close function
-  const closeModal = () => setModalVisible(false);
+  const closeModal = () => {
+    setModalVisible(false);
+    setselectedCustomId(null);
+  }
 
   return (
     <>
@@ -190,9 +207,15 @@ const MatchSuggestionBlock = ({
             <Modal.Body>
               <div>
                 <ul>
-                  {/* TODO: Make selectable! */}
+        
                   {unmatched_names.map((name, index) => (
                     <li key={index}>
+                      <input className="mr-2" type="radio" 
+                        onClick={() => {
+                          setselectedCustomId(name.unmatchedTuteeId);
+                          setselectedTuteeId(null);
+                        }}
+                        checked={selectedCustomId === name.unmatchedTuteeId}/>
                       {name.firstName} {name.lastName}
                     </li>
                   ))}
@@ -200,6 +223,16 @@ const MatchSuggestionBlock = ({
               </div>
             </Modal.Body>
             <Modal.Footer>
+              <button 
+                className={`btn btn-secondary ${
+                  selectedCustomId
+                    ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2] border-0"
+                    : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={handleApprove} 
+                disabled={!selectedCustomId || isSubmitting}>
+                Approve
+              </button>
               <button className="btn btn-secondary" onClick={closeModal}>
                 Close
               </button>
