@@ -11,7 +11,6 @@ import MatchSuggestionBlock from "./matchSuggestionBlock";
 import { useState, useEffect } from "react";
 import { tuteeInfo, tutorInfo } from "../types";
 // import FilterButton from "./FilterButton";
-
 // tutees not passed in from algorithm yet
 interface MatchSuggestion {
   flagged: boolean;
@@ -31,6 +30,7 @@ export default function MatchSuggestionTable() {
     grade: "8",
     special_needs: "No",
     tutoring_mode: "Hybrid",
+    flagged: true,
   };
 
   const tutee2: tuteeInfo = {
@@ -42,6 +42,7 @@ export default function MatchSuggestionTable() {
     grade: "10",
     special_needs: "Dyslexia",
     tutoring_mode: "In-Person",
+    flagged: false,
   };
 
   const tutee3: tuteeInfo = {
@@ -53,6 +54,7 @@ export default function MatchSuggestionTable() {
     grade: "9",
     special_needs: "No",
     tutoring_mode: "Hybrid",
+    flagged: false,
   };
 
   interface TuteeName {
@@ -78,7 +80,6 @@ export default function MatchSuggestionTable() {
         const data = await response.json();
         console.log("Match Suggestions:", data);
         setMatchSuggestions(data.matchSuggestions);
-        // todo
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -141,7 +142,6 @@ export default function MatchSuggestionTable() {
                   tutee1={tutee1}
                   tutee2={tutee2}
                   tutee3={tutee3}
-                  flagged={match.flagged}
                   unmatched_names={unmatchedNames}
                 />
               ))}
