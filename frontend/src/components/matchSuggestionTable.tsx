@@ -58,6 +58,7 @@ export default function MatchSuggestionTable() {
   interface TuteeName {
     firstName: string;
     lastName: string;
+    unmatchedTuteeId: string;
   }
 
   const [matchsuggestions, setMatchSuggestions] = useState<MatchSuggestion[]>(
@@ -98,6 +99,7 @@ export default function MatchSuggestionTable() {
         const names = unmatchedTutees.map((formData: any) => ({
           firstName: formData.tutee_first_name,
           lastName: formData.tutee_last_name,
+          unmatchedTuteeId: formData.id,
         }));
         setUnmatchedNames(names);
         console.log("Unmatched Tutee Names: ", names);
