@@ -1,4 +1,5 @@
 "use client";
+import config from "../config.ts";
 import { useState } from "react";
 
 import { tuteeBoxProps } from "../types";
@@ -65,7 +66,7 @@ export default function TuteeInfoBox({
   const handleSubmit = () => {
     setIsDropdownOpen(false);
     console.log("id from front end: ", id);
-    fetch(`http://localhost:3000/move-tutee-to-history/${id}`, {
+    fetch(`${config.backendUrl}/move-tutee-to-history/${id}`, {
       method: "POST",
     })
       .then((response) => response.json())

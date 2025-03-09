@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -247,7 +248,7 @@ export default function TuteeForm() {
     if (Object.keys(newErrors).length === 0) {
       // http://localhost:3000/tuteesubmission
       // https://lcs-tutoring.onrender.com/tuteesubmission
-      fetch("http://localhost:3000/tuteesubmission", {
+      fetch(`${config.backendUrl}/tuteesubmission`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

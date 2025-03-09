@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import { useEffect, useState } from "react";
 
 export default function Demo() {
@@ -7,7 +8,7 @@ export default function Demo() {
 
     const fetchMessage = async () => {
       // https://lcs-tutoring.onrender.com/demo/${id}
-      const data = await fetch(`https://lcs-tutoring.onrender.com/demo/${id}`);
+      const data = await fetch(`${config.backendUrl}/demo/${id}`);
       const message = await data.text();
       setText(message);
     };

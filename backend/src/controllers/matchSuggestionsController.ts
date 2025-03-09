@@ -95,7 +95,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               id: tuteeTable.id,
               first_name: tuteeTable.tutee_first_name,
               last_name: tuteeTable.tutee_last_name,
-              parent_email: tuteeTable.parent_email,
+              email: tuteeTable.parent_email,
               grade: tuteeTable.grade,
               subjects: tuteeTable.subjects,
               special_needs: tuteeTable.special_needs,
@@ -108,7 +108,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               id: tuteeTable.id,
               first_name: tuteeTable.tutee_first_name,
               last_name: tuteeTable.tutee_last_name,
-              parent_email: tuteeTable.parent_email,
+              email: tuteeTable.parent_email,
               grade: tuteeTable.grade,
               subjects: tuteeTable.subjects,
               special_needs: tuteeTable.special_needs,
@@ -121,7 +121,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               id: tuteeTable.id,
               first_name: tuteeTable.tutee_first_name,
               last_name: tuteeTable.tutee_last_name,
-              parent_email: tuteeTable.parent_email,
+              email: tuteeTable.parent_email,
               grade: tuteeTable.grade,
               subjects: tuteeTable.subjects,
               special_needs: tuteeTable.special_needs,
@@ -140,7 +140,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     );
       
     // console.log("these are the tutees: ", tutees);
-    console.log("these are the tutors: ", matchResults);
+    // console.log("these are the tutors: ", matchResults);
 
     res.send({
       matchSuggestions: matchResults

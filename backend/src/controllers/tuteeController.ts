@@ -173,7 +173,7 @@ async function filterTutees(
 
   const tutees = await query;
 
-  console.log("Filtered Tutees:", tutees);
+  // console.log("Filtered Tutees:", tutees);
 
   return tutees;
 }

@@ -1,4 +1,5 @@
 "use client";
+import config from "../config.ts";
 import { useState } from "react";
 
 import { tutorBoxProps } from "../types";
@@ -66,7 +67,7 @@ export default function TutorInfoBox({
 
   const handleSubmit = () => {
     setIsDropdownOpen(false);
-    fetch(`http://localhost:3000/move-tutor-to-history/${id}`, {
+    fetch(`${config.backendUrl}/move-tutor-to-history/${id}`, {
       method: "POST",
     })
       .then((response) => response.json())

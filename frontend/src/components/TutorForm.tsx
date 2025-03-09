@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -274,11 +275,7 @@ export default function TutorForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      // https://jumbocodegpt.onrender.com/tutorsubmission
-      // http://localhost:3000/tutorsubmission
-
-      console.log("before fetching");
-      fetch("http://localhost:3000/tutorsubmission", {
+      fetch(`${config.backendUrl}/tutorsubmission`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import React, { useState } from "react";
 
 export default function AdminLogin() {
@@ -26,15 +27,15 @@ export default function AdminLogin() {
   //     setError(true);
   //   }
   // };
- 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:3000/admin-login", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json', // Specify that the body format is JSON
-          'Accept': 'application/json'        // Optionally specify that your client expects JSON responses
+          "Content-Type": "application/json", // Specify that the body format is JSON
+          Accept: "application/json", // Optionally specify that your client expects JSON responses
         },
         body: JSON.stringify({ email, password }),
       });
@@ -53,10 +54,12 @@ export default function AdminLogin() {
       setError(true);
     }
   };
-  
+
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-4">
-      <h2 className="text-2xl font-semibold text-center">Log In for LCS Admin</h2>
+      <h2 className="text-2xl font-semibold text-center">
+        Log In for LCS Admin
+      </h2>
       {error && (
         <div className="w-[514px] h-[60px] p-4 bg-red-100 text-red-700 border border-red-400 rounded flex items-center">
           <span className="mr-2">✖️</span>
@@ -94,5 +97,3 @@ export default function AdminLogin() {
     </div>
   );
 }
-
-

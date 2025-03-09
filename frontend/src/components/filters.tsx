@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Form } from "react-bootstrap";
-import closeButton from "../assets/images/filter/close_button.svg";
+import GrayCloseButton from "../assets/images/filter/close_button.svg";
+import BlueCloseButton from "../assets/images/filter/blue_close.svg";
 // import { ButtonGroup } from 'react-bootstrap';
 // import { ToggleButton } from 'react-bootstrap';
 // import { ToggleButtonGroup } from 'react-bootstrap';
@@ -34,6 +35,7 @@ export default function FilterModal(props: FilterModalProps) {
     useState<boolean>();
   const [selectedButtonMode, setSelectedButtonMode] = useState<string>("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [imageSrc, setImageSrc] = useState(GrayCloseButton);
 
   const handleToggleDisability = (button: boolean) => {
     setSelectedButtonDisability(button);
@@ -79,8 +81,12 @@ export default function FilterModal(props: FilterModalProps) {
       </Modal.Header> */}
       <Modal.Body>
         <div className={"flex justify-end"}>
-          <button onClick={props.onHide}>
-            <img src={closeButton} />
+          <button
+            onClick={props.onHide}
+            onMouseEnter={() => setImageSrc(BlueCloseButton)}
+            onMouseLeave={() => setImageSrc(GrayCloseButton)}
+          >
+            <img src={imageSrc} alt="Close" />
           </button>
         </div>
         <div className={"flex flex-row justify-center"}>

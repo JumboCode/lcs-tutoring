@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import { useState } from "react";
 export default function AddAdmin() {
   const [showInput, setShowInput] = useState(false);

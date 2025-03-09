@@ -28,7 +28,7 @@ export default function TuteeSuggestionBox({
 
   const [showPopup, setShowPopup] = useState(false);
   return (
-    <div className="border rounded-lg w-full">
+    <div className="border rounded-lg w-full min-h-[250px]">
       <div className="flex gap-4 items-center ml-5 p-2">
         <input
           type="radio"
@@ -60,7 +60,7 @@ export default function TuteeSuggestionBox({
       )}
       <div className="py-1 flex flex-row text-gray-500 px-8 bg-[#fbfbfb] justify-start items-center mx-2">
         <span className="w-1/2">Grade</span>
-        <span className="w-1/2">Subject</span>
+        <span className="w-1/2">Subjects</span>
       </div>
       <div className="py-2 flex flex-row text-[black] px-8 justify-start items-center mx-2">
         <span className="w-1/2">{grade}</span>
@@ -82,7 +82,7 @@ export default function TuteeSuggestionBox({
         <span className="w-1/2">Tutoring Mode</span>
       </div>
       <div className="py-2 flex flex-row text-[black] px-8 justify-start items-center mx-2">
-        <span className="w-1/2">{special_needs}</span>
+        <span className="w-1/2">{special_needs ? special_needs : "N/A"}</span>
         <span className="w-1/2">{tutoring_mode}</span>
       </div>
     </div>

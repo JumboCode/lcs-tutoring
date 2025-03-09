@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import MatchedInfoBox from "./MatchedInfoBox";
 import { useState, useEffect } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
@@ -57,7 +58,7 @@ export default function ApprovedMatches() {
           appliedFilters as any
         ).toString();
         const response = await fetch(
-          `http://localhost:3000/approved-matches?${queryFilter}`,
+          `${config.backendUrl}/approved-matches?${queryFilter}`,
           {
             method: "GET",
             headers: {
@@ -69,7 +70,7 @@ export default function ApprovedMatches() {
           throw new Error("Failed to fetch matches");
         }
         const data = await response.json();
-        // console.log("Fetched approved matches: ", data);
+        console.log("Fetched approved matches: ", data.activeApprovedMatches);
         setActiveMatches(data.activeApprovedMatches);
         setInactiveMatches(data.inactiveApprovedMatches);
       } catch (error) {

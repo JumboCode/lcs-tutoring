@@ -7,6 +7,7 @@
  * suggestion blocks
  */
 
+import config from "../config.ts";
 import MatchSuggestionBlock from "./matchSuggestionBlock";
 import { useState, useEffect } from "react";
 import { tuteeInfo, tutorInfo } from "../types";
@@ -38,12 +39,13 @@ export default function MatchSuggestionTable() {
     console.log("im in approved match suggestions useeffect");
     const fetchSuggestions = async () => {
       try {
-        const response = await fetch("http://localhost:3000/match-suggestions");
+        const response = await fetch(`${config.backendUrl}/match-suggestions`);
         if (!response.ok) {
           throw new Error("Failed to fetch match suggestions");
         }
         const data = await response.json();
         console.log("Match Suggestions:", data);
+        console.log("GONNA SET");
         setMatchSuggestions(data.matchSuggestions);
       } catch (error) {
         setError((error as Error).message);
@@ -54,7 +56,7 @@ export default function MatchSuggestionTable() {
 
     const fetchTutees = async () => {
       try {
-        const response = await fetch("http://localhost:3000/tutees");
+        const response = await fetch(`${config.backendUrl}/tutees`);
         if (!response.ok) {
           throw new Error("Failed to fetch tutees");
         }

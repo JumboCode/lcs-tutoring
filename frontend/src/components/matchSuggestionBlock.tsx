@@ -9,6 +9,7 @@
 
 "use client";
 
+import config from "../config.ts";
 import TuteeSuggestionBox from "./tuteeSuggestionBox";
 
 import { BsEnvelope } from "react-icons/bs";
@@ -21,7 +22,6 @@ import { tuteeInfo } from "../types";
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
 import { Flag } from "lucide-react";
-import Select from "react-select/base";
 
 // const BG_COLOR = "#fbfbfb";
 interface TuteeName {
@@ -68,8 +68,7 @@ const MatchSuggestionBlock = ({
       }
       console.log(`final: ${idToSend}`);
 
-
-      const response = await fetch("http://localhost:3000/approve-match", {
+      const response = await fetch(`${config.backendUrl}/approve-match`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +110,7 @@ const MatchSuggestionBlock = ({
   const closeModal = () => {
     setModalVisible(false);
     setselectedCustomId(null);
-  }
+  };
 
   return (
     <>
@@ -145,9 +144,9 @@ const MatchSuggestionBlock = ({
               "py-1 flex flex-row text-gray-500 px-2 bg-[#fbfbfb] justify-start items-center mx-3"
             }
           >
-            <span className="w-1/4">Subject</span>
-            <span className="w-1/4">Grade</span>
-            <span className="w-1/4">Open to Disability</span>
+            <span className="w-1/4">Subject Preferences</span>
+            <span className="w-1/4">Grade Preferences</span>
+            <span className="w-1/4">Open to Special Needs</span>
             <span className="w-1/4">Tutoring Mode</span>
           </div>
           <div className="py-2 flex flex-row text-[black] px-2 justify-start items-center mx-3">
@@ -160,26 +159,26 @@ const MatchSuggestionBlock = ({
           {/*tutee info in below div*/}
           <div className="flex flex-row m-6 space-x-6 items-center justify-center ">
             {tutee1 && (
-            <TuteeSuggestionBox
-              tutee_info={tutee1}
-              isSelected={selectedTuteeId === tutee1.id}
-              onSelect={() => setselectedTuteeId(tutee1.id)}
-            />
-          )}
-          {tutee2 && (
-            <TuteeSuggestionBox
-              tutee_info={tutee2}
-              isSelected={selectedTuteeId === tutee2.id}
-              onSelect={() => setselectedTuteeId(tutee2.id)}
-            />
-          )}
-          {tutee3 && (
-            <TuteeSuggestionBox
-              tutee_info={tutee3}
-              isSelected={selectedTuteeId === tutee3.id}
-              onSelect={() => setselectedTuteeId(tutee3.id)}
-            />
-          )}
+              <TuteeSuggestionBox
+                tutee_info={tutee1}
+                isSelected={selectedTuteeId === tutee1.id}
+                onSelect={() => setselectedTuteeId(tutee1.id)}
+              />
+            )}
+            {tutee2 && (
+              <TuteeSuggestionBox
+                tutee_info={tutee2}
+                isSelected={selectedTuteeId === tutee2.id}
+                onSelect={() => setselectedTuteeId(tutee2.id)}
+              />
+            )}
+            {tutee3 && (
+              <TuteeSuggestionBox
+                tutee_info={tutee3}
+                isSelected={selectedTuteeId === tutee3.id}
+                onSelect={() => setselectedTuteeId(tutee3.id)}
+              />
+            )}
           </div>
 
           {/*buttons*/}
@@ -222,15 +221,17 @@ const MatchSuggestionBlock = ({
             <Modal.Body>
               <div>
                 <ul>
-        
                   {unmatched_names.map((name, index) => (
                     <li key={index}>
-                      <input className="mr-2" type="radio" 
+                      <input
+                        className="mr-2"
+                        type="radio"
                         onClick={() => {
                           setselectedCustomId(name.unmatchedTuteeId);
                           setselectedTuteeId(null);
                         }}
-                        checked={selectedCustomId === name.unmatchedTuteeId}/>
+                        checked={selectedCustomId === name.unmatchedTuteeId}
+                      />
                       {name.firstName} {name.lastName}
                     </li>
                   ))}
@@ -238,14 +239,15 @@ const MatchSuggestionBlock = ({
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <button 
+              <button
                 className={`btn btn-secondary ${
                   selectedCustomId
                     ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2] border-0"
                     : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
                 }`}
-                onClick={handleApprove} 
-                disabled={!selectedCustomId || isSubmitting}>
+                onClick={handleApprove}
+                disabled={!selectedCustomId || isSubmitting}
+              >
                 Approve
               </button>
               <button className="btn btn-secondary" onClick={closeModal}>

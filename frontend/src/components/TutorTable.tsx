@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import TutorInfoBox from "./TutorInfoBox";
 import { useState, useEffect } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
@@ -48,8 +49,7 @@ export default function TutorTable() {
           appliedFilters as any
         ).toString();
         const response = await fetch(
-          // https://jumbocodegpt.onrender.com/tutors
-          `http://localhost:3000/tutors?${queryFilter}`,
+          `${config.backendUrl}/tutors?${queryFilter}`,
           {
             method: "GET",
             headers: {

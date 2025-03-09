@@ -1,4 +1,5 @@
-"use client";
+import config from "../config.ts";
+("use client");
 import { useEffect, useState } from "react";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
@@ -21,8 +22,6 @@ const STYLES = {
     colors: "transition-colors duration-150",
   },
 } as const;
-
-const BACKEND_URL = "http://localhost:3000";
 
 type MatchedInfoBoxProps = {
   tutee_props: tuteeBoxProps;
@@ -72,7 +71,7 @@ export default function MatchedInfoBoxbox_props({
 
     console.log("about to fetch unmatch pair");
 
-    fetch(`${BACKEND_URL}/unmatch-pair/${matchId}`, {
+    fetch(`${config.backendUrl}/unmatch-pair/${matchId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -86,7 +85,7 @@ export default function MatchedInfoBoxbox_props({
 
   const deletePair = () => {
     setIsDropdownOpen(false);
-    fetch(`${BACKEND_URL}/delete-pair/${matchId}`, {
+    fetch(`${config.backendUrl}/delete-pair/${matchId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -106,7 +105,7 @@ export default function MatchedInfoBoxbox_props({
   const handleSendEmail = async () => {
     setIsDropdownOpen(false);
     try {
-      const response = await fetch(`${BACKEND_URL}/email`, {
+      const response = await fetch(`${config.backendUrl}/email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +137,7 @@ export default function MatchedInfoBoxbox_props({
 
   const handleToggleFlag = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/flag/`, {
+      const response = await fetch(`${config.backendUrl}/flag/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ matchId: matchId }),

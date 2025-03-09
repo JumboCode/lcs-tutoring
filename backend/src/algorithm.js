@@ -39,47 +39,44 @@
  * @property {string} history_date
  */
 
-export default class TutorMatcher {
-    url = "http://localhost:3000";
-    constructor() {
-      /**
-       * @type {Tutor[]}
-       */
-      this.tutors = [];
-      /**
-       * @type {Tutee[]}
-       */
-      this.tutees = [];
-    }
-  
-  
-    addTutor(tutor) {
-      this.tutors.push(tutor);
-    }
-  
-    addTutee(tutee) {
-      this.tutees.push(tutee);
-    }
-  
-  
-    async fetchData() {
-      await Promise.all([this.fetchTutors(), this.fetchTutees()]);
-      // console.log(this.tutors);
-      // console.log(this.tutees);
-      // console.log("TUtees: ", this.tutees);
-    }
-  
-    async fetchTutors() {
-      console.log("fetching tutors");
-      const response = await fetch(`${this.url}/unmatched-tutors`);
-      const {unmatchedTutors} = await response.json();
-      // console.log(unmatchedTutors);
-      for (const unmatchedTutor of unmatchedTutors) {
-        this.addTutor(unmatchedTutor);
-      }
-      // console.log("All tutees: ", this.tutees);
-url = "http://localhost:3000";
+export default class TutorMatcher { 
+  // url = ""
+  url = "http://localhost:3000";
+  constructor() {
+    /**
+     * @type {Tutor[]}
+     */
+    this.tutors = [];
+    /**
+     * @type {Tutee[]}
+     */
+    this.tutees = [];
+  }
 
+
+  addTutor(tutor) {
+    this.tutors.push(tutor);
+  }
+
+  addTutee(tutee) {
+    this.tutees.push(tutee);
+  }
+
+
+  async fetchData() {
+    await Promise.all([this.fetchTutors(), this.fetchTutees()]);
+    // console.log(this.tutors);
+    // console.log(this.tutees);
+    // console.log("TUtees: ", this.tutees);
+  }
+
+  async fetchTutors() {
+    console.log("fetching tutors");
+    const response = await fetch(`${this.url}/unmatched-tutors`);
+    const {unmatchedTutors} = await response.json();
+    // console.log(unmatchedTutors);
+    for (const unmatchedTutor of unmatchedTutors) {
+      this.addTutor(unmatchedTutor);
     }
     // console.log("All tutees: ", this.tutees);
   }
@@ -95,35 +92,55 @@ url = "http://localhost:3000";
   }
   
   findMatches() {
+    console.log("FINDING MATCHES")
     const matches = [];
   
     // Group tutees by tutoring_mode
-    const modeTuteeIndex = this.tutees.reduce((acc, tutee) => {
-      if (!acc[tutee.tutoring_mode]) {
-        acc[tutee.tutoring_mode] = [];
-      }
-      acc[tutee.tutoring_mode].push(tutee);
-      return acc;
-    }, {});
+    // const modeTuteeIndex = this.tutees.reduce((acc, tutee) => {
+    //   if (!acc[tutee.tutoring_mode]) {
+    //     acc[tutee.tutoring_mode] = [];
+    //   }
+    //   acc[tutee.tutoring_mode].push(tutee);
+    //   return acc;
+    // }, {});
+
+    /* modeTuteeIndex is of the form: 
+     *  {Hybrid: 
+     *    [
+     *      {tuteeinfo}
+     *      ...
+     *    ]
+     *  Online:
+     *    [
+     *      {tuteeinfo}
+     *      ...
+     *    ]
+     *  In-person:
+     *    [
+     *      {tuteeinfo}
+     *      ...
+     *    ]}
+    */
   
     for (const tutor of this.tutors) {
-      // If tutor has reached their max capacity, skip
-      tutor.currentTutees = tutor.currentTutees || 0;
-      if (tutor.currentTutees >= tutor.maxTutees) continue;
-  
-      const eligibleTutees = modeTuteeIndex[tutor.tutoring_mode] || [];
-  
       // Build an array of candidate matches with scores
+
+      // console.log("TUTOR: ", tutor)
+
       const candidateMatches = [];
-      for (const tutee of eligibleTutees) {
+      for (const tutee of this.tutees) {
         // Skip if tutee has special needs and tutor's disability preference conflicts
-        if (tutee.has_special_needs && tutor.disability_pref) continue;
+
+
+        // if (tutee.has_special_needs && tutor.disability_pref) continue;
         const score = this._calculateMatchScore(tutor, tutee);
         candidateMatches.push({ tutee, score });
       }
   
       // Sort candidate matches by score descending
       candidateMatches.sort((a, b) => b.score - a.score);
+
+      // console.log("CANDIDATE MATCHES: ", candidateMatches);
   
       // Select the top 3 matches (or fewer if capacity is reached)
       let assignedCount = 0;
@@ -132,15 +149,8 @@ url = "http://localhost:3000";
 
       for (const candidate of candidateMatches) {
         if (assignedCount >= 3) break;
-        if (tutor.currentTutees >= tutor.maxTutees) break;
   
-        // matches.push({
-        //   tuteeId: candidate.tutee.id,
-        //   tutorId: tutor.id,
-        //   matchScore: candidate.score,
-        // });
         tuteeIds[tuteeIndex++] = candidate.tutee.id;
-        tutor.currentTutees++;
         assignedCount++;
       }
       matches.push({
@@ -149,10 +159,36 @@ url = "http://localhost:3000";
         tuteeId2: tuteeIds[1],
         tuteeId3: tuteeIds[2]});
     }
-    console.log("Matches: ", matches);
+    // console.log("Matches: ", matches);
     return matches;
   }
-    
+
+    _calculateSpecialNeedsScore(tutor, tutee) {
+      // TODO: fix for diverse range of needs
+      let needsScore = 0
+      // tutor can tutor with special needs and tutee has
+      if (tutor.disability_pref && tutee.has_special_needs) {
+        needsScore = 1
+      // tutor can tutor with special needs and tutee doesn't have
+      } else if (tutor.disability_pref && tutee.has_special_needs) {
+        needsScore = 0.8
+      // tutor can't tutor with special needs and tutee doesn't have
+      } else if (!tutee.has_special_needs && !tutor.disability_pref) {
+        needsScore = 1
+      }
+      return needsScore;
+    }
+
+    _calculateTutoringModeScore(tutor, tutee) {
+      let modeScore = 0;
+      if (tutor.tutoring_mode === tutee.tutoring_mode) {
+        // console.log("SAME MODE: ", tutor, tutee)
+        modeScore = 1;
+      } else if (tutor.tutoring_mode === "Anything" || tutee.tutoring_mode === "Anything") {
+        modeScore = 1;
+      }
+      return modeScore; 
+    }
   
     _calculateGradeScore(tutor, tutee) {
       let gradeScore = 0;
@@ -171,18 +207,22 @@ url = "http://localhost:3000";
   
     _calculateMatchScore(tutor, tutee) {
 
-      
-      // console.log("Tutee subjects: ", tutee.subjects)
       const commonSubjects = new Set(
         [...tutee.subjects].filter((subject) => tutor.subject_pref.includes(subject))
       );
+
       // console.log("Tutee and tutor common: ", commonSubjects);
+
       const subjectScore = commonSubjects.size / tutee.subjects.length;
       // console.log("subject score: ", subjectScore)
+
       // TODO: implement availability stuff
       // const availabilityScore = 1 - tutor.current_tutees / tutor.max_tutees;
-      const gradeScore = this._calculateGradeScore(tutor, tutee);
   
-      return 0.4 * subjectScore + 0.2 * gradeScore;
+      const gradeScore = this._calculateGradeScore(tutor, tutee);
+      const modeScore = this._calculateTutoringModeScore(tutor, tutee);
+      const needsScore = this._calculateSpecialNeedsScore(tutor, tutee);
+  
+      return 0.4 * subjectScore + 0.3 * gradeScore + 0.5 * modeScore + 0.8 * needsScore;
     }
   }

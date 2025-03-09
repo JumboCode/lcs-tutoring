@@ -1,3 +1,4 @@
+import config from "../config.ts";
 import TuteeInfoBox from "./TuteeInfoBox";
 import { useState, useEffect } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
@@ -47,10 +48,8 @@ export default function TuteeTable() {
         const queryFilter = new URLSearchParams(
           appliedFilters as any
         ).toString();
-        // https://jumbocodegpt.onrender.com/tutees
-        // http://localhost:3000/tutees
         const response = await fetch(
-          `http://localhost:3000/tutees?${queryFilter}`,
+          `${config.backendUrl}/tutees?${queryFilter}`,
           {
             method: "GET",
             headers: {
