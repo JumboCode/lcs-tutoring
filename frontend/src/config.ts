@@ -3,7 +3,7 @@ interface Config {
 }
 
 const config: Config = {
-    backendUrl: "https://lcs-tutoring.onrender.com",
+    backendUrl: "http://localhost:3000",
     // https://lcs-tutoring.onrender.com
     // http://localhost:3000
 };

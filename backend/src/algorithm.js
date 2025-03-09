@@ -41,7 +41,7 @@
 
 export default class TutorMatcher { 
   // url = ""
-  url = "https://lcs-tutoring.onrender.com";
+  url = "http://localhost:3000";
   constructor() {
     /**
      * @type {Tutor[]}
@@ -65,9 +65,6 @@ export default class TutorMatcher {
 
   async fetchData() {
     await Promise.all([this.fetchTutors(), this.fetchTutees()]);
-    // console.log(this.tutors);
-    // console.log(this.tutees);
-    // console.log("TUtees: ", this.tutees);
   }
 
   async fetchTutors() {

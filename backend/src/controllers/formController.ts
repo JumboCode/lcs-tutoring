@@ -10,6 +10,7 @@ import {
   tuteeTable,
   tutorTable,
   adminTable,
+  unmatchedTable,
 } from "../db/schema";
 // import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
@@ -56,7 +57,9 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
       tutoring_mode: tutoringMode,
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
-      history_date: new Date().toISOString().split("T")[0],
+    });
+    await db.insert(unmatchedTable).values({
+      tutee_id: id,
     });
     console.log("Tutee submitted: ", req.body);
   } catch (error) {
@@ -109,6 +112,9 @@ export const tutorSubmission = async (req: Request, res: Response) => {
       num_tutees: numTutees,
       notes: notes,
       language_proficiencies: languageProficiencies,
+    });
+    await db.insert(unmatchedTable).values({
+      tutor_id: id,
     });
     console.log("Tutee submitted: ", req.body);
   } catch (error) {

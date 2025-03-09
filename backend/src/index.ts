@@ -1,14 +1,5 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
-import {
-  matchedTable,
-  // tuteeTable,
-  // tutorTable,
-  unmatchedTable,
-  // historyTable,
-  // approvedMatchesTable,
-  // adminTable,
-} from "./db/schema";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import fs from "fs";
@@ -17,8 +8,6 @@ import tutee_router from "./routes/tutees";
 import approved_matches_router from "./routes/approvedMatches";
 import match_suggestions_router from "./routes/matchSuggestions";
 import form_router from "./routes/form";
-
-const db = drizzle(process.env.DATABASE_URL!);
 
 const app: Express = express();
 app.use(cors());

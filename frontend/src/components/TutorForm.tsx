@@ -270,8 +270,9 @@ export default function TutorForm() {
 
     setErrors(newErrors);
 
+    console.log("About to submit tutor form");
     console.log(JSON.stringify(formData));
-    console.log(Object.keys(newErrors));
+    // console.log(Object.keys(newErrors));
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
