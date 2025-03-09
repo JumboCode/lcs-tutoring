@@ -218,7 +218,6 @@ export default function TutorTable() {
                 <TutorInfoBox
                   box_props={box_props}
                   key={index}
-                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={true}
                   onDelete={(deletedTutor) => {
                     console.log("Deleted tutor id: ", deletedTutor.id);
@@ -239,7 +238,6 @@ export default function TutorTable() {
                 <TutorInfoBox
                   box_props={box_props}
                   key={index}
-                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={false}
                 />
               ))}
@@ -251,7 +249,6 @@ export default function TutorTable() {
                 <TutorInfoBox
                   box_props={box_props}
                   key={index}
-                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={false}
                 />
               ))}
