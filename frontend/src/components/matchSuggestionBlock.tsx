@@ -151,13 +151,27 @@ const MatchSuggestionBlock = ({
           </div>
           <div className="py-2 flex flex-row text-[black] px-2 justify-start items-center mx-3">
             <span className="w-1/4">{subject.join(", ")}</span>
-            <span className="w-1/4">{grade_level_pref.join(", ")}</span>
+            <span className="w-1/4">
+              {grade_level_pref
+                .map((grade) =>
+                  grade == "0"
+                    ? "Kindergarten"
+                    : grade == "1"
+                    ? "1st"
+                    : grade == "2"
+                    ? "2nd"
+                    : grade == "3"
+                    ? "3rd"
+                    : grade + "th"
+                )
+                .join(", ")}
+            </span>
             <span className="w-1/4">{disability_pref ? "Yes" : "No"}</span>
             <span className="w-1/4">{tutoring_mode}</span>
           </div>
 
           {/*tutee info in below div*/}
-          <div className="flex flex-row m-6 space-x-6 items-center justify-center ">
+          <div className="flex flex-row m-6 space-x-6 items-center justify-between">
             {tutee1 && (
               <TuteeSuggestionBox
                 tutee_info={tutee1}
