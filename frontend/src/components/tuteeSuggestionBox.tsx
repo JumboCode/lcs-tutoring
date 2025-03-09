@@ -3,6 +3,7 @@
 import { tuteeInfo } from "../types";
 import { BsEnvelope } from "react-icons/bs";
 import { useState } from "react";
+import { Flag } from "lucide-react";
 // const BG_COLOR = "#fbfbfb";
 
 export default function TuteeSuggestionBox({
@@ -22,6 +23,7 @@ export default function TuteeSuggestionBox({
     grade,
     special_needs,
     tutoring_mode,
+    flagged,
   } = tutee_info;
 
   const [showPopup, setShowPopup] = useState(false);
@@ -35,8 +37,10 @@ export default function TuteeSuggestionBox({
           className="w-4 h-4 mt-1.5 accent-gray-500"
         />
         <div>
-          <div className="text-lg font-bold">
-            {first_name} {last_name}
+          <div className="text-lg font-bold flex flex-col items-start gap-2">
+            <div className="flex items-center">
+              {first_name} {last_name}
+            </div>
           </div>
           <div className="flex items-center gap-1 text-gray-500">
             <BsEnvelope size={12} color="mr-1" />
@@ -44,6 +48,16 @@ export default function TuteeSuggestionBox({
           </div>
         </div>
       </div>
+      {flagged && (
+        <div className="bg-[#FEFDF2] p-2 rounded w-5/6 mx-auto">
+          <div className="flex items-center gap-2 ">
+            <Flag className="text-[#F3CA42]" />
+            <span className="text-sm font-normal text-[#F3CA42]">
+              Priority Selection
+            </span>
+          </div>
+        </div>
+      )}
       <div className="py-1 flex flex-row text-gray-500 px-8 bg-[#fbfbfb] justify-start items-center mx-2">
         <span className="w-1/2">Grade</span>
         <span className="w-1/2">Subject</span>

@@ -50,6 +50,7 @@ export default function TutorInfoBox({
     disability_pref,
     tutoring_mode,
     notes,
+    flagged,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -80,7 +81,11 @@ export default function TutorInfoBox({
     <div className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}`}>
       <table className="table-fixed w-full">
         <thead>
-          <tr className={`h-[80px] ${bgColor} border-b`}>
+          <tr
+            className={`h-[80px] ${
+              flagged ? "bg-[#FEFDF2]" : "bg-[#FAFCFE]"
+            } border-b`}
+          >
             <th className="font-normal w-1/5 px-3">
               <div className="flex flex-col">
                 {history_date && (

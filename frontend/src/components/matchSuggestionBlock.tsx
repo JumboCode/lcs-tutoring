@@ -20,6 +20,7 @@ import { tuteeInfo } from "../types";
 
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
+import { Flag } from "lucide-react";
 import Select from "react-select/base";
 
 // const BG_COLOR = "#fbfbfb";
@@ -34,14 +35,12 @@ const MatchSuggestionBlock = ({
   tutee1,
   tutee2,
   tutee3,
-  flagged,
   unmatched_names,
 }: {
   tutor_info: tutorInfo;
   tutee1: tuteeInfo;
   tutee2: tuteeInfo;
   tutee3: tuteeInfo;
-  flagged: Boolean;
   unmatched_names: TuteeName[];
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
@@ -130,7 +129,16 @@ const MatchSuggestionBlock = ({
               <span className="pl-2 text-sm text-gray-500">{phone}</span>
             </div>
           </div>
-
+          {tutor_info.flagged && (
+            <div className="bg-[#FEFDF2] p-2 rounded mx-auto my-2">
+              <div className="flex items-center gap-2 ">
+                <Flag className="text-[#F3CA42]" />
+                <span className="text-sm font-normal text-[#F3CA42]">
+                  Priority Selection Flag
+                </span>
+              </div>
+            </div>
+          )}
           <div
             className={
               "py-1 flex flex-row text-gray-500 px-2 bg-[#fbfbfb] justify-start items-center mx-3"
