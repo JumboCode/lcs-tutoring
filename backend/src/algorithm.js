@@ -40,42 +40,46 @@
  */
 
 export default class TutorMatcher {
-  url = "http://localhost:3000";
-  constructor() {
-    /**
-     * @type {Tutor[]}
-     */
-    this.tutors = [];
-    /**
-     * @type {Tutee[]}
-     */
-    this.tutees = [];
-  }
+    url = "http://localhost:3000";
+    constructor() {
+      /**
+       * @type {Tutor[]}
+       */
+      this.tutors = [];
+      /**
+       * @type {Tutee[]}
+       */
+      this.tutees = [];
+    }
+  
+  
+    addTutor(tutor) {
+      this.tutors.push(tutor);
+    }
+  
+    addTutee(tutee) {
+      this.tutees.push(tutee);
+    }
+  
+  
+    async fetchData() {
+      await Promise.all([this.fetchTutors(), this.fetchTutees()]);
+      // console.log(this.tutors);
+      // console.log(this.tutees);
+      // console.log("TUtees: ", this.tutees);
+    }
+  
+    async fetchTutors() {
+      console.log("fetching tutors");
+      const response = await fetch(`${this.url}/unmatched-tutors`);
+      const {unmatchedTutors} = await response.json();
+      // console.log(unmatchedTutors);
+      for (const unmatchedTutor of unmatchedTutors) {
+        this.addTutor(unmatchedTutor);
+      }
+      // console.log("All tutees: ", this.tutees);
+url = "http://localhost:3000";
 
-
-  addTutor(tutor) {
-    this.tutors.push(tutor);
-  }
-
-  addTutee(tutee) {
-    this.tutees.push(tutee);
-  }
-
-
-  async fetchData() {
-    await Promise.all([this.fetchTutors(), this.fetchTutees()]);
-    // console.log(this.tutors);
-    // console.log(this.tutees);
-    // console.log("TUtees: ", this.tutees);
-  }
-
-  async fetchTutors() {
-    console.log("fetching tutors");
-    const response = await fetch(`${this.url}/unmatched-tutors`);
-    const {unmatchedTutors} = await response.json();
-    // console.log(unmatchedTutors);
-    for (const unmatchedTutor of unmatchedTutors) {
-      this.addTutor(unmatchedTutor);
     }
     // console.log("All tutees: ", this.tutees);
   }
@@ -123,18 +127,27 @@ export default class TutorMatcher {
   
       // Select the top 3 matches (or fewer if capacity is reached)
       let assignedCount = 0;
+      let tuteeIds = [null, null, null];
+      let tuteeIndex = 0;
+
       for (const candidate of candidateMatches) {
         if (assignedCount >= 3) break;
         if (tutor.currentTutees >= tutor.maxTutees) break;
   
-        matches.push({
-          tuteeId: candidate.tutee.id,
-          tutorId: tutor.id,
-          matchScore: candidate.score,
-        });
+        // matches.push({
+        //   tuteeId: candidate.tutee.id,
+        //   tutorId: tutor.id,
+        //   matchScore: candidate.score,
+        // });
+        tuteeIds[tuteeIndex++] = candidate.tutee.id;
         tutor.currentTutees++;
         assignedCount++;
       }
+      matches.push({
+        tutorId: tutor.id, 
+        tuteeId1: tuteeIds[0],
+        tuteeId2: tuteeIds[1],
+        tuteeId3: tuteeIds[2]});
     }
     console.log("Matches: ", matches);
     return matches;

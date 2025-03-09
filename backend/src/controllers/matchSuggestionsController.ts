@@ -11,11 +11,53 @@ import {
   matchedTable,
   approvedMatchesTable,
 } from "../db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or } from "drizzle-orm";
 import { Request, Response } from "express";
-import TutorMatcher from "../algorithm";
+import TutorMatcher from "../algorithm.js";
 
 const db = drizzle(process.env.DATABASE_URL!);
+
+export type tuteeBoxProps = {
+  id: string;
+  tutee_first_name: string;
+  tutee_last_name: string;
+  parent_email: string;
+  subjects: string[];
+  grade: string;
+  special_needs: string;
+  tutoring_mode: string;
+};
+
+type tutorBoxProps = {
+  id: string;
+  date: string;
+  first_name: string;
+  last_name: string;
+  pronouns: string;
+  major: string;
+  year_grad: string;
+  phone: string;
+  email: string;
+  grade_level_pref: string[];
+  disability_pref: boolean;
+  subject_pref: string[];
+  tutoring_mode: string;
+  num_tutees: number;
+};
+
+type AlgoMatch = {
+  tutor: tutorBoxProps
+  tutee1: tuteeBoxProps
+  tutee2: tuteeBoxProps
+  tutee3: tuteeBoxProps
+}
+
+type TutorObjectProps = {
+  tutorId: string,
+  tuteeId1: number,
+  tuteeId2: number,
+  tuteeId3: number
+}
 
 
 /* returns all the tutor - tutee1-3 match suggestions */
@@ -27,73 +69,81 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 
     // Step 1: Pull all unmatched tutees
     // Step 2: Pull all unmatched tutors
-    //      Form: {tutor, tutee1, tutee2, tutee3}
-    // Step 3: Run algorithm with all unmatched tutees and tutors
-    // Step 4: res.send() what the algorithm spits back out
-
-    /*
-     { tuteeId: 9, tutorId: '1000003', matchScore: 0.6000000000000001 },
-    { tuteeId: 11, tutorId: '1000003', matchScore: 0.6000000000000001 },
-    {
-
-    {tutorId: '1000003', tuteeId1: 9, tuteeId2: 11, tuteeId3: NULL}
-    */
-    const tutorMatcher: any = new TutorMatcher();
+    const tutorMatcher = new TutorMatcher();
     await tutorMatcher.fetchData();
-    await tutorMatcher.findMatches();
+    // Step 3: For each tutor, call the algorithm on all the tutees to find the top 3
+    let tutorObject = await tutorMatcher.findMatches();
 
-    const matches = await db
-      .select({
-        flagged: unmatchedTable.flagged,
-        tutor: {
-          id: tutorTable.id,
-          first_name: tutorTable.first_name,
-          last_name: tutorTable.last_name,
-          phone: tutorTable.phone,
-          email: tutorTable.email,
-          subject: tutorTable.subject_pref,
-          grade_level_pref: tutorTable.grade_level_pref,
-          disability_pref: tutorTable.disability_pref,
-          tutoring_mode: tutorTable.tutoring_mode,
-        },
-        // TUTEE SUGGESTIONS FROM ALGORITHM
-        // tutee1: {
-        //   id: tuteeTable.id,
-        //   tutee_first_name: tuteeTable.tutee_first_name,
-        //   tutee_last_name: tuteeTable.tutee_last_name,
-        //   parent_email: tuteeTable.parent_email,
-        //   grade: tuteeTable.grade,
-        //   subjects: tuteeTable.subjects,
-        //   special_needs: tuteeTable.special_needs,
-        //   tutoring_mode: tuteeTable.tutoring_mode
-        // },
-        // tutee2: {
-        //   id: tuteeTable.id,
-        //   tutee_first_name: tuteeTable.tutee_first_name,
-        //   tutee_last_name: tuteeTable.tutee_last_name,
-        //   parent_email: tuteeTable.parent_email,
-        //   grade: tuteeTable.grade,
-        //   subjects: tuteeTable.subjects,
-        //   special_needs: tuteeTable.special_needs,
-        //   tutoring_mode: tuteeTable.tutoring_mode
-        // },
-        // tutee3: {
-        //   id: tuteeTable.id,
-        //   tutee_first_name: tuteeTable.tutee_first_name,
-        //   tutee_last_name: tuteeTable.tutee_last_name,
-        //   parent_email: tuteeTable.parent_email,
-        //   grade: tuteeTable.grade,
-        //   subjects: tuteeTable.subjects,
-        //   special_needs: tuteeTable.special_needs,
-        //   tutoring_mode: tuteeTable.tutoring_mode
-        // }
+    const matchResults = await Promise.all(
+      tutorObject.map(async (match: TutorObjectProps) => {
+        console.log("Tutee 1 ID IS: ", match.tuteeId1);
+        const tutor_obj = await db
+          .select({
+              id: tutorTable.id,
+              first_name: tutorTable.first_name,
+              last_name: tutorTable.last_name,
+              phone: tutorTable.phone,
+              email: tutorTable.email,
+              subject: tutorTable.subject_pref,
+              grade_level_pref: tutorTable.grade_level_pref,
+              disability_pref: tutorTable.disability_pref,
+              tutoring_mode: tutorTable.tutoring_mode})
+          .from(tutorTable)
+          .where(eq(tutorTable.id, match.tutorId));
+        const tutee1_obj = await db
+          .select({
+              id: tuteeTable.id,
+              first_name: tuteeTable.tutee_first_name,
+              last_name: tuteeTable.tutee_last_name,
+              parent_email: tuteeTable.parent_email,
+              grade: tuteeTable.grade,
+              subjects: tuteeTable.subjects,
+              special_needs: tuteeTable.special_needs,
+              tutoring_mode: tuteeTable.tutoring_mode,
+            })
+          .from(tuteeTable)
+          .where(eq(tuteeTable.id, match.tuteeId1));
+        const tutee2_obj = await db
+          .select({
+              id: tuteeTable.id,
+              first_name: tuteeTable.tutee_first_name,
+              last_name: tuteeTable.tutee_last_name,
+              parent_email: tuteeTable.parent_email,
+              grade: tuteeTable.grade,
+              subjects: tuteeTable.subjects,
+              special_needs: tuteeTable.special_needs,
+              tutoring_mode: tuteeTable.tutoring_mode,
+            })
+          .from(tuteeTable)
+          .where(eq(tuteeTable.id, match.tuteeId2));
+        const tutee3_obj = await db
+          .select({
+              id: tuteeTable.id,
+              first_name: tuteeTable.tutee_first_name,
+              last_name: tuteeTable.tutee_last_name,
+              parent_email: tuteeTable.parent_email,
+              grade: tuteeTable.grade,
+              subjects: tuteeTable.subjects,
+              special_needs: tuteeTable.special_needs,
+              tutoring_mode: tuteeTable.tutoring_mode,
+          })
+          .from(tuteeTable)
+          .where(eq(tuteeTable.id, match.tuteeId3));
+
+          let tutor = tutor_obj[0] || null;
+          let tutee1 = tutee1_obj[0] || null;
+          let tutee2 = tutee2_obj[0] || null;
+          let tutee3 = tutee3_obj[0] || null;
+
+        return {tutor, tutee1, tutee2, tutee3}
       })
-      .from(unmatchedTable)
-      // .where(and(tutee1.id))
-      .innerJoin(tutorTable, eq(unmatchedTable.tutor_id, tutorTable.id));
+    );
+      
+    // console.log("these are the tutees: ", tutees);
+    console.log("these are the tutors: ", matchResults);
 
     res.send({
-      matchSuggestions: matches,
+      matchSuggestions: matchResults
     });
   } catch (error) {
     console.error(error);

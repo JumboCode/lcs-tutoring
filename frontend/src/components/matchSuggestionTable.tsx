@@ -15,55 +15,19 @@ import { tuteeInfo, tutorInfo } from "../types";
 interface MatchSuggestion {
   flagged: boolean;
   tutor: tutorInfo;
-  tutee1: tuteeInfo;
-  tutee2: tuteeInfo;
-  tutee3: tuteeInfo;
+  tutee1: tuteeInfo | null;
+  tutee2: tuteeInfo | null;
+  tutee3: tuteeInfo | null;
 }
 
 export default function MatchSuggestionTable() {
-  const tutee1: tuteeInfo = {
-    id: "12",
-    first_name: "Bill",
-    last_name: "Smith",
-    email: "bill.smith@hi.com",
-    subjects: ["Math", "Geometry"],
-    grade: "8",
-    special_needs: "No",
-    tutoring_mode: "Hybrid",
-    flagged: true,
-  };
-
-  const tutee2: tuteeInfo = {
-    id: "13",
-    first_name: "Bob",
-    last_name: "Jones",
-    email: "bob.jones@hi.com",
-    subjects: ["Science"],
-    grade: "10",
-    special_needs: "Dyslexia",
-    tutoring_mode: "In-Person",
-    flagged: false,
-  };
-
-  const tutee3: tuteeInfo = {
-    id: "14",
-    first_name: "Ana",
-    last_name: "Todd",
-    email: "ana.todd@hi.com",
-    subjects: ["English"],
-    grade: "9",
-    special_needs: "No",
-    tutoring_mode: "Hybrid",
-    flagged: false,
-  };
-
   interface TuteeName {
     firstName: string;
     lastName: string;
     unmatchedTuteeId: string;
   }
 
-  const [matchsuggestions, setMatchSuggestions] = useState<MatchSuggestion[]>(
+  const [matchSuggestions, setMatchSuggestions] = useState<MatchSuggestion[]>(
     []
   );
   const [unmatchedNames, setUnmatchedNames] = useState<TuteeName[]>([]);
@@ -137,13 +101,14 @@ export default function MatchSuggestionTable() {
         {!loading && !error && (
           <div>
             <div>
-              {matchsuggestions.map((match, index) => (
+              {matchSuggestions.map((match, index) => (
                 <MatchSuggestionBlock
                   key={index}
                   tutor_info={match.tutor}
-                  tutee1={tutee1}
-                  tutee2={tutee2}
-                  tutee3={tutee3}
+                  tutee1={match.tutee1}
+                  tutee2={match.tutee2}
+                  tutee3={match.tutee3}
+                  flagged={match.flagged}
                   unmatched_names={unmatchedNames}
                 />
               ))}
