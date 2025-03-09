@@ -4,7 +4,7 @@ interface Config {
 
 const config: Config = {
     backendUrl: "http://localhost:3000",
-    // https://jumbocodegpt.onrender.com
+    // https://lcs-tutoring.onrender.com
 };
 
 export default config;

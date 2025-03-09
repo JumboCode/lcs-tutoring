@@ -31,7 +31,7 @@ export default function AdminLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/admin-login", {
+      const response = await fetch(`${config.backendUrl}/admin-login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Specify that the body format is JSON

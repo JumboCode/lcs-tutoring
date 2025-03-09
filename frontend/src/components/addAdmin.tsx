@@ -28,9 +28,7 @@ export default function AddAdmin() {
     }
     setErrorMessage("");
     setErrorOutline("");
-    // http://localhost:3000/admin/${email}
-    // https://lcs-tutoring.onrender.com/admin/${email}
-    await fetch("http://localhost:3000/admin", {
+    await fetch(`${config.backendUrl}/admin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

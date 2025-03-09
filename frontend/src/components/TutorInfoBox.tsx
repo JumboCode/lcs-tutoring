@@ -1,7 +1,7 @@
 "use client";
 import config from "../config.ts";
 import { useState } from "react";
-
+import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import { tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
@@ -22,14 +22,12 @@ const STYLES = {
 
 type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
-  bgColor: string;
   isUnmatched: boolean;
   onDelete?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
   box_props,
-  bgColor,
   isUnmatched,
   onDelete,
 }: TutorInfoBoxProps) {
@@ -79,14 +77,12 @@ export default function TutorInfoBox({
   };
 
   return (
-    <div className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}`}>
+    <div
+      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
+    >
       <table className="table-fixed w-full">
         <thead>
-          <tr
-            className={`h-[80px] ${
-              flagged ? "bg-[#FEFDF2]" : "bg-[#FAFCFE]"
-            } border-b`}
-          >
+          <tr className={`h-[80px] border-b-2`}>
             <th className="font-normal w-1/5 px-3">
               <div className="flex flex-col">
                 {history_date && (
@@ -99,7 +95,15 @@ export default function TutorInfoBox({
               <span>
                 {first_name} {last_name}
               </span>
-              <span className="text-[#D70000]">{notes && ` *`}</span>
+              <span className="text-[#D70000]">
+                {notes && ` *`}
+                {flagged && (
+                  <img
+                    src={RED_FLAG}
+                    className="w-4 h-4 inline-block ml-3 mr-2"
+                  />
+                )}
+              </span>
               <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />

@@ -95,33 +95,6 @@ export default class TutorMatcher {
     console.log("FINDING MATCHES")
     const matches = [];
   
-    // Group tutees by tutoring_mode
-    // const modeTuteeIndex = this.tutees.reduce((acc, tutee) => {
-    //   if (!acc[tutee.tutoring_mode]) {
-    //     acc[tutee.tutoring_mode] = [];
-    //   }
-    //   acc[tutee.tutoring_mode].push(tutee);
-    //   return acc;
-    // }, {});
-
-    /* modeTuteeIndex is of the form: 
-     *  {Hybrid: 
-     *    [
-     *      {tuteeinfo}
-     *      ...
-     *    ]
-     *  Online:
-     *    [
-     *      {tuteeinfo}
-     *      ...
-     *    ]
-     *  In-person:
-     *    [
-     *      {tuteeinfo}
-     *      ...
-     *    ]}
-    */
-  
     for (const tutor of this.tutors) {
       // Build an array of candidate matches with scores
 

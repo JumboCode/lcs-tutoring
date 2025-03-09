@@ -218,7 +218,6 @@ export default function TuteeTable() {
                 <TuteeInfoBox
                   box_props={box_props}
                   key={index}
-                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={true}
                   onDelete={(deletedTutee) => {
                     // Remove the deleted tutee from unmatched tutees
@@ -238,7 +237,6 @@ export default function TuteeTable() {
                 <TuteeInfoBox
                   box_props={box_props}
                   key={index}
-                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={false}
                 />
               ))}
@@ -250,7 +248,6 @@ export default function TuteeTable() {
                 <TuteeInfoBox
                   box_props={box_props}
                   key={index}
-                  bgColor={index % 2 === 0 ? "bg-white" : "bg-[#FAFCFE]"}
                   isUnmatched={false}
                 />
               ))}
