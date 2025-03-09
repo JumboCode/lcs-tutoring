@@ -22,7 +22,6 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
     console.log("This the req body: ", req.body);
     const request = req.body;
     const {
-      id,
       childFirstName,
       childLastName,
       gender,
@@ -41,8 +40,7 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
     } = request;
     // bad practice, prefer to submit number directly
     console.log("This the subjects: ", subjects);
-    await db.insert(tuteeTable).values({
-      id: id,
+    const [insertedTutee] = await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
       gender: gender,
@@ -57,9 +55,9 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
       tutoring_mode: tutoringMode,
       notes: additionalInfo,
       date: new Date().toISOString().split("T")[0],
-    });
+    }).returning({ id: tuteeTable.id });
     await db.insert(unmatchedTable).values({
-      tutee_id: id,
+      tutee_id: insertedTutee.id,
     });
     console.log("Tutee submitted: ", req.body);
   } catch (error) {
