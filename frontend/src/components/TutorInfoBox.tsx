@@ -35,6 +35,7 @@ export default function TutorInfoBox({
   const {
     id,
     date,
+    history_date,
     first_name,
     last_name,
     email,
@@ -48,6 +49,8 @@ export default function TutorInfoBox({
     num_tutees,
     disability_pref,
     tutoring_mode,
+    notes,
+    flagged,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -78,12 +81,24 @@ export default function TutorInfoBox({
     <div className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}`}>
       <table className="table-fixed w-full">
         <thead>
-          <tr className={`h-[80px] ${bgColor} border-b`}>
-            <th className="font-normal w-1/5 px-3">{date}</th>
+          <tr
+            className={`h-[80px] ${
+              flagged ? "bg-[#FEFDF2]" : "bg-[#FAFCFE]"
+            } border-b`}
+          >
+            <th className="font-normal w-1/5 px-3">
+              <div className="flex flex-col">
+                {history_date && (
+                  <span className="font-medium">Inactive {history_date}</span>
+                )}
+                <span className="text-gray-500">Joined {date}</span>
+              </div>{" "}
+            </th>
             <th className="font-normal w-1/5">
-              <p>
+              <span>
                 {first_name} {last_name}
-              </p>
+              </span>
+              <span className="text-[#D70000]">{notes && ` *`}</span>
               <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />
@@ -178,7 +193,7 @@ export default function TutorInfoBox({
             </tr>
             <tr className="h-[35px] bg-gray-100/50 border-b text-sm">
               <td className="text-gray-400 px-3 w-1/5">Previous Tutee</td>
-              <td className="text-gray-400 w-1/5">Grade Level</td>
+              <td className="text-gray-400 w-1/5">Grade Level Preferences</td>
               <td className="text-gray-400 w-1/5"># of Tutees</td>
               <td className="text-gray-400 w-1/5">Open to Disability</td>
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
@@ -194,6 +209,13 @@ export default function TutorInfoBox({
               </td>
               <td className="w-1/5">{tutoring_mode}</td>
             </tr>
+            {notes && (
+              <tr className="bg-[#FFD6D6] text-sm">
+                <td className="text-[#D70000] px-3" colSpan={5}>
+                  <strong>Special Request:</strong> {notes}
+                </td>
+              </tr>
+            )}
           </tbody>
         )}
       </table>

@@ -10,8 +10,9 @@ import {
   approvedMatchesTable,
   matchedTable,
   unmatchedTable,
+  historyTable,
 } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
 import { Resend } from "resend";
 
@@ -45,10 +46,120 @@ export const moveToInactive = async (req: Request, res: Response) => {
   }
 };
 
+export const deletePair = async (req: Request, res: Response) => {
+  try {
+    const match_id = Number(req.params.id);
+
+    const match = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, match_id));
+    if (!match) {
+      res.status(404).json("Match not found");
+    }
+    console.log("here");
+    await db
+      .update(approvedMatchesTable)
+      .set({ active: false })
+      .where(eq(approvedMatchesTable.id, match_id));
+    console.log("Match moved to inactive");
+    res.status(200).json("Match moved to inactive");
+
+    const tutor_id = match[0].tutor_id;
+    const tutee_id = match[0].tutee_id;
+
+    await db.insert(historyTable).values({
+      tutor_id: tutor_id,
+    });
+
+    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+
+    await db.update(tutorTable)
+      .set({ history_date: new Date().toISOString().split("T")[0], })
+      .where(eq(tutorTable.id, tutor_id));
+
+    await db.insert(historyTable).values({
+      tutee_id: tutee_id,
+    });
+
+    await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+
+    await db.update(tuteeTable)
+      .set({ history_date: new Date().toISOString().split("T")[0], })
+      .where(eq(tuteeTable.id, tutee_id));
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("Error updating flag status");
+  }
+  
+};
+
 /* returns all the approved matches */
 export const getApprovedMatches = async (req: Request, res: Response) => {
   try {
     console.log("Inside approved matches endpoint");
+
+    let { gradeLevels, selectedSubjects, tutoringMode, disability } = req.query;
+
+    // converting URL query string to arrays
+    let grades: number[] | undefined = [];
+    if (typeof gradeLevels === "string") {
+      grades = gradeLevels.split(",").map(Number);
+    } else if (Array.isArray(gradeLevels)) {
+      grades = gradeLevels.map(Number);
+    }
+    // set to undefined if grades == 0
+    if (grades[0] === 0) {
+      grades = undefined;
+    } else {
+      // kindergarten is -1 because query url default undefined is [0]
+      grades = grades.map((grade) => (grade === -1 ? 0 : grade))
+    }
+
+    // converting URL query string to arrays
+    let subjects: string[] | undefined = [];
+    if (typeof selectedSubjects === "string") {
+      subjects = selectedSubjects.split(",").map((subject) => subject.trim());
+    } else if (Array.isArray(selectedSubjects)) {
+      subjects = selectedSubjects.map(String);
+    }
+    // set to undefined if subjects is [""]
+    subjects = subjects.filter((subject) => subject.trim() !== "");
+    subjects = subjects.length > 0 ? subjects : undefined;
+
+    if (!tutoringMode) {
+      tutoringMode = undefined;
+    }
+
+    let disability_pref: boolean | undefined = false;
+    if (disability === "true") {
+      disability_pref = true;
+    } else if (disability === "false") {
+      disability_pref = false;
+    } else {
+      disability_pref = undefined;
+    }
+    
+    console.log("grades:", grades);
+    console.log("subjects:", subjects);
+    console.log("tutoring mode:", tutoringMode);
+    console.log("disability:", disability_pref);
+    console.log("Inside tutees endpoint");
+
+    const filteredMatches = await filterMatches(
+      grades,
+      subjects,
+      disability_pref,
+      tutoringMode?.toString(),
+    );
+
+    // console.log(filteredMatches);
+
+    // getting all ids of the filtered matches
+    const matchIds = filteredMatches
+      .map((match) => match.matchId)
+      .filter((id) => id !== undefined);
 
     // query to get all active matches
     const active_matches = await db
@@ -56,6 +167,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
         sent_email: approvedMatchesTable.sent_email,
+        pair_date: approvedMatchesTable.pair_date,
+        inactive_date: approvedMatchesTable.inactive_date,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -78,7 +191,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       .from(approvedMatchesTable)
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
       .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
-      .where(eq(approvedMatchesTable.active, true));
+      .where(and(eq(approvedMatchesTable.active, true), inArray(approvedMatchesTable.id, matchIds)));
 
     // query to get all the inactive matches
     const inactive_matches = await db
@@ -86,6 +199,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
         matchId: approvedMatchesTable.id,
         flagged: approvedMatchesTable.flagged,
         sent_email: approvedMatchesTable.sent_email,
+        pair_date: approvedMatchesTable.pair_date,
+        inactive_date: approvedMatchesTable.inactive_date,
         tutor: {
           id: tutorTable.id,
           first_name: tutorTable.first_name,
@@ -102,12 +217,13 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           parent_email: tuteeTable.parent_email,
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
+          special_needs: tuteeTable.special_needs,
         },
       })
       .from(approvedMatchesTable)
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
       .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
-      .where(eq(approvedMatchesTable.active, false));
+      .where(and(eq(approvedMatchesTable.active, false), inArray(approvedMatchesTable.id, matchIds)));
 
     res.send({
       activeApprovedMatches: active_matches,
@@ -118,6 +234,65 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
     res.status(500).send("Error fetching approved matches");
   }
 };
+
+/**** Filter Matches by grade levels and subjects ****
+ *
+ * Example input: filterMatches([9, 10], undefined)
+ *  - Should return all tutors that have selected 9th or
+ *    10th graders in their grade preferences
+ *
+ * Pass in "undefined" to not filter by something
+ *
+ * You can console.log all the tutors that the query returns
+ * to verify a correct output
+ *********************************************************/
+async function filterMatches(
+  grades?: number[],
+  subjects?: string[],
+  disabilityPref?: boolean,
+  tutoringMode?: string
+) {
+  const query = db.select({
+    matchId: approvedMatchesTable.id,
+    tutee: {
+      grade: tuteeTable.grade,
+      subjects: tuteeTable.subjects,
+      tutoring_mode: tuteeTable.tutoring_mode,
+      has_special_needs: tuteeTable.has_special_needs
+    }}).from(approvedMatchesTable)
+    .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
+
+  const conditions: any[] = [];
+
+  if (subjects && subjects.length > 0) {
+    const condition_subject = subjects.map((subject) =>
+      arrayContains(tuteeTable.subjects, [subject])
+    );
+    conditions.push(or(...condition_subject));
+  }
+
+  if (grades && grades.length > 0) {
+    conditions.push(or(inArray(tuteeTable.grade, grades)));
+  }
+
+  if (disabilityPref != undefined) {
+    conditions.push(or(eq(tuteeTable.has_special_needs, disabilityPref)));
+  }
+
+  if (tutoringMode != undefined) {
+    conditions.push(or(eq(tuteeTable.tutoring_mode, tutoringMode)));
+  }
+
+  if (conditions.length > 0) {
+    query.where(and(...conditions));
+  }
+
+  const matches = await query;
+
+  // console.log("Filtered matches:", matches);
+
+  return matches;
+}
 
 // backend/src/index.ts
 export const flagApprovedMatch = async (req: Request, res: Response) => {
@@ -163,7 +338,7 @@ export const unmatchPair = async (req: Request, res: Response) => {
     // Move the pair to inactive in Approved Matches Table
     await db
       .update(approvedMatchesTable)
-      .set({ active: false })
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0]})
       .where(eq(approvedMatchesTable.id, Number(match_id)));
     
     res.json({ success: true, message: "Pair unmatched" });

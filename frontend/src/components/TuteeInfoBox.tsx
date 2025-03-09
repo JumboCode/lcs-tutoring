@@ -48,6 +48,7 @@ export default function TuteeInfoBox({
     parent_last_name,
     parent_phone,
     notes,
+    flagged,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -79,22 +80,20 @@ export default function TuteeInfoBox({
     <div className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}`}>
       <table className="table-fixed w-full">
         <thead>
-          <tr className={`h-[80px] ${bgColor} border-b`}>
+          <tr className={`h-[80px] ${flagged ? "bg-[#FEFDF2]" : ""} border-b`}>
             <th className="font-normal w-1/5 px-3">
               <div className="flex flex-col">
                 {history_date && (
-                  <span className="text-red-500 font-medium">
-                    Inactive {history_date}
-                  </span>
+                  <span className="font-medium">Inactive {history_date}</span>
                 )}
                 <span className="text-gray-500">Joined {date}</span>
-              </div>{" "}
+              </div>
             </th>
             <th className="font-normal w-1/5">
               <span>
                 {tutee_first_name} {tutee_last_name}
               </span>
-              <span className="text-[#D70000]">{notes && `    *`}</span>
+              <span className="text-[#D70000]">{notes && ` *`}</span>
               <div className="text-[#888888] relative flex items-center gap-x-2">
                 <div className="flex-shrink-0">
                   <BsEnvelope />
@@ -116,7 +115,17 @@ export default function TuteeInfoBox({
             <th className="font-normal w-1/5">{subjects.join(", ")}</th>
             <th className="w-1/5">
               <div className="font-normal items-center justify-center">
-                <span>{grade}</span>
+                <span>
+                  {grade == "0"
+                    ? "Kindergarten"
+                    : grade == "1"
+                    ? "1st"
+                    : grade == "2"
+                    ? "2nd"
+                    : grade == "3"
+                    ? "3rd"
+                    : grade + "th"}
+                </span>
               </div>
             </th>
             <th className="w-1/5">
@@ -178,7 +187,7 @@ export default function TuteeInfoBox({
             <tr className="h-[55px] border-b text-sm">
               <td className="px-3 w-1/5">{gender}</td>
               <td className="w-1/5">{tutoring_mode}</td>
-              <td className="w-1/5">{special_needs}</td>
+              <td className="w-1/5">{special_needs ? special_needs : "N/A"}</td>
               <td className="w-1/5">
                 <div className="flex flex-col">
                   <span>

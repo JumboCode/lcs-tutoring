@@ -7,6 +7,7 @@ import { BsCheck2 } from "react-icons/bs";
 import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
+import unmatch_pair from "../assets/images/approved_matches/unmatch_pair.svg";
 
 const STYLES = {
   colors: {
@@ -29,7 +30,8 @@ type MatchedInfoBoxProps = {
   matchId: string;
   flagged: boolean;
   bgColor: string;
-  date: string;
+  pair_date: string;
+  inactive_date?: string;
   isActive: boolean;
   sent_email: boolean;
   onUnpair?: (matchId: string) => void;
@@ -40,7 +42,8 @@ export default function MatchedInfoBoxbox_props({
   tutor_props,
   matchId,
   flagged,
-  date,
+  pair_date,
+  inactive_date,
   isActive,
   sent_email,
   onUnpair,
@@ -63,7 +66,7 @@ export default function MatchedInfoBoxbox_props({
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [active, setActive] = useState(isActive);
+
   const unmatchPair = () => {
     setIsDropdownOpen(false);
 
@@ -80,27 +83,26 @@ export default function MatchedInfoBoxbox_props({
       })
       .catch((error) => console.error(error));
   };
+
+  const deletePair = () => {
+    setIsDropdownOpen(false);
+    fetch(`${BACKEND_URL}/delete-pair/${matchId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onUnpair) onUnpair(matchId);
+      })
+      .catch((error) => console.error(error));
+  };
+
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
-  const handleMoveToInactive = async () => {
-    try {
-      console.log(matchId);
-      const response = await fetch(`${BACKEND_URL}/move-to-inactive/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ matchId: matchId }),
-      });
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsDropdownOpen(false);
-      setActive(false);
-    }
-  };
+
   const handleSendEmail = async () => {
     setIsDropdownOpen(false);
     try {
@@ -150,67 +152,72 @@ export default function MatchedInfoBoxbox_props({
     }
   };
   return (
-    active && (
-      <div
-        className={`${
-          isCurrentlyFlagged ? "bg-red-50" : "odd:bg-gray-50 even:bg-white"
-        } w-full h-auto rounded-lg border-b text-left transition-colors my-2`}
-      >
-        <table className="table-fixed w-full">
-          <thead>
-            <tr className={`h-[80px] border-b`}>
-              <th className="w-1/5 px-3 font-normal">
-                {isCurrentlyFlagged && (
-                  <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
+    <div
+      className={`${
+        isCurrentlyFlagged ? "bg-red-50" : "odd:bg-white even:bg-gray-50"
+      } w-full h-auto border-b text-left transition-colors`}
+    >
+      <table className="table-fixed w-full">
+        <thead>
+          <tr className={`h-[80px] border-b`}>
+            <th className="w-1/5 px-3 font-normal">
+              {isCurrentlyFlagged && (
+                <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
+              )}
+              <div className="flex flex-col">
+                {inactive_date && (
+                  <span className="font-medium">Inactive {inactive_date}</span>
                 )}
-                {date}
-              </th>
-              <th className="w-1/5 font-normal">
-                <p>
-                  {first_name} {last_name}
+                <span className="text-gray-500">Active {pair_date}</span>
+              </div>
+            </th>
+            <th className="w-1/5 font-normal">
+              <p>
+                {first_name} {last_name}
+              </p>
+              <div className="text-[#888888] relative flex items-center gap-x-2">
+                <div className="flex-shrink-0">
+                  <BsEnvelope />
+                </div>
+                <p
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                  onMouseEnter={() => setShowStudentPopup(true)}
+                  onMouseLeave={() => setShowStudentPopup(false)}
+                >
+                  {email}
                 </p>
-                <div className="text-[#888888] relative flex items-center gap-x-2">
-                  <div className="flex-shrink-0">
-                    <BsEnvelope />
-                  </div>
-                  <p
-                    className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-                    onMouseEnter={() => setShowStudentPopup(true)}
-                    onMouseLeave={() => setShowStudentPopup(false)}
-                  >
+                {showStudentPopup && (
+                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
                     {email}
-                  </p>
-                  {showStudentPopup && (
-                    <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
-                      {email}
-                    </div>
-                  )}
-                </div>
-              </th>
-              <th className="w-1/5 font-normal">
-                <p>
-                  {tutee_first_name} {tutee_last_name}
-                </p>
-                <div className="text-[#888888] relative flex items-center gap-x-2">
-                  <div className="flex-shrink-0">
-                    <BsEnvelope />
                   </div>
-                  <p
-                    className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-                    onMouseEnter={() => setShowParentPopup(true)}
-                    onMouseLeave={() => setShowParentPopup(false)}
-                  >
-                    {parent_email}
-                  </p>
-                  {showParentPopup && (
-                    <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
-                      {parent_email}
-                    </div>
-                  )}
+                )}
+              </div>
+            </th>
+            <th className="w-1/5 font-normal">
+              <p>
+                {tutee_first_name} {tutee_last_name}
+              </p>
+              <div className="text-[#888888] relative flex items-center gap-x-2">
+                <div className="flex-shrink-0">
+                  <BsEnvelope />
                 </div>
-              </th>
-              <th className="w-1/5">
-                <div className="flex flex-grow justify-center items-center">
+                <p
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+                  onMouseEnter={() => setShowParentPopup(true)}
+                  onMouseLeave={() => setShowParentPopup(false)}
+                >
+                  {parent_email}
+                </p>
+                {showParentPopup && (
+                  <div className="absolute top-full mt-2 w-auto p-2 bg-white border border-gray-300 shadow-lg">
+                    {parent_email}
+                  </div>
+                )}
+              </div>
+            </th>
+            <th className="w-1/5">
+              <div className="flex flex-grow justify-center items-center">
+                {isActive && (
                   <button
                     onClick={handleSendEmail}
                     disabled={emailSent}
@@ -230,41 +237,43 @@ export default function MatchedInfoBoxbox_props({
                       {emailSent ? "Sent Email" : "Send Email"}
                     </p>
                   </button>
-                </div>
-              </th>
-              <th className="w-1/5">
-                <div className="flex items-center justify-center flex-row">
-                  <button
-                    className="flex items-center text-[#888888] hover:text-gray-600"
-                    onClick={handleToggleDescription}
+                )}
+                {!isActive && <span className="font-normal">N/A</span>}
+              </div>
+            </th>
+            <th className="w-1/5">
+              <div className="flex items-center justify-center flex-row">
+                <button
+                  className="flex items-center text-[#888888] hover:text-gray-600"
+                  onClick={handleToggleDescription}
+                >
+                  <div
+                    style={{
+                      transition: STYLES.transitions.arrow,
+                    }}
+                    className={`transform ${isRotated ? "rotate-90" : ""}`}
                   >
-                    <div
-                      style={{
-                        transition: STYLES.transitions.arrow,
-                      }}
-                      className={`transform ${isRotated ? "rotate-90" : ""}`}
-                    >
-                      <IoIosArrowForward size={20} />
-                    </div>
-                    <span className="ml-2 p-0 font-normal">Details</span>
-                  </button>
+                    <IoIosArrowForward size={20} />
+                  </div>
+                  <span className="ml-2 p-0 font-normal">Details</span>
+                </button>
 
-                  {isActive && (
-                    <div className="relative">
-                      <button
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        className="mb-2 ml-5 p-0 text-lg text-gray-400"
-                      >
-                        ...
-                        <div
-                          className={`transition-transform duration-300 ${
-                            isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
-                          }`}
-                        ></div>
-                      </button>
-                      {isDropdownOpen && (
-                        <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
-                          {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                {isActive && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="mb-2 ml-5 p-0 text-lg text-gray-400"
+                    >
+                      ...
+                      <div
+                        className={`transition-transform duration-300 ${
+                          isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                        }`}
+                      ></div>
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                        {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
                         <div className="className=" mr-2 w-4 h-4 inline-block>
                           <BsTrashFill size={20} />
                         </div>
@@ -293,54 +302,63 @@ export default function MatchedInfoBoxbox_props({
                               </>
                             )}
                           </button>
-                            )}
-                          <button
-                            onClick={handleMoveToInactive}
-                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                          >
-                            <img
-                              src={FLAG}
-                              className="w-4 h-4 inline-block mr-2"
-                            />{" "}
-                            Inactive
-                          </button>
-                          <button
-                            className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                            onClick={unmatchPair}
-                          >
-                            <img
-                              src={deleteIcon}
-                              className="w-4 h-4 inline-block mr-2"
-                            />
-                            Unmatch Pair
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </th>
+                        )}
+                        <button
+                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          onClick={unmatchPair}
+                        >
+                          <img
+                            src={unmatch_pair}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          Unmatch Pair
+                        </button>
+                        <button
+                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          onClick={deletePair}
+                        >
+                          <img
+                            src={deleteIcon}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          Delete Pair
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </th>
+          </tr>
+        </thead>
+        {showDescription && (
+          <tbody className="bg-inherit">
+            <tr className={`h-[35px] bg-gray-100/50 border-b`}>
+              <td className="text-gray-400 px-3 w-1/5">Subject</td>
+              <td className="text-gray-400 w-1/5">Grade</td>
+              <td className="text-gray-400 w-1/5">Special Needs</td>
+              <td className="text-gray-400 w-1/5">Tutoring Mode</td>
+              <td className="text-gray-400 w-1/5"></td>
             </tr>
-          </thead>
-          {showDescription && (
-            <tbody className="bg-inherit">
-              <tr className={`h-[35px] bg-gray-100/50 border-b`}>
-                <td className="text-gray-400 px-3 w-1/5">Subject</td>
-                <td className="text-gray-400 w-1/5">Grade</td>
-                <td className="text-gray-400 w-1/5">Special Needs</td>
-                <td className="text-gray-400 w-1/5">Tutoring Mode</td>
-                <td className="text-gray-400 w-1/5"></td>
-              </tr>
-              <tr className={`h-[55px] border-b`}>
-                <td className="px-3 w-1/5">{subject}</td>
-                <td className="w-1/5">{grade}</td>
-                <td className="w-1/5">{special_needs}</td>
-                <td className="w-1/5">{tutoring_mode}</td>
-              </tr>
-            </tbody>
-          )}
-        </table>
-      </div>
-    )
+            <tr className={`h-[55px] border-b`}>
+              <td className="px-3 w-1/5">{subjects.join(", ")}</td>
+              <td className="w-1/5">
+                {grade == "0"
+                  ? "Kindergarten"
+                  : grade == "1"
+                  ? "1st"
+                  : grade == "2"
+                  ? "2nd"
+                  : grade == "3"
+                  ? "3rd"
+                  : grade + "th"}
+              </td>
+              <td className="w-1/5">{special_needs ? special_needs : "No"}</td>
+              <td className="w-1/5">{tutoring_mode}</td>
+            </tr>
+          </tbody>
+        )}
+      </table>
+    </div>
   );
 }

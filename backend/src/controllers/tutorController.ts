@@ -18,13 +18,60 @@ const db = drizzle(process.env.DATABASE_URL!);
 /* returns all the matched and unmatched tutors with filter */
 export const getTutors = async (req: Request, res: Response) => {
   try {
+    let { gradeLevels, selectedSubjects, tutoringMode, disability } = req.query;
+
+    // converting URL query string to arrays
+    let grades: number[] | undefined = [];
+    if (typeof gradeLevels === "string") {
+      grades = gradeLevels.split(",").map(Number);
+    } else if (Array.isArray(gradeLevels)) {
+      grades = gradeLevels.map(Number);
+    }
+    // set to undefined if grades == 0
+    if (grades[0] === 0) {
+      grades = undefined;
+    } else {
+      // kindergarten is -1 because query url default undefined is [0]
+      grades = grades.map((grade) => (grade === -1 ? 0 : grade))
+    }
+
+    // converting URL query string to arrays
+    let subjects: string[] | undefined = [];
+    if (typeof selectedSubjects === "string") {
+      subjects = selectedSubjects.split(",").map((subject) => subject.trim());
+    } else if (Array.isArray(selectedSubjects)) {
+      subjects = selectedSubjects.map(String);
+    }
+    // set to undefined if subjects is [""]
+    subjects = subjects.filter((subject) => subject.trim() !== "");
+    subjects = subjects.length > 0 ? subjects : undefined;
+
+    if (!tutoringMode) {
+      tutoringMode = undefined;
+    }
+
+    let disability_pref: boolean | undefined = false;
+    if (disability === "true") {
+      disability_pref = true;
+    } else if (disability === "false") {
+      disability_pref = false;
+    } else {
+      disability_pref = undefined;
+    }
+    
+    console.log("grades:", grades);
+    console.log("subjects:", subjects);
+    console.log("tutoring mode:", tutoringMode);
+    console.log("disability:", disability_pref);
     // applying the filter
     const filteredTutors = await filterTutors(
-      undefined,
-      undefined,
-      undefined,
-      undefined
+      grades,
+      subjects,
+      disability_pref,
+      tutoringMode?.toString(),
     );
+
+    console.log(filteredTutors);
 
     // getting all ids of the filtered tutors
     const tutorIds = filteredTutors

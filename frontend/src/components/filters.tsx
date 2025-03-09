@@ -7,11 +7,13 @@ import closeButton from "../assets/images/filter/close_button.svg";
 // import { ToggleButtonGroup } from 'react-bootstrap';
 
 const buttonStyle: string =
-  "items-center px-2 py-3 m-2 text-xs bg-[#FFFFFF] border-[#E7E7E7] border-1 !rounded-xl text-[#888888]";
+  "items-center px-2 py-2 min-w-[50px] hover:bg-gray-100 m-2 text-xs bg-[#FFFFFF] border-[#E7E7E7] border-1 !rounded-xl text-[#888888]";
 const buttonStyleActive: string =
-  "items-center px-2 py-3 m-2 text-xs bg-[#FFFFFF] border-[#1F3A68] border-1 !rounded-xl text-[#1F3A68]";
+  "items-center px-2 py-2 min-w-[50px] m-2 bg-[#d8e0ed] text-xs bg-[#FFFFFF] border-[#5874a3] border-1 !rounded-xl text-[#1F3A68]";
 const applyButtonStyle: string =
-  "items-center px-2 py-3 m-2 text-xs bg-[#DBEAFA] border-[#E7E7E7] border-1 !rounded-xl text-[#000000]";
+  "items-center px-2 py-2 min-w-[80px] m-2 text-xs bg-[#7ea5e4] text-white border-[#E7E7E7] hover:bg-[#4174c2] border-1 !rounded-xl text-[#000000]";
+const resetButtonStyle: string =
+  "items-center px-2 py-2 min-w-[80px] m-2 text-xs bg-[#FFFFFF] border-[#E7E7E7] hover:bg-gray-200 border-1 !rounded-xl text-[#000000]";
 
 interface FilterModalProps {
   onHide: () => void;
@@ -20,24 +22,33 @@ interface FilterModalProps {
 }
 
 interface FilterValues {
-  gradeLevel: string;
-  selectedSubjects: string[];
-  tutoringMode: string;
-  disability: string;
+  gradeLevels?: number[];
+  selectedSubjects?: string[];
+  tutoringMode?: string;
+  disability?: boolean;
 }
 
 export default function FilterModal(props: FilterModalProps) {
-  const [gradeLevel, setGradeLevel] = useState<string>("");
+  const [gradeLevels, setGradeLevels] = useState<number[]>([]);
   const [selectedButtonDisability, setSelectedButtonDisability] =
-    useState<string>("");
+    useState<boolean>();
   const [selectedButtonMode, setSelectedButtonMode] = useState<string>("");
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
 
-  const handleToggleDisability = (button: string) => {
+  const handleToggleDisability = (button: boolean) => {
     setSelectedButtonDisability(button);
   };
   const handleToggleMode = (button: string) => {
     setSelectedButtonMode(button);
+  };
+
+  const handleGradeClick = (gradeLevel: number) => {
+    console.log(gradeLevels);
+    setGradeLevels((prevSelected) =>
+      prevSelected.includes(gradeLevel)
+        ? prevSelected.filter((grade) => grade !== gradeLevel)
+        : [...prevSelected, gradeLevel]
+    );
   };
 
   const handleSubjectClick = (subjectName: string) => {
@@ -50,10 +61,10 @@ export default function FilterModal(props: FilterModalProps) {
   };
 
   const resetFilters = () => {
-    setGradeLevel("");
+    setGradeLevels([]);
     setSelectedSubjects([]);
     setSelectedButtonMode("");
-    setSelectedButtonDisability("");
+    setSelectedButtonDisability(undefined);
   };
 
   return (
@@ -81,34 +92,130 @@ export default function FilterModal(props: FilterModalProps) {
           </h3>
         </div>
         <hr className={"h-0.5 my-3 bg-[#E7E7E7] border-0"} />
-        <Form.Group controlId="gradeLevel">
-          <Form.Label>Grade Level</Form.Label>
-          <Form.Control
-            as="select"
-            value={gradeLevel}
-            onChange={(e) => setGradeLevel(e.target.value)}
-            className={"border-[#E7E7E7]"}
-          >
-            <option disabled={true} value="">
-              Select any option
-            </option>
-            <option>Grade 1</option>
-            <option>Grade 2</option>
-            <option>Grade 3</option>
-            <option>Grade 4</option>
-            <option>Grade 5</option>
-            <option>Grade 6</option>
-            <option>Grade 7</option>
-            <option>Grade 8</option>
-            <option>Grade 9</option>
-            <option>Grade 10</option>
-            <option>Grade 11</option>
-            <option>Grade 12</option>
-          </Form.Control>
+        <Form.Group controlId="gradeLevels">
+          <Form.Label>Grade Levels</Form.Label>
+          <span className="ml-3 text-xs text-bold text-gray-400">
+            (Select multiple)
+          </span>
+          <div className={"flex flex-col"}>
+            <div className={"flex flex-row"}>
+              <button
+                // kindergarten is -1 because 0 is url query default for undef
+                onClick={() => handleGradeClick(-1)}
+                className={
+                  gradeLevels.includes(-1) ? buttonStyleActive : buttonStyle
+                }
+              >
+                Kindergarten
+              </button>
+              <button
+                onClick={() => handleGradeClick(1)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(1) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                1st Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(2)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(2) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                2nd Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(3)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(3) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                3rd Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(4)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(4) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                4th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(5)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(5) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                5th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(6)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(6) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                6th Grade
+              </button>
+            </div>
+            <div className={"flex flex-row"}>
+              <button
+                onClick={() => handleGradeClick(7)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(7) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                7th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(8)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(8) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                8th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(9)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(9) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                9th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(10)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(10) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                10th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(11)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(11) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                11th Grade
+              </button>
+              <button
+                onClick={() => handleGradeClick(12)}
+                className={`!min-w-[90px] ${
+                  gradeLevels.includes(12) ? buttonStyleActive : buttonStyle
+                }`}
+              >
+                12th Grade
+              </button>
+            </div>
+          </div>
         </Form.Group>
+
         <hr className={"h-0.5 my-3 bg-[#E7E7E7] border-0"} />
         <Form.Group controlId="subjects">
           <Form.Label>Subjects</Form.Label>
+          <span className="ml-3 text-xs text-bold text-gray-400">
+            (Select multiple)
+          </span>
           <div className={"flex flex-col"}>
             <div className={"flex flex-row"}>
               <button
@@ -324,9 +431,9 @@ export default function FilterModal(props: FilterModalProps) {
           <Form.Label>Tutoring Mode</Form.Label>
           <div className={"flex flex-row"}>
             <button
-              onClick={() => handleToggleMode("virtualOnly")}
+              onClick={() => handleToggleMode("Online")}
               className={
-                selectedButtonMode === "virtualOnly"
+                selectedButtonMode === "Online"
                   ? buttonStyleActive
                   : buttonStyle
               }
@@ -334,14 +441,34 @@ export default function FilterModal(props: FilterModalProps) {
               Virtual Only
             </button>
             <button
-              onClick={() => handleToggleMode("In-PersonOnly")}
+              onClick={() => handleToggleMode("In-person")}
               className={
-                selectedButtonMode === "In-PersonOnly"
+                selectedButtonMode === "In-person"
                   ? buttonStyleActive
                   : buttonStyle
               }
             >
               In-Person Only
+            </button>
+            <button
+              onClick={() => handleToggleMode("Hybrid")}
+              className={
+                selectedButtonMode === "Hybrid"
+                  ? buttonStyleActive
+                  : buttonStyle
+              }
+            >
+              Hybrid
+            </button>
+            <button
+              onClick={() => handleToggleMode("Anything")}
+              className={
+                selectedButtonMode === "Anything"
+                  ? buttonStyleActive
+                  : buttonStyle
+              }
+            >
+              Anything is fine
             </button>
           </div>
         </Form.Group>
@@ -351,19 +478,18 @@ export default function FilterModal(props: FilterModalProps) {
           <Form.Label>Disability</Form.Label>
           <div className={"flex flex-row"}>
             <button
-              onClick={() => handleToggleDisability("yes")}
+              onClick={() => handleToggleDisability(true)}
               className={
-                selectedButtonDisability === "yes"
-                  ? buttonStyleActive
-                  : buttonStyle
+                selectedButtonDisability ? buttonStyleActive : buttonStyle
               }
             >
               Yes
             </button>
             <button
-              onClick={() => handleToggleDisability("no")}
+              onClick={() => handleToggleDisability(false)}
               className={
-                selectedButtonDisability === "no"
+                !selectedButtonDisability &&
+                selectedButtonDisability !== undefined
                   ? buttonStyleActive
                   : buttonStyle
               }
@@ -375,13 +501,21 @@ export default function FilterModal(props: FilterModalProps) {
         <hr className={"h-0.5 my-3 bg-[#E7E7E7] border-0"} />
         <div className={"justify-center"}>
           <div className={"flex flex-row justify-center"}>
-            <button
-              onClick={() => resetFilters()}
-              className={buttonStyleActive}
-            >
+            <button onClick={() => resetFilters()} className={resetButtonStyle}>
               Reset
             </button>
-            <button onClick={props.onHide} className={applyButtonStyle}>
+            <button
+              onClick={() => {
+                props.onApply({
+                  gradeLevels,
+                  selectedSubjects,
+                  tutoringMode: selectedButtonMode,
+                  disability: selectedButtonDisability,
+                });
+                props.onHide();
+              }}
+              className={applyButtonStyle}
+            >
               Apply
             </button>
           </div>

@@ -78,17 +78,21 @@ export default class TutorMatcher {
         this.addTutor(unmatchedTutor);
       }
       // console.log("All tutees: ", this.tutees);
-    }
+url = "http://localhost:3000";
 
-    async fetchTutees() {
-      console.log("fetching tutees");
-      const response = await fetch(`${this.url}/unmatched-tutees`);
-      const {unmatchedTutees} = await response.json();
-      // console.log(unmatchedTutees);
-      for (const unmatchedTutee of unmatchedTutees) {
-        this.addTutee(unmatchedTutee);
-      }
     }
+    // console.log("All tutees: ", this.tutees);
+  }
+
+  async fetchTutees() {
+    console.log("fetching tutees");
+    const response = await fetch(`${this.url}/unmatched-tutees`);
+    const {unmatchedTutees} = await response.json();
+    // console.log(unmatchedTutees);
+    for (const unmatchedTutee of unmatchedTutees) {
+      this.addTutee(unmatchedTutee);
+    }
+  }
   
   findMatches() {
     const matches = [];
@@ -182,7 +186,3 @@ export default class TutorMatcher {
       return 0.4 * subjectScore + 0.2 * gradeScore;
     }
   }
-  
-  // const tutorMatcher = new TutorMatcher();
-  // await tutorMatcher.fetchData();
-  // await tutorMatcher.findMatches();

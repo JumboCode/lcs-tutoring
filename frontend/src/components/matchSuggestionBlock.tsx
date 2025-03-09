@@ -14,18 +14,20 @@ import TuteeSuggestionBox from "./tuteeSuggestionBox";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa6";
-import { RiArrowDropDownLine } from "react-icons/ri";
 import { BsPlusLg } from "react-icons/bs";
 import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
 
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
+import { Flag } from "lucide-react";
+import Select from "react-select/base";
 
 // const BG_COLOR = "#fbfbfb";
 interface TuteeName {
   firstName: string;
   lastName: string;
+  unmatchedTuteeId: string;
 }
 
 const MatchSuggestionBlock = ({
@@ -33,7 +35,6 @@ const MatchSuggestionBlock = ({
   tutee1,
   tutee2,
   tutee3,
-  flagged,
   unmatched_names,
 }: {
   tutor_info: tutorInfo;
@@ -44,15 +45,11 @@ const MatchSuggestionBlock = ({
   unmatched_names: TuteeName[];
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
+  const [selectedCustomId, setselectedCustomId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [finishedSubmitting, setFinishedSubmitting] = useState(false);
 
   const handleApprove = async () => {
-    if (!selectedTuteeId) {
-      alert("Please select a tutee first");
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       console.log("approve match");
@@ -60,13 +57,24 @@ const MatchSuggestionBlock = ({
       const tutorId = tutor_info.id;
 
       console.log(selectedTuteeId);
+      let idToSend = selectedTuteeId;
+      console.log(`start: ${idToSend}`);
+      if (selectedTuteeId == null) {
+        console.log(`here 1: ${idToSend}`);
+        if (selectedCustomId != null) {
+          idToSend = selectedCustomId;
+          console.log(`here 2: ${idToSend}`);
+        }
+      }
+      console.log(`final: ${idToSend}`);
+
 
       const response = await fetch("http://localhost:3000/approve-match", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tutorId, selectedTuteeId }),
+        body: JSON.stringify({ tutorId, selectedTuteeId: idToSend }),
       });
 
       console.log("Got response");
@@ -100,13 +108,16 @@ const MatchSuggestionBlock = ({
   const openModal = () => setModalVisible(true);
 
   // Modal close function
-  const closeModal = () => setModalVisible(false);
+  const closeModal = () => {
+    setModalVisible(false);
+    setselectedCustomId(null);
+  }
 
   return (
     <>
       {!finishedSubmitting && (
         <div className="border rounded-lg bg-white p-6 my-6">
-          <div className="flex space-x-6 mx-6">
+          <div className="flex space-x-6 mx-6 my-3">
             <span className="font-bold text-lg">
               {first_name} {last_name}
             </span>
@@ -118,12 +129,17 @@ const MatchSuggestionBlock = ({
               <FiPhone />
               <span className="pl-2 text-sm text-gray-500">{phone}</span>
             </div>
-
-            <div className="flex flex-1 justify-end">
-              <RiArrowDropDownLine size={40} />
-            </div>
           </div>
-
+          {tutor_info.flagged && (
+            <div className="bg-[#FEFDF2] p-2 rounded mx-auto my-2">
+              <div className="flex items-center gap-2 ">
+                <Flag className="text-[#F3CA42]" />
+                <span className="text-sm font-normal text-[#F3CA42]">
+                  Priority Selection Flag
+                </span>
+              </div>
+            </div>
+          )}
           <div
             className={
               "py-1 flex flex-row text-gray-500 px-2 bg-[#fbfbfb] justify-start items-center mx-3"
@@ -169,26 +185,34 @@ const MatchSuggestionBlock = ({
           {/*buttons*/}
           <div className="flex flex-row-reverse space-x-6 space-x-reverse">
             <button
-              className="rounded-xl bg-[#1E3B68] px-5 py-3 text-white text-lg hover:bg-blue-700 disabled:opacity-50"
+              className={`rounded-xl px-5 py-3 text-lg w-[200px] ${
+                selectedTuteeId
+                  ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2]"
+                  : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
+              }`}
               type="button"
               onClick={handleApprove}
               disabled={!selectedTuteeId || isSubmitting}
             >
-              <span className="inline-block ml-0.5">
-                <FaCheck />
-              </span>{" "}
-              {isSubmitting ? "Processing..." : "Approve"}
+              <span
+                className={`${
+                  selectedTuteeId ? "flex flex-row gap-x-2 items-center" : ""
+                }`}
+              >
+                {selectedTuteeId && <FaCheck />}
+                {isSubmitting ? "Processing..." : "Approve"}
+              </span>
             </button>
             <button
               onClick={openModal}
-              className="rounded-xl bg-white px-5 py-3 border text-gray-700 text-lg hover:bg-gray-200"
+              className="rounded-xl bg-[#ffffff] hover:bg-gray-100 px-5 py-3 border text-gray-700 text-lg "
               type="button"
             >
               {/* This is where you will complete your ticket */}
-              <span className="inline-block ml-0.5">
+              <span className="flex flex-row items-center gap-x-2">
                 <BsPlusLg />
-              </span>{" "}
-              Custom Match
+                Custom Match
+              </span>
             </button>
           </div>
           <Modal show={modalVisible} onHide={closeModal}>
@@ -198,9 +222,15 @@ const MatchSuggestionBlock = ({
             <Modal.Body>
               <div>
                 <ul>
-                  {/* TODO: Make selectable! */}
+        
                   {unmatched_names.map((name, index) => (
                     <li key={index}>
+                      <input className="mr-2" type="radio" 
+                        onClick={() => {
+                          setselectedCustomId(name.unmatchedTuteeId);
+                          setselectedTuteeId(null);
+                        }}
+                        checked={selectedCustomId === name.unmatchedTuteeId}/>
                       {name.firstName} {name.lastName}
                     </li>
                   ))}
@@ -208,6 +238,16 @@ const MatchSuggestionBlock = ({
               </div>
             </Modal.Body>
             <Modal.Footer>
+              <button 
+                className={`btn btn-secondary ${
+                  selectedCustomId
+                    ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2] border-0"
+                    : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
+                }`}
+                onClick={handleApprove} 
+                disabled={!selectedCustomId || isSubmitting}>
+                Approve
+              </button>
               <button className="btn btn-secondary" onClick={closeModal}>
                 Close
               </button>

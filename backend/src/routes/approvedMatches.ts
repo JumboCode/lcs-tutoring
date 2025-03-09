@@ -8,6 +8,7 @@ import {
   unmatchPair,
   emailPair,
   moveToInactive,
+  deletePair,
 } from "../controllers/approvedMatchesController";
 import express from "express";
 
@@ -18,5 +19,6 @@ router.post("/flag/", flagApprovedMatch);
 router.post("/unmatch-pair/:id", unmatchPair);
 router.post("/email", emailPair);
 router.post("/move-to-inactive/", moveToInactive);
+router.post("/delete-pair/:id", deletePair);
 
 export default router;

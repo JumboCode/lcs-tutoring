@@ -12,28 +12,10 @@ import {
   approvedMatchesTable,
 } from "../db/schema";
 import { eq, and, or } from "drizzle-orm";
-import { alias } from "drizzle-orm/pg-core";
 import { Request, Response } from "express";
 import TutorMatcher from "../algorithm.js";
 
 const db = drizzle(process.env.DATABASE_URL!);
-
-// type tuteeBoxProps = {
-//   id: string;
-//   date: string;
-//   history_date: string | null;
-//   tutee_first_name: string;
-//   tutee_last_name: string;
-//   parent_email: string;
-//   subjects: string[];
-//   grade: string;
-//   special_needs: string;
-//   gender: string;
-//   tutoring_mode: string;
-//   parent_first_name: string;
-//   parent_last_name: string;
-//   parent_phone: string;
-// };
 
 export type tuteeBoxProps = {
   id: string;
@@ -160,7 +142,6 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     // console.log("these are the tutees: ", tutees);
     console.log("these are the tutors: ", matchResults);
 
-
     res.send({
       matchSuggestions: matchResults
     });
@@ -185,16 +166,10 @@ export const approveMatch = async (req: Request, res: Response) => {
       await db.insert(approvedMatchesTable).values({
         tutee_id: selectedTuteeId,
         tutor_id: tutorId,
+        pair_date: new Date().toLocaleDateString("en-CA", {
+          timeZone: "America/New_York",
+        }),
       });
-
-      await db
-        .update(approvedMatchesTable)
-        .set({
-          date: new Date().toLocaleDateString("en-CA", {
-            timeZone: "America/New_York",
-          }),
-        })
-        .where(eq(approvedMatchesTable.tutee_id, selectedTuteeId));
 
       await db
         .delete(unmatchedTable)

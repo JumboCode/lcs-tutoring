@@ -11,7 +11,6 @@ import MatchSuggestionBlock from "./matchSuggestionBlock";
 import { useState, useEffect } from "react";
 import { tuteeInfo, tutorInfo } from "../types";
 // import FilterButton from "./FilterButton";
-
 // tutees not passed in from algorithm yet
 interface MatchSuggestion {
   flagged: boolean;
@@ -25,6 +24,7 @@ export default function MatchSuggestionTable() {
   interface TuteeName {
     firstName: string;
     lastName: string;
+    unmatchedTuteeId: string;
   }
 
   const [matchSuggestions, setMatchSuggestions] = useState<MatchSuggestion[]>(
@@ -45,8 +45,6 @@ export default function MatchSuggestionTable() {
         const data = await response.json();
         console.log("Match Suggestions:", data);
         setMatchSuggestions(data.matchSuggestions);
-        // todo
-        console.log("MATCH SUGGESTIONS USESTATE: ", matchSuggestions)
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -66,6 +64,7 @@ export default function MatchSuggestionTable() {
         const names = unmatchedTutees.map((formData: any) => ({
           firstName: formData.tutee_first_name,
           lastName: formData.tutee_last_name,
+          unmatchedTuteeId: formData.id,
         }));
         setUnmatchedNames(names);
         console.log("Unmatched Tutee Names: ", names);
@@ -87,7 +86,7 @@ export default function MatchSuggestionTable() {
         {/* When awaiting the fetch */}
         {loading && (
           <div className="flex items-center justify-center py-10">
-            <p className="text-lg text-gray-500">Loading matches...</p>
+            <p className="text-lg text-gray-500">Loading suggestions...</p>
           </div>
         )}
 
