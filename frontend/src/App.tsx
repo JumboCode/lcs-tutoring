@@ -17,6 +17,7 @@ import TuteeForm from "./components/TuteeForm";
 import TeamPage from "./components/teamPage";
 import Header from "./components/header";
 import Footer from "./components/Footer";
+import EListForm from "./components/E-ListForm";
 
 /* Admin View */
 import FilterModal from "./components/filters";
@@ -45,6 +46,7 @@ function App() {
               <ScrollToTop />
               <Header />
               <HomePage />
+              <EListForm />
               <Footer />
             </div>
           }
@@ -68,6 +70,7 @@ function App() {
               <ScrollToTop />
               <Header />
               <TeamPage />
+              <EListForm />
               <Footer />
             </div>
           }
