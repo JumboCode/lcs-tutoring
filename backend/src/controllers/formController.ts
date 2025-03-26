@@ -11,6 +11,7 @@ import {
   tutorTable,
   adminTable,
   unmatchedTable,
+  elist
 } from "../db/schema";
 // import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
@@ -165,3 +166,30 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export const handleEList = async (req: Request, res: Response) => {
+  try {
+    const { tuftsEmail, gradYear, fullName } = req.body;
+
+    // Check for duplicate email in the elist table
+    const existingEmail = await db
+      .select()
+      .from(elist)
+      .where(eq(elist.email, tuftsEmail));
+
+    if (existingEmail.length > 0) {
+      return res.status(400).json({ success: false, message: "Email already exists in the mailing list" });
+    }
+    await db.insert(elist).values({
+      name: fullName,
+      email: tuftsEmail,
+      year_grad: gradYear
+    });
+
+    console.log("Email added to mailing list: ", tuftsEmail);
+    res.status(200).json({ success: true, message: "Email added to mailing list" });
+  } catch (error) {
+    console.error("Error adding email to mailing list", error);
+    res.status(500).json({ success: false, message: "Error adding email to mailing list" });
+  }
+}
