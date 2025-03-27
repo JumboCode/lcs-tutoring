@@ -30,6 +30,7 @@ export default function MatchSuggestionTable() {
     grade: "8",
     special_needs: "No",
     tutoring_mode: "Hybrid",
+    notes: "Hi",
   };
 
   const tutee2: tuteeInfo = {
@@ -40,6 +41,7 @@ export default function MatchSuggestionTable() {
     grade: "10",
     special_needs: "Dyslexia",
     tutoring_mode: "In-Person",
+    notes: "none",
   };
 
   const tutee3: tuteeInfo = {
@@ -50,6 +52,7 @@ export default function MatchSuggestionTable() {
     grade: "9",
     special_needs: "No",
     tutoring_mode: "Hybrid",
+    notes: "hello",
   };
 
   interface TuteeName {

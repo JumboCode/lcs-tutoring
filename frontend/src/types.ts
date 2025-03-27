@@ -44,6 +44,7 @@ export interface tutorInfo {
   grade_level_pref: string[];
   disability_pref: boolean;
   tutoring_mode: string;
+  notes: string;
 }
 
 export interface tuteeInfo {
@@ -54,4 +55,5 @@ export interface tuteeInfo {
   grade: string;
   special_needs: string;
   tutoring_mode?: string;
+  notes: string;
 }

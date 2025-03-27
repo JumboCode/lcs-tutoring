@@ -22,6 +22,7 @@ export default function TuteeSuggestionBox({
     grade,
     special_needs,
     tutoring_mode,
+    notes,
   } = tutee_info;
 
   const [showPopup, setShowPopup] = useState(false);
@@ -43,11 +44,25 @@ export default function TuteeSuggestionBox({
             <span className="text-sm">{email}</span>
           </div>
         </div>
+
       </div>
+      
+
+        {/*Display Tutee Special Request in box*/}
+        <div className="pb-2">
+          {notes && (
+            <div style={{ width: '345px', margin: 'auto'}} className="px-4 py-2 bg-red-100 border-red-500 text-black">
+              <strong className="text-red-600 text-sm" >Special Request: </strong> 
+              <span className="text-sm">{notes}</span>
+            </div>
+          )}
+        </div>
+
       <div className="py-1 flex flex-row text-gray-500 px-8 bg-[#fbfbfb] justify-start items-center mx-2">
         <span className="w-1/2">Grade</span>
         <span className="w-1/2">Subject</span>
       </div>
+      
       <div className="py-2 flex flex-row text-[black] px-8 justify-start items-center mx-2">
         <span className="w-1/2">{grade}</span>
         <p

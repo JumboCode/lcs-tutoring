@@ -21,7 +21,6 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     console.log("Inside match suggestions endpoint");
     // query logic
     // NOTE: Algorithm implementation somewhere here
-
     // Step 1: Pull all unmatched tutees
     // Step 2: Pull all unmatched tutors
     // Step 3: For each tutor, call the algorithm on all the tutees to find the top 3
@@ -40,6 +39,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
           grade_level_pref: tutorTable.grade_level_pref,
           disability_pref: tutorTable.disability_pref,
           tutoring_mode: tutorTable.tutoring_mode,
+          notes: tutorTable.notes
         },
         // TUTEE SUGGESTIONS FROM ALGORITHM
       })

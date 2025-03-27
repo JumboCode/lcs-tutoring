@@ -94,6 +94,7 @@ const MatchSuggestionBlock = ({
     grade_level_pref = [],
     disability_pref,
     tutoring_mode,
+    notes,
   } = tutor_info;
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -140,6 +141,14 @@ const MatchSuggestionBlock = ({
         <span className="w-1/4">{disability_pref ? "Yes" : "No"}</span>
         <span className="w-1/4">{tutoring_mode}</span>
       </div>
+      
+      {/*special request being displayed in below div*/}
+        {notes && (
+          <div style={{ width: '1155px', margin: 'auto'}} className="px-2 pt-2 py-2 bg-red-100 border-red-500 text-black">
+            <strong className="text-red-600 text-sm" >Special Request: </strong> 
+            <span className="text-sm">{notes}</span>
+          </div>
+        )}
 
       {/*tutee info in below div*/}
       <div className="flex flex-row m-6 space-x-6 items-center justify-center ">
