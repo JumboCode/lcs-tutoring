@@ -10,6 +10,7 @@ import TuteeDBBlue from "../assets/images/nav_icons/tutee_db_blue.svg";
 import ApprovedMatchBlue from "../assets/images/nav_icons/approved_match_blue.svg";
 import TutorDBBlue from "../assets/images/nav_icons/tutor_db_blue.svg";
 import Collapse from "../assets/images/nav_icons/collapse.svg";
+import Elephant from "../assets/images/elephant.svg";
 
 import TuteeTable from "./TuteeTable";
 import TutorTable from "./TutorTable";
@@ -47,9 +48,10 @@ export default function NavigationBar() {
     <div>
       {/* Fixed navigation bar */}
       <div
-        className="fixed top-0 left-0 flex flex-col bg-[#FFFFFF] min-h-screen transition-all duration-300 border-r-2"
+        className="fixed top-0 left-0 flex flex-col bg-[#E3EFFB] min-h-screen transition-all duration-300 border-r-2"
         style={{ width: navBarWidth }}
       >
+        
         <div
           onClick={toggleCollapse}
           className="flex justify-end cursor-pointer p-2"
@@ -60,16 +62,21 @@ export default function NavigationBar() {
             }`}
             src={Collapse}
             alt="Collapse Icon"
-            style={{ width: "20px", height: "20px" }}
+            style={{ width: "15px", height: "15px" }}
           />
+        </div>
+        <div>
+          <img 
+            src={Elephant}
+            style={{padding: "5px", marginLeft: "15px"}}></img>
         </div>
 
         <div className="flex flex-col mt-5 space-y-4">
           {menuItems.map((item) => (
             <div
               key={item.name}
-              className={`group rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold cursor-pointer text-[#888888] hover:bg-[#E3EFFB] hover:text-[#1F3A68] ${
-                currentPage === item.name ? "bg-[#E3EFFB] text-[#1F3A68]" : ""
+              className={`group rounded box-border h-10 w-30 flex flex-row items-center ml-2 text-left font-semibold cursor-pointer text-[#888888] hover:bg-[#BFDBF7] hover:text-[#1F3A68] ${
+                currentPage === item.name ? "bg-[#BFDBF7] text-[#1F3A68]" : ""
               }`}
               onClick={() => setCurrentPage(item.name)}
             >

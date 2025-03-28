@@ -96,7 +96,10 @@ export default function TutorTable() {
             console.log("FILTERS ARE: ", filters);
           }}
         />
+  
       </div>
+      <hr className="border-t-1 border-gray w-full my-2 mt-3" />
+
 
       {/* When awaiting the fetch */}
       {loading && (
@@ -118,84 +121,84 @@ export default function TutorTable() {
           className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
-            <div className="flex flex-row justify-start space-x-8 py-4 px-4">
-              <div
-                className={
-                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                }
-                onClick={() => setIsActive(TABS.UNMATCHED)}
-              >
-                <h1
-                  className={
-                    isActive === TABS.UNMATCHED ? COLORS.ACTIVE : COLORS.HISTORY
-                  }
-                >
-                  Unmatched
-                </h1>
+            <div className="relative w-full px-4">
+              <div className="flex flex-row justify-start space-x-8 py-4">
+                {/* Tabs */}
                 <div
-                  className={
-                    "flex w-8 h-8 rounded-full  items-center justify-center " +
-                    (isActive === TABS.UNMATCHED
-                      ? COLORS.ACTIVE_BG
-                      : COLORS.HISTORY_BG)
-                  }
+                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
+                  onClick={() => setIsActive(TABS.UNMATCHED)}
                 >
-                  {unmatchedTutors.length}
+                  <h1 className={isActive === TABS.UNMATCHED ? COLORS.ACTIVE : COLORS.HISTORY}>
+                    Unmatched
+                  </h1>
+                  <div
+                    className={
+                      "flex w-8 h-8 rounded-full items-center justify-center " +
+                      (isActive === TABS.UNMATCHED ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                    }
+                  >
+                    {unmatchedTutors.length}
+                  </div>
+                </div>
+
+                <div
+                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
+                  onClick={() => setIsActive(TABS.MATCHED)}
+                >
+                  <h1 className={isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY}>
+                    Matched
+                  </h1>
+                  <div
+                    className={
+                      "flex w-8 h-8 rounded-full items-center justify-center " +
+                      (isActive === TABS.MATCHED ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                    }
+                  >
+                    {matchedTutors.length}
+                  </div>
+                </div>
+
+                <div
+                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
+                  onClick={() => setIsActive(TABS.HISTORY)}
+                >
+                  <h1 className={isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY}>
+                    History
+                  </h1>
+                  <div
+                    className={
+                      "flex w-8 h-8 rounded-full items-center justify-center " +
+                      (isActive === TABS.HISTORY ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                    }
+                  >
+                    {historyTutors.length}
+                  </div>
                 </div>
               </div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E7E7E7] rounded-full" />
               <div
-                className={
-                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                }
-                onClick={() => setIsActive(TABS.MATCHED)}
-              >
-                <h1
-                  className={
-                    isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY
-                  }
-                >
-                  Matched
-                </h1>
-                <div
-                  className={
-                    "flex w-8 h-8 rounded-full  items-center justify-center " +
-                    (isActive === TABS.MATCHED
-                      ? COLORS.ACTIVE_BG
-                      : COLORS.HISTORY_BG)
-                  }
-                >
-                  {matchedTutors.length}
-                </div>
-              </div>
-              <div
-                className={
-                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                }
-                onClick={() => setIsActive(TABS.HISTORY)}
-              >
-                <h1
-                  className={
-                    isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY
-                  }
-                >
-                  History
-                </h1>
-                <div
-                  className={
-                    "flex w-8 h-8 rounded-full  items-center justify-center " +
-                    (isActive === TABS.HISTORY
-                      ? COLORS.ACTIVE_BG
-                      : COLORS.HISTORY_BG)
-                  }
-                >
-                  {historyTutors.length}
-                </div>
-              </div>
+                className="absolute bottom-0 h-0.5 rounded-full bg-[#8DAADD] transition-all duration-300"
+                style={{
+                  width:
+                    isActive === TABS.UNMATCHED
+                      ? "9rem"
+                      : isActive === TABS.MATCHED
+                      ? "7.75rem"
+                      : "6.5rem",
+                  left:
+                    isActive === TABS.UNMATCHED
+                      ? "1rem"
+                      : isActive === TABS.MATCHED
+                      ? "11.5rem"
+                      : "21rem",
+                }}
+              />
             </div>
+
           </div>
-          <table className="w-full">
+          <table className="w-full mt-4">
             <thead>
-              <tr className="h-[35px] bg-gray-100 border">
+              <tr className="h-[35px] bg-[#F1F7FD]">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>

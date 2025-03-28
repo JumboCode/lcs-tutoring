@@ -111,6 +111,7 @@ export default function ApprovedMatches() {
           }}
         />
       </div>
+      <hr className="border-t-1 border-gray w-full my-2 mt-3" />
 
       {/* When awaiting the fetch */}
       {loading && (
@@ -132,60 +133,62 @@ export default function ApprovedMatches() {
           className={`flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
-            <div className="flex flex-row justify-start space-x-8 py-4 px-4">
-              <div
-                className={
-                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                }
-                onClick={() => setIsActive(TABS.ACTIVE)}
-              >
-                <h1
-                  className={
-                    isActive === TABS.ACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE
-                  }
-                >
-                  Active
-                </h1>
+          <div className="relative w-full px-4">
+              <div className="flex flex-row justify-start space-x-8 py-4">
+                {/* Tabs */}
                 <div
-                  className={
-                    "flex w-8 h-8 rounded-full items-center justify-center " +
-                    (isActive === TABS.ACTIVE
-                      ? COLORS.ACTIVE_BG
-                      : COLORS.INACTIVE_BG)
-                  }
+                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
+                  onClick={() => setIsActive(TABS.ACTIVE)}
                 >
-                  {active_matches.length}
+                  <h1 className={isActive === TABS.ACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE}>
+                    Matched
+                  </h1>
+                  <div
+                    className={
+                      "flex w-8 h-8 rounded-full items-center justify-center " +
+                      (isActive === TABS.ACTIVE ? COLORS.ACTIVE_BG : COLORS.INACTIVE_BG)
+                    }
+                  >
+                    {active_matches.length}
+                  </div>
+                </div>
+
+                <div
+                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
+                  onClick={() => setIsActive(TABS.INACTIVE)}
+                >
+                  <h1 className={isActive === TABS.INACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE}>
+                    Inactive
+                  </h1>
+                  <div
+                    className={
+                      "flex w-8 h-8 rounded-full items-center justify-center " +
+                      (isActive === TABS.INACTIVE ? COLORS.ACTIVE_BG : COLORS.INACTIVE_BG)
+                    }
+                  >
+                    {inactive_matches.length}
+                  </div>
                 </div>
               </div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E7E7E7] rounded-full" />
               <div
-                className={
-                  "flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                }
-                onClick={() => setIsActive(TABS.INACTIVE)}
-              >
-                <h1
-                  className={
-                    isActive === TABS.INACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE
-                  }
-                >
-                  Inactive
-                </h1>
-                <div
-                  className={
-                    "flex w-8 h-8 rounded-full items-center justify-center " +
-                    (isActive === TABS.INACTIVE
-                      ? COLORS.ACTIVE_BG
-                      : COLORS.INACTIVE_BG)
-                  }
-                >
-                  {inactive_matches.length}
-                </div>
-              </div>
+                className="absolute bottom-0 h-0.5 rounded-full bg-[#8DAADD] transition-all duration-300"
+                style={{
+                  width:
+                    isActive === TABS.ACTIVE
+                      ? "8rem"
+                      : "7.5rem",
+                  left:
+                    isActive === TABS.ACTIVE
+                      ? "1rem"
+                      : "10rem",
+                }}
+              />
             </div>
           </div>
-          <table className="w-full">
+          <table className="w-full mt-4">
             <thead>
-              <tr className="h-[35px] bg-gray-100 border">
+              <tr className="h-[35px] bg-[#F1F7FD]">
                 <td className="px-3 w-1/5">
                   <h1 className="text-gray-500 text-lg">Date</h1>
                 </td>
