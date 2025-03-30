@@ -11,13 +11,17 @@
     "clean": "rm -rf dist build node_modules/.cache"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.24.1",
+    "@clerk/react-router": "^1.1.4",
+    "@clerk/themes": "^2.2.20",
     "bootstrap": "^5.3.3",
     "lucide-react": "^0.453.0",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.5",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
-    "react-router-dom": "^6.29.0",
+    "react-router": "^7.3.0",
+    "react-router-dom": "^7.3.0",
     "react-select": "^5.8.3",
     "resend": "^4.1.2",
     "validator": "^13.12.0"

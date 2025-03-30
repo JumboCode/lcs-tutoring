@@ -246,8 +246,6 @@ export default function TuteeForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      // http://localhost:3000/tuteesubmission
-      // https://lcs-tutoring.onrender.com/tuteesubmission
       fetch(`${config.backendUrl}/tuteesubmission`, {
         method: "POST",
         headers: {

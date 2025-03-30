@@ -1,32 +1,11 @@
 import config from "../config.ts";
 import React, { useState } from "react";
+// import NavigationBar from "./navigationBar.tsx";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await fetch("/admin-login", {
-  //       method: "POST",
-  //       body: JSON.stringify({ email, password }),
-  //     });
-  //     console.log("hello");
-  //     const data = await response.json();
-  //     console.log("bye");
-  //     if (data.success) {
-  //       console.log("Logged in successfully");
-  //       setError(false);
-  //     } else {
-  //       setError(true);
-  //     }
-  //   } catch (err) {
-  //     console.error("Login failed", err);
-  //     setError(true);
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

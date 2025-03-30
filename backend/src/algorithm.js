@@ -193,6 +193,6 @@ export default class TutorMatcher {
       const modeScore = this._calculateTutoringModeScore(tutor, tutee);
       const needsScore = this._calculateSpecialNeedsScore(tutor, tutee);
   
-      return 0.4 * subjectScore + 0.3 * gradeScore + 0.5 * modeScore + 0.8 * needsScore;
+      return 0.6 * subjectScore + 0.7 * gradeScore + 0.4 * modeScore + 0.3 * needsScore;
     }
   }
