@@ -1,6 +1,5 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
-import { useNavigate } from "react-router-dom";
+import config from "../config.ts";
 
 interface FormData {
   fullName: string;
@@ -18,14 +17,14 @@ export default function EListForm() {
   const [formData, setFormData] = useState<FormData>({
     fullName: "",
     tuftsEmail: "",
-    gradYear: ""
+    gradYear: "",
   });
 
   //errors
   const [errors, setErrors] = useState<FormErrors>({
     fullName: "",
     tuftsEmail: "",
-    gradYear: ""
+    gradYear: "",
   });
 
   //for past tutee Desc.
@@ -45,7 +44,6 @@ export default function EListForm() {
     }));
   };
 
-
   //submit function with data validation
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,18 +60,15 @@ export default function EListForm() {
       }
     });
 
-
     setErrors(newErrors);
 
     console.log(JSON.stringify(formData));
-    console.log(Object.keys(newErrors))
+    console.log(Object.keys(newErrors));
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      // https://jumbocodegpt.onrender.com/tutorsubmission
-      // http://localhost:3000/tutorsubmission
       try {
-        const response = await fetch("http://localhost:3000/e-list", {
+        const response = await fetch(`${config.backendUrl}/e-list`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -84,16 +79,16 @@ export default function EListForm() {
           setFormData({
             fullName: "",
             tuftsEmail: "",
-            gradYear: ""
+            gradYear: "",
           });
           setIsSubmitted(true);
-        
-      }
-      if (response.status === 400) {
-        setErrorMessage("Unable to submit form. You are already on the E-List.");
-      }
-    }
-      catch(error) {
+        }
+        if (response.status === 400) {
+          setErrorMessage(
+            "Unable to submit form. You are already on the E-List."
+          );
+        }
+      } catch (error) {
         setIsSubmitted(false);
         console.log("Error submitting form:", error);
         alert("Unable to submit form. Please try again later.");
@@ -108,59 +103,67 @@ export default function EListForm() {
 
   return (
     <div className="p-16 bg-[#F5F5F5]">
-      <h1 className="text-center text-5xl font-medium text-[#1E3B68] mb-4">Join our E-List!</h1>
-      <h1 className="text-center text-xl font-light text-[#1E3B68]">Sign up to receive updates on our activities and events.</h1>
-    {isSubmitted ? (
+      <h1 className="text-center text-5xl font-medium text-[#1E3B68] mb-4">
+        Join our E-List!
+      </h1>
+      <h1 className="text-center text-xl font-light text-[#1E3B68]">
+        Sign up to receive updates on our activities and events.
+      </h1>
+      {isSubmitted ? (
         <div className="bg-white rounded-lg max-w-lg mx-auto my-7 p-8 text-center shadow-md">
-        <h2 className="text-2xl font-medium text-[#1E3B68] mb-4">Thank you for submitting your email!</h2>
-        <p className="text-gray-700">Keep an eye out for an email!</p>
-      </div>
-    ) : 
-    (
-      <>
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3 max-w-lg mx-auto my-7">
+          <h2 className="text-2xl font-medium text-[#1E3B68] mb-4">
+            Thank you for submitting your email!
+          </h2>
+          <p className="text-gray-700">Keep an eye out for an email!</p>
+        </div>
+      ) : (
+        <>
+          <form
+            onSubmit={handleSubmit}
+            className="grid grid-cols-1 gap-3 max-w-lg mx-auto my-7"
+          >
             {[
-            { label: "Full Name", id: "fullName" },
-            { label: "Tufts Email", id: "tuftsEmail" },
-            { label: "Year of Graduation", id: "gradYear" },
+              { label: "Full Name", id: "fullName" },
+              { label: "Tufts Email", id: "tuftsEmail" },
+              { label: "Year of Graduation", id: "gradYear" },
             ].map((field) => (
-            <div className="flex flex-col" key={field.id}>
+              <div className="flex flex-col" key={field.id}>
                 <input
-                type="text"
-                id={field.id}
-                name={field.id}
-                onChange={handleChange}
-                value={formData[field.id as keyof FormData] as string}
-                placeholder={field.label}
-                className={`font-light rounded-lg border border-gray-300 p-2 text-center ${
+                  type="text"
+                  id={field.id}
+                  name={field.id}
+                  onChange={handleChange}
+                  value={formData[field.id as keyof FormData] as string}
+                  placeholder={field.label}
+                  className={`font-light rounded-lg border border-gray-300 p-2 text-center ${
                     errors[field.id as keyof FormData]
-                    ? "border-red-500"
-                    : "border-gray-300"
-                }`}
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
                 />
                 {errors[field.id as keyof FormData] && (
-                <span className="text-red-500 text-sm">
+                  <span className="text-red-500 text-sm">
                     {errors[field.id as keyof FormData]}
-                </span>
+                  </span>
                 )}
-            </div>
+              </div>
             ))}
-      
-          <div className="flex justify-center mt-4"> 
-            <button
-                  className="rounded-full bg-[#1E3B68] py-2.5 px-4 text-white text-xl"
-                  type="submit"
-                >
-                  Submit
-            </button>
+
+            <div className="flex justify-center mt-4">
+              <button
+                className="rounded-full bg-[#1E3B68] py-2.5 px-4 text-white text-xl"
+                type="submit"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+          <div className="w-full flex items-center align-middle justify-center">
+            {" "}
+            <p className="text-red-600">{errorMessage}</p>
           </div>
-        </form>
-        <div className="w-full flex items-center align-middle justify-center"> <p className="text-red-600">{errorMessage}</p></div>
-
-       
-        
-    </>)}
-
+        </>
+      )}
     </div>
   );
 }

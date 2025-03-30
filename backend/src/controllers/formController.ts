@@ -9,11 +9,10 @@ import { eq } from "drizzle-orm";
 import {
   tuteeTable,
   tutorTable,
-  adminTable,
   unmatchedTable,
   elist
 } from "../db/schema";
-// import { eq } from "drizzle-orm";
+import { clerkClient } from '@clerk/express'
 import { Request, Response } from "express";
 
 const db = drizzle(process.env.DATABASE_URL!);
@@ -122,52 +121,7 @@ export const tutorSubmission = async (req: Request, res: Response) => {
   }
 };
 
-export const adminEmailSubmission = async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
-    await db.insert(adminTable).values({
-      email: email,
-      password: password,
-    });
-    console.log("Email submitted: ", req.body);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error adding new admin");
-  }
-};
-
-// TODO: add clerk auth
-export const adminLogin = async (req: Request, res: Response): Promise<any> => {
-  const { email, password } = req.body;
-
-
-  try {
-    const admins = await db.select().from(adminTable).where(eq(adminTable.email, email));
-
-    console.log(email);
-    console.log(password);
-
-    if (admins.length === 0) {
-      console.log("Here")
-      return res.status(401).json({ success: false, message: "Incorrect email or password" });
-    }
-
-    const admin = admins[0];
-
-    console.log("Password equal: ", (password === admin.password));
-
-    if (password === admin.password) {
-      res.json({ success: true, message: "Logged in successfully" });
-    } else {
-      res.send(401).json({ success: false, message: "Incorrect email or password" });
-    }
-  } catch (error) {
-    console.error("Login error", error);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
-
-export const handleEList = async (req: Request, res: Response) => {
+export const handleEList = async (req: Request, res: Response): Promise<any> => {
   try {
     const { tuftsEmail, gradYear, fullName } = req.body;
 
@@ -193,3 +147,31 @@ export const handleEList = async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "Error adding email to mailing list" });
   }
 }
+
+export const createAdmin = async (req: Request, res: Response): Promise<any> => {
+  const { emailAddress, password, firstName, lastName } = req.body;
+
+  if (!emailAddress[0].endsWith("@tufts.edu")) {
+    return res.status(400).json({ error: "Only Tufts University emails (@tufts.edu) are allowed." });
+  }
+
+  try {
+    const user = await clerkClient.users.createUser({
+      emailAddress,
+      password,
+      firstName,
+      lastName,
+    });
+
+    res.status(200).json({ message: "User created", user });
+  } catch (error: any) {
+    console.error("Error creating user:", error);
+
+    if (error.status === 422) {
+      return res.status(422).json({error: error.errors[0].message});
+    }
+
+    res.status(500).json({ error: "Error submitting the form" });
+  }
+};
+

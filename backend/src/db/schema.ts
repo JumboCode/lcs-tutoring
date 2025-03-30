@@ -73,12 +73,6 @@ export const approvedMatchesTable = pgTable('approved_matches', {
   inactive_date: date(),
 });
 
-export const adminTable = pgTable("admin", {
-  id: serial("id").primaryKey(),
-  email: varchar("email", { length: 100 }).notNull().unique(),
-  password: varchar({ length: 100 }).notNull(),
-});
-
 export const elist = pgTable('elist', {
   id: serial('id').primaryKey(),
   name: varchar({ length: 100 }).notNull(),

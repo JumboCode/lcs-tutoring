@@ -8,7 +8,6 @@ import SethRachelButton from "./components/buttonSethRachel";
 import ValentinaCharlieButton from "./components/buttonValentinaCharlie";
 import AnneRainierButton from "@/components/buttonAnneRainier";
 import ArayHunterButton from "./components/buttonArayHunter";
-import Demo from "./components/request_demo";
 
 /* General View */
 import ScrollToTop from "./components/ScrollToTop";
@@ -18,7 +17,6 @@ import TuteeForm from "./components/TuteeForm";
 import TeamPage from "./components/teamPage";
 import Header from "./components/header";
 import Footer from "./components/Footer";
-import EListForm from "./components/E-ListForm";
 
 /* Admin View */
 import FilterModal from "./components/filters";
@@ -27,22 +25,15 @@ import NavigationBar from "./components/navigationBar";
 import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
-import AddAdmin from "./components/addAdmin";
-import AdminLogin from "./components/adminSignIn"; // Added this
+import AdminLogin from "./components/adminSignIn";
 import SuccessPage from "./components/SuccessPage";
+import EListForm from "./components/E-ListForm";
 
-import {
-  SignIn,
-  SignedIn,
-  SignInButton,
-  SignedOut,
-  RedirectToSignIn,
-  SignOutButton,
-} from "@clerk/react-router";
+import { SignedIn, SignedOut } from "@clerk/react-router";
 import elephantLogo from "./assets/images/elephant.svg";
+import AdminSignUp from "./components/adminSignUp";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-const CLERK_AFTER_SIGN_IN = import.meta.env.CLERK_AFTER_SIGN_IN;
 
 function App() {
   const [modalShow, setModalShow] = useState(false);
@@ -55,7 +46,7 @@ function App() {
         },
       }}
       publishableKey={PUBLISHABLE_KEY}
-      afterSignOutUrl="/"
+      afterSignOutUrl="/admin"
       signInUrl="/admin"
     >
       <Router>
@@ -91,6 +82,7 @@ function App() {
                 <ScrollToTop />
                 <Header />
                 <TeamPage />
+                <EListForm />
                 <Footer />
               </div>
             }
@@ -140,6 +132,14 @@ function App() {
             }
           ></Route>
           <Route
+            path="/elist-form"
+            element={
+              <div>
+                <EListForm />
+              </div>
+            }
+          ></Route>
+          <Route
             path="/filters"
             element={
               <div>
@@ -163,8 +163,6 @@ function App() {
             }
           ></Route>
 
-          <Route path="/admin" element={<NavigationBar />}></Route>
-
           <Route
             path="/tuteetable"
             element={
@@ -182,29 +180,24 @@ function App() {
               </div>
             }
           ></Route>
-
           <Route
-            path="/tutortable"
+            path="/admin"
             element={
               <div>
-                <TutorTable />
-              </div>
-            }
-          ></Route>
-
-          <Route
-            path="/demo"
-            element={
-              <div>
-                <Demo />
+                <SignedOut>
+                  <AdminLogin />
+                </SignedOut>
+                <SignedIn>
+                  <NavigationBar />
+                </SignedIn>
               </div>
             }
           ></Route>
           <Route
-            path="/adminLogin"
+            path="/adminsignup"
             element={
               <div>
-                <AdminLogin />
+                <AdminSignUp />
               </div>
             }
           ></Route>

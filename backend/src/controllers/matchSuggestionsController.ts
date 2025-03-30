@@ -28,30 +28,6 @@ export type tuteeBoxProps = {
   tutoring_mode: string;
 };
 
-type tutorBoxProps = {
-  id: string;
-  date: string;
-  first_name: string;
-  last_name: string;
-  pronouns: string;
-  major: string;
-  year_grad: string;
-  phone: string;
-  email: string;
-  grade_level_pref: string[];
-  disability_pref: boolean;
-  subject_pref: string[];
-  tutoring_mode: string;
-  num_tutees: number;
-};
-
-type AlgoMatch = {
-  tutor: tutorBoxProps
-  tutee1: tuteeBoxProps
-  tutee2: tuteeBoxProps
-  tutee3: tuteeBoxProps
-}
-
 type TutorObjectProps = {
   tutorId: string,
   tuteeId1: number,
@@ -87,7 +63,8 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               subject: tutorTable.subject_pref,
               grade_level_pref: tutorTable.grade_level_pref,
               disability_pref: tutorTable.disability_pref,
-              tutoring_mode: tutorTable.tutoring_mode})
+              tutoring_mode: tutorTable.tutoring_mode,
+              notes: tutorTable.notes})
           .from(tutorTable)
           .where(eq(tutorTable.id, match.tutorId));
         const tutee1_obj = await db
@@ -100,6 +77,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               subjects: tuteeTable.subjects,
               special_needs: tuteeTable.special_needs,
               tutoring_mode: tuteeTable.tutoring_mode,
+              notes: tuteeTable.notes,
             })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId1));
@@ -113,6 +91,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               subjects: tuteeTable.subjects,
               special_needs: tuteeTable.special_needs,
               tutoring_mode: tuteeTable.tutoring_mode,
+              notes: tuteeTable.notes,
             })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId2));
@@ -126,6 +105,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
               subjects: tuteeTable.subjects,
               special_needs: tuteeTable.special_needs,
               tutoring_mode: tuteeTable.tutoring_mode,
+              notes: tuteeTable.notes,
           })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId3));
