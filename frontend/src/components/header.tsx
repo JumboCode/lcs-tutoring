@@ -6,19 +6,27 @@ import elephantLogo from "../assets/images/elephant.svg";
 
 export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+
+  const handleNavClick = () => {
+        window.scrollTo(0, 0);
+        setIsDropdownOpen(false);
+      };
 
   return (
     <header className="border-gray-200 border-b py-3 bg-white sticky top-0 z-50">
       <div className="flex justify-between items-center w-[90vw] mx-auto">
-        <Link to="/adminview">
+        <Link to="/" onClick={handleNavClick}>
           <img className="h-12 w-12" src={elephantLogo} alt="Elephant Logo" />
         </Link>
         <ul className="flex flex-row space-x-8">
           <Link
             className="cursor-pointer border-b-2 border-transparent hover:border-black"
             to="/"
+            onClick={handleNavClick}
           >
             Home
           </Link>
@@ -26,6 +34,7 @@ export default function Header() {
           <Link
             className="cursor-pointer border-b-2 border-transparent hover:border-black"
             to="/team"
+            onClick={handleNavClick}
           >
             Team
           </Link>
