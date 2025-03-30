@@ -11,15 +11,22 @@ import ApprovedMatchBlue from "../assets/images/nav_icons/approved_match_blue.sv
 import TutorDBBlue from "../assets/images/nav_icons/tutor_db_blue.svg";
 import Collapse from "../assets/images/nav_icons/collapse.svg";
 import Elephant from "../assets/images/elephant.svg";
+import LogoutGray from "../assets/images/nav_icons/logout_gray.svg";
+import LogoutBlue from "../assets/images/nav_icons/logout_blue.svg";
 
 import TuteeTable from "./TuteeTable";
 import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
 import MatchSuggestionTable from "./matchSuggestionTable";
 
+import { SignOutButton, UserButton } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+
 export default function NavigationBar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [currentPage, setCurrentPage] = useState("Match Suggestions");
+  const [showPopup, setShowPopup] = useState(false);
+  const { user } = useUser();
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -99,6 +106,66 @@ export default function NavigationBar() {
               {!isCollapsed && <span className="ml-2">{item.name}</span>}
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-center items-end pb-4 mt-auto">
+          <div className="flex flex-row">
+            {!isCollapsed && user && (
+              <div className="flex items-center mr-2">
+                <UserButton>
+                  <img
+                    src={user.imageUrl || "https://via.placeholder.com/150"}
+                    alt="User Profile"
+                    className="w-8 h-8 mr-2 rounded-full object-cover"
+                  />
+                </UserButton>
+              </div>
+            )}
+            {!isCollapsed && user && (
+              <div
+                className="text-xs flex flex-col items-start"
+                onMouseEnter={() => setShowPopup(true)}
+                onMouseLeave={() => setShowPopup(false)}
+              >
+                <span className="w-[120px] overflow-hidden text-ellipsis whitespace-nowrap font-bold flex items-center">
+                  <span className="mr-1">{user.firstName}</span>
+                  <span>{user.lastName}</span>
+                </span>
+                <span className="w-[120px] overflow-hidden text-ellipsis whitespace-nowrap text-[#888888]">
+                  {user.primaryEmailAddress
+                    ? user.primaryEmailAddress.emailAddress
+                    : "No email available"}
+                </span>
+              </div>
+            )}
+            {showPopup && user && (
+              <div className="absolute bottom-[60px] mb-2 text-xs w-auto p-2 bg-white border border-gray-300 shadow-lg z-10">
+                <div className="flex flex-col">
+                  <div>
+                    <span className="mr-1">{user.firstName}</span>
+                    <span>{user.lastName}</span>
+                  </div>
+                  {user.primaryEmailAddress
+                    ? user.primaryEmailAddress.emailAddress
+                    : "No email available"}
+                </div>
+              </div>
+            )}
+            <SignOutButton redirectUrl="/admin">
+              <button className="group hover:bg-[#BFDBF7] rounded">
+                <img
+                  src={LogoutBlue}
+                  className="hidden group-hover:block"
+                  style={{ width: "35px", height: "35px", padding: "5px" }}
+                ></img>
+                <img
+                  src={LogoutGray}
+                  className="block group-hover:hidden"
+                  style={{ width: "35px", height: "35px", padding: "5px" }}
+                ></img>
+              </button>
+            </SignOutButton>
+          </div>
         </div>
       </div>
 

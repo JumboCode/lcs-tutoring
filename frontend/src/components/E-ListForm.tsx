@@ -67,8 +67,6 @@ export default function EListForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
-      // https://jumbocodegpt.onrender.com/tutorsubmission
-      // http://localhost:3000/tutorsubmission
       try {
         const response = await fetch(`${config.backendUrl}/e-list`, {
           method: "POST",
