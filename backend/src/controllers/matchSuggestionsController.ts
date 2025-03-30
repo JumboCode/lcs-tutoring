@@ -174,8 +174,9 @@ export const approveMatch = async (req: Request, res: Response) => {
       await db
         .delete(unmatchedTable)
         .where(
-          eq(unmatchedTable.tutor_id, tutorId) ||
-            eq(unmatchedTable.tutee_id, selectedTuteeId)
+          or(
+          eq(unmatchedTable.tutor_id, tutorId),
+          eq(unmatchedTable.tutee_id, selectedTuteeId))
         );
 
       res.status(200).json({ success: true });
