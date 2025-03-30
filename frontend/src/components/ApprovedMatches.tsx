@@ -133,20 +133,26 @@ export default function ApprovedMatches() {
           className={`flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
-          <div className="relative w-full px-4">
+            <div className="relative w-full px-4">
               <div className="flex flex-row justify-start space-x-8 py-4">
                 {/* Tabs */}
                 <div
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.ACTIVE)}
                 >
-                  <h1 className={isActive === TABS.ACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE}>
+                  <h1
+                    className={
+                      isActive === TABS.ACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE
+                    }
+                  >
                     Matched
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.ACTIVE ? COLORS.ACTIVE_BG : COLORS.INACTIVE_BG)
+                      (isActive === TABS.ACTIVE
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.INACTIVE_BG)
                     }
                   >
                     {active_matches.length}
@@ -157,13 +163,21 @@ export default function ApprovedMatches() {
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.INACTIVE)}
                 >
-                  <h1 className={isActive === TABS.INACTIVE ? COLORS.ACTIVE : COLORS.INACTIVE}>
+                  <h1
+                    className={
+                      isActive === TABS.INACTIVE
+                        ? COLORS.ACTIVE
+                        : COLORS.INACTIVE
+                    }
+                  >
                     Inactive
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.INACTIVE ? COLORS.ACTIVE_BG : COLORS.INACTIVE_BG)
+                      (isActive === TABS.INACTIVE
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.INACTIVE_BG)
                     }
                   >
                     {inactive_matches.length}
@@ -174,14 +188,8 @@ export default function ApprovedMatches() {
               <div
                 className="absolute bottom-0 h-0.5 rounded-full bg-[#8DAADD] transition-all duration-300"
                 style={{
-                  width:
-                    isActive === TABS.ACTIVE
-                      ? "8rem"
-                      : "7.5rem",
-                  left:
-                    isActive === TABS.ACTIVE
-                      ? "1rem"
-                      : "10rem",
+                  width: isActive === TABS.ACTIVE ? "8rem" : "7.5rem",
+                  left: isActive === TABS.ACTIVE ? "1rem" : "10rem",
                 }}
               />
             </div>

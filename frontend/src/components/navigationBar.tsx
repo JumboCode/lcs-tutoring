@@ -51,7 +51,6 @@ export default function NavigationBar() {
         className="fixed top-0 left-0 flex flex-col bg-[#E3EFFB] min-h-screen transition-all duration-300 border-r-2"
         style={{ width: navBarWidth }}
       >
-        
         <div
           onClick={toggleCollapse}
           className="flex justify-end cursor-pointer p-2"
@@ -65,13 +64,18 @@ export default function NavigationBar() {
             style={{ width: "15px", height: "15px" }}
           />
         </div>
-        <div>
-          <img 
-            src={Elephant}
-            style={{padding: "5px", marginLeft: "15px"}}></img>
-        </div>
+        {!isCollapsed && (
+          <div>
+            <img
+              src={Elephant}
+              style={{ padding: "5px", marginLeft: "15px" }}
+            ></img>
+          </div>
+        )}
 
-        <div className="flex flex-col mt-5 space-y-4">
+        <div
+          className={`flex flex-col ${isCollapsed ? "mt-5" : "mt-4"} space-y-4`}
+        >
           {menuItems.map((item) => (
             <div
               key={item.name}

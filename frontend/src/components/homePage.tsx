@@ -5,6 +5,7 @@ import ServicesBoxes from "./services.tsx";
 import AboutUs from "./aboutUs.tsx";
 import GetInvolved from "./getInvolved.tsx";
 import PastTutors from "./pastTutors.tsx";
+import EListForm from "./E-ListForm.tsx";
 
 const HomePage = () => {
   return (
@@ -14,6 +15,7 @@ const HomePage = () => {
       <ServicesBoxes />
       <GetInvolved />
       <PastTutors />
+      <EListForm />
     </div>
   );
 };

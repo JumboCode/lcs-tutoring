@@ -18,7 +18,6 @@ import TuteeForm from "./components/TuteeForm";
 import TeamPage from "./components/teamPage";
 import Header from "./components/header";
 import Footer from "./components/Footer";
-import EListForm from "./components/E-ListForm";
 
 /* Admin View */
 import FilterModal from "./components/filters";
@@ -28,8 +27,9 @@ import TuteeTable from "./components/TuteeTable";
 import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 import AddAdmin from "./components/addAdmin";
-import AdminLogin from "./components/adminSignIn"; // Added this
+import AdminLogin from "./components/adminSignIn";
 import SuccessPage from "./components/SuccessPage";
+import EListForm from "./components/E-ListForm";
 
 import {
   SignIn,
@@ -91,6 +91,7 @@ function App() {
                 <ScrollToTop />
                 <Header />
                 <TeamPage />
+                <EListForm />
                 <Footer />
               </div>
             }
@@ -136,6 +137,14 @@ function App() {
             element={
               <div>
                 <ApprovedMatches />
+              </div>
+            }
+          ></Route>
+          <Route
+            path="/elist-form"
+            element={
+              <div>
+                <EListForm />
               </div>
             }
           ></Route>

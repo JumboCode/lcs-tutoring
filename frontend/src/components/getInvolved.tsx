@@ -1,5 +1,5 @@
 "use client";
-
+import { Link } from "react-router-dom";
 import Studying from "../assets/images/homepage_studying.svg";
 import TutorTutee from "../assets/images/homepage_tutor_tutee_2.svg";
 
@@ -27,13 +27,14 @@ export default function GetInvolved() {
                   local community and is a rewarding experience
                 </p>
                 <p>You can sign up to be a tutor anytime through this form:</p>
-                <div className="mb-6"></div>
-                <button
-                  className="rounded-full bg-[#1E3B68] py-3 px-4 text-white text-lg"
-                  type="button"
-                >
-                  Become a Tutor!
-                </button>
+                <div className="pt-6">
+                  <Link
+                    className="rounded-full bg-[#1E3B68] py-3 px-4 text-white text-lg hover:bg-[#375e98]"
+                    to="/tutor-form"
+                  >
+                    Become a Tutor!
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -61,15 +62,17 @@ export default function GetInvolved() {
               <p className="text-left text-xl text-[#545353]">
                 You can sign up for your child to find a tutor anytime through
                 this form. Once we have this information, we will set your child
-                up with a volunteer tutor from Tufts who macthes the
+                up with a volunteer tutor from Tufts who matches the
                 specifications as soon as possible.
               </p>
-              <button
-                className="rounded-full bg-[#1E3B68] py-3 px-4 text-white text-lg"
-                type="button"
-              >
-                Sign Up for a Tutor!
-              </button>
+              <div className="pt-2">
+                <Link
+                  className="rounded-full bg-[#1E3B68] py-3 px-4 text-white text-lg hover:bg-[#375e98]"
+                  to="/tutee-form"
+                >
+                  Sign Up for a Tutor!
+                </Link>
+              </div>
             </div>
           </div>
         </div>

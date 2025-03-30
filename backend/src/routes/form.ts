@@ -12,6 +12,6 @@ router.post("/tuteesubmission", tuteeSubmission);
 router.post("/tutorsubmission", tutorSubmission);
 router.post("/admin", adminEmailSubmission);
 router.post("/admin-login", adminLogin);
-router.post("/e-list", handleEList)
+router.post("/e-list", handleEList);
 
 export default router;

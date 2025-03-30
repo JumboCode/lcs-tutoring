@@ -167,7 +167,7 @@ export const adminLogin = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-export const handleEList = async (req: Request, res: Response) => {
+export const handleEList = async (req: Request, res: Response): Promise<any> => {
   try {
     const { tuftsEmail, gradYear, fullName } = req.body;
 
