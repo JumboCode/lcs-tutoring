@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import Studying from "../assets/images/homepage_studying.svg";
 import TutorTutee from "../assets/images/homepage_tutor_tutee_2.svg";
 
 export default function GetInvolved() {
+
+        const [currentPage, setCurrentPage] = useState("getInvolved");
+
   return (
     <div className="bg-[#FBFAFC] p-12 md:p-24">
       <div className="max-w-6xl mx-auto space-y-15">
@@ -31,6 +35,10 @@ export default function GetInvolved() {
                 <button
                   className="rounded-full bg-[#1E3B68] py-3 px-4 text-white text-lg"
                   type="button"
+                  onClick={() => {
+                        setCurrentPage("tutorForm");
+                        window.location.href = "/tutor-form";
+                }}
                 >
                   Become a Tutor!
                 </button>
@@ -67,6 +75,10 @@ export default function GetInvolved() {
               <button
                 className="rounded-full bg-[#1E3B68] py-3 px-4 text-white text-lg"
                 type="button"
+                onClick={() => {
+                        setCurrentPage("tuteeForm");
+                        window.location.href = "/tutee-form";
+                }}
               >
                 Sign Up for a Tutor!
               </button>

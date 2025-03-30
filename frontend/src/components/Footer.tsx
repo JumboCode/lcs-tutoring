@@ -4,6 +4,11 @@ import { Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
+
+        const scrollToTop = () => {
+                window.scrollTo(0, 0);
+        };
+
   return (
     <div className="bg-blue-100">
       <div className="flex flex-row w-[90vw] mx-auto py-8 h-60 md:h-80">
@@ -21,20 +26,42 @@ export default function Footer() {
             <Link
               className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
               to="/"
+              onClick={scrollToTop}
             >
               Home
             </Link>
             <Link
               className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
               to="/team"
+              onClick={scrollToTop}
             >
               Team
             </Link>
+            <Link
+              className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
+              to="/tutor-form"
+              onClick={scrollToTop}
+            >
+              Tutor Form
+            </Link>
+            <Link
+                className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
+                to="/tutee-form"
+                onClick={scrollToTop}
+            >
+                Tutee Form
+            </Link>
+
           </div>
-          <p className="cursor-pointer text-[#2F3335] text-sm inline border-b border-blue-100 hover:border-b hover:border-black">
+          <a 
+            href="https://www.instagram.com/lcstutors/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="cursor-pointer text-[#2F3335] text-sm inline border-b border-blue-100 hover:border-b hover:border-black"
+          >
             Find us on Instagram
             <Instagram color="black" size={16} className="inline ml-0.5" />
-          </p>
+          </a>
         </div>
       </div>
     </div>
