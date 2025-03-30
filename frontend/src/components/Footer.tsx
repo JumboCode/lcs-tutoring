@@ -4,10 +4,9 @@ import { Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Footer() {
-
-        const scrollToTop = () => {
-                window.scrollTo(0, 0);
-        };
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="bg-blue-100">
@@ -20,47 +19,44 @@ export default function Footer() {
         </div>
         <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4 items-end">
           <div className="flex flex-col space-y-2">
-            <span className="cursor-pointer text-black text-base font-bold font-inter border-b border-blue-100">
+            <span className="text-black text-base font-bold font-inter border-b border-blue-100">
               Pages
             </span>
-            <Link
-              className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
-              to="/"
-              onClick={scrollToTop}
-            >
-              Home
+            <Link className="cursor-pointer" to="/" onClick={scrollToTop}>
+              <span className="text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+                Home
+              </span>
+            </Link>
+            <Link className="cursor-pointer" to="/team" onClick={scrollToTop}>
+              <span className="text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+                Team
+              </span>
             </Link>
             <Link
-              className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
-              to="/team"
-              onClick={scrollToTop}
-            >
-              Team
-            </Link>
-            <Link
-              className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
+              className="cursor-pointer"
               to="/tutor-form"
               onClick={scrollToTop}
             >
-              Tutor Form
+              <span className="text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black">
+                Tutor Form
+              </span>
             </Link>
             <Link
-                className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
-                to="/tutee-form"
-                onClick={scrollToTop}
+              className="cursor-pointer text-[#2F3335] text-base border-b border-blue-100 hover:border-b hover:border-black"
+              to="/tutee-form"
+              onClick={scrollToTop}
             >
-                Tutee Form
+              Tutee Form
             </Link>
-
           </div>
-          <a 
-            href="https://www.instagram.com/lcstutors/" 
-            target="_blank" 
-            rel="noopener noreferrer" 
+          <a
+            href="https://www.instagram.com/lcstutors/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="cursor-pointer text-[#2F3335] text-sm inline border-b border-blue-100 hover:border-b hover:border-black"
           >
             Find us on Instagram
-            <Instagram color="black" size={16} className="inline ml-0.5" />
+            <Instagram color="black" size={16} className="inline ml-1 mb-0.5" />
           </a>
         </div>
       </div>

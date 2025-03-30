@@ -5,9 +5,6 @@ import Studying from "../assets/images/homepage_studying.svg";
 import TutorTutee from "../assets/images/homepage_tutor_tutee_2.svg";
 
 export default function GetInvolved() {
-
-        const [currentPage, setCurrentPage] = useState("getInvolved");
-
   return (
     <div className="bg-[#FBFAFC] p-12 md:p-24">
       <div className="max-w-6xl mx-auto space-y-15">
