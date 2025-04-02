@@ -62,6 +62,8 @@ export default function MatchedInfoBoxbox_props({
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [emailSent, setEmailSent] = useState(sent_email);
+  console.log("email sent: ", emailSent);
+  console.log("SENT EMAIL: ", sent_email);
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

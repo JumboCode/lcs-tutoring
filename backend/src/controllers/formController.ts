@@ -59,10 +59,10 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
     await db.insert(unmatchedTable).values({
       tutee_id: insertedTutee.id,
     });
-    console.log("Tutee submitted: ", req.body);
+    console.log("unmatched tutee id: ", insertedTutee.id,);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error moving to matched");
+    res.status(500).send("ERROR POSTING NEW TUTEE");
   }
 };
 
@@ -114,7 +114,7 @@ export const tutorSubmission = async (req: Request, res: Response) => {
     await db.insert(unmatchedTable).values({
       tutor_id: id,
     });
-    console.log("Tutee submitted: ", req.body);
+    console.log("Tutor submitted: ", req.body);
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to matched");

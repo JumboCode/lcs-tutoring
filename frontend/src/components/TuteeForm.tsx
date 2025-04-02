@@ -258,29 +258,12 @@ export default function TuteeForm() {
         .catch((error) => console.error(error));
       console.log("Form submitted successfully:", formData);
 
-      //reset form
-      // setFormData({
-      //   childFirstName: "",
-      //   childLastName: "",
-      //   gender: "",
-      //   grade: "",
-      //   specialNeeds: "",
-      //   specialNeedsInfo: "",
-      //   parentFirstName: "",
-      //   parentLastName: "",
-      //   phone: "",
-      //   email: "",
-      //   subject: "",
-      //   tutoringMode: "",
-      //   additionalInfo: "",
-      //   agreement: "",
-      //   signature: "",
-      // });
-
       setShowTextBox(false);
       alert("Form submitted successfully!");
 
       navigate("/success-page");
+    } else {
+      alert("Oops! Some fields have errors. Please check and try again.");
     }
   };
 

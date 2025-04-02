@@ -119,20 +119,28 @@ export default function TuteeTable() {
           className={`w-full flex-grow border ${COLORS.BORDER} rounded-lg bg-white p-4 mt-3`}
         >
           <div className="flex flex-col">
-          <div className="relative w-full px-4">
+            <div className="relative w-full px-4">
               <div className="flex flex-row justify-start space-x-8 py-4">
                 {/* Tabs */}
                 <div
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.UNMATCHED)}
                 >
-                  <h1 className={isActive === TABS.UNMATCHED ? COLORS.ACTIVE : COLORS.HISTORY}>
+                  <h1
+                    className={
+                      isActive === TABS.UNMATCHED
+                        ? COLORS.ACTIVE
+                        : COLORS.HISTORY
+                    }
+                  >
                     Unmatched
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.UNMATCHED ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                      (isActive === TABS.UNMATCHED
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.HISTORY_BG)
                     }
                   >
                     {unmatchedTutees.length}
@@ -143,13 +151,19 @@ export default function TuteeTable() {
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.MATCHED)}
                 >
-                  <h1 className={isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY}>
+                  <h1
+                    className={
+                      isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY
+                    }
+                  >
                     Matched
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.MATCHED ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                      (isActive === TABS.MATCHED
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.HISTORY_BG)
                     }
                   >
                     {matchedTutees.length}
@@ -160,13 +174,19 @@ export default function TuteeTable() {
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.HISTORY)}
                 >
-                  <h1 className={isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY}>
+                  <h1
+                    className={
+                      isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY
+                    }
+                  >
                     History
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.HISTORY ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                      (isActive === TABS.HISTORY
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.HISTORY_BG)
                     }
                   >
                     {historyTutees.length}

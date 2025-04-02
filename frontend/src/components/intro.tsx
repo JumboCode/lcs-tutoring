@@ -15,7 +15,7 @@ export default function Intro() {
               style={{ width: "40px" }}
             ></div>
           </div>
-          <p className="font-interRegular font-bold italic text-left text-[3.5rem] md:w-[600px] mb-6">
+          <p className="font-bold italic text-left text-[3.5rem] md:w-[600px] mb-6">
             Leonard Carmichael Society Tutoring
           </p>
           <Link

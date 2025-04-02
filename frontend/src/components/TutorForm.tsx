@@ -242,17 +242,21 @@ export default function TutorForm() {
           newErrors["phone"] = "Invalid Phone Number";
         }
       }
-
+      console.log("DATE: ", new Date().getFullYear());
       if (
         formData["yearGrad"].length != 4 ||
         isNaN(Number(formData["yearGrad"])) ||
         !(
-          Number(formData["yearGrad"]) >= 2025 &&
-          Number(formData["yearGrad"]) <= 2028
+          Number(formData["yearGrad"]) >= new Date().getFullYear() &&
+          Number(formData["yearGrad"]) <= new Date().getFullYear() + 10
         )
       ) {
         if (formData["yearGrad"].length != 0) {
-          newErrors["yearGrad"] = "Invalid Year of Graduation";
+          newErrors[
+            "yearGrad"
+          ] = `Invalid Year of Graduation (Between ${new Date().getFullYear()} - ${
+            new Date().getFullYear() + 10
+          })`;
         }
       }
 
@@ -288,29 +292,12 @@ export default function TutorForm() {
         .catch((error) => console.error(error));
       console.log("Form submitted successfully:", formData);
 
-      //reset form
-      // setFormData({
-      //   childFirstName: "",
-      //   childLastName: "",
-      //   gender: "",
-      //   grade: "",
-      //   specialNeeds: "",
-      //   specialNeedsInfo: "",
-      //   parentFirstName: "",
-      //   parentLastName: "",
-      //   phone: "",
-      //   email: "",
-      //   subject: "",
-      //   tutoringMode: "",
-      //   additionalInfo: "",
-      //   agreement: "",
-      //   signature: "",
-      // });
-
       setShowTextBox(false);
       alert("Form submitted successfully!");
 
       navigate("/success-page");
+    } else {
+      alert("Oops! Some fields have errors. Please check and try again.");
     }
   };
 

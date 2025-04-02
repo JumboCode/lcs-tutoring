@@ -18,6 +18,7 @@ const db = drizzle(process.env.DATABASE_URL!);
 /* returns all the matched and unmatched tutees with the filter applied */
 export const getTutees = async ( req: Request, res: Response) => {
   try {
+    console.log("GETTING TUTEES")
     let { gradeLevels, selectedSubjects, tutoringMode, disability } = req.query;
 
     // converting URL query string to arrays
@@ -59,12 +60,6 @@ export const getTutees = async ( req: Request, res: Response) => {
       disability_pref = undefined;
     }
     
-    console.log("grades:", grades);
-    console.log("subjects:", subjects);
-    console.log("tutoring mode:", tutoringMode);
-    console.log("disability:", disability_pref);
-    console.log("Inside tutees endpoint");
-
     const filteredTutees = await filterTutees(
       grades,
       subjects,
@@ -97,6 +92,7 @@ export const getTutees = async ( req: Request, res: Response) => {
       .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id))
       .where(inArray(tuteeTable.id, tuteeIds));
 
+    console.log("sending tutees");
     res.send({
       matchedTutees: matchedTutees.map((row) => row.tutee),
       unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
@@ -211,35 +207,5 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to history");
-  }
-};
-
-export const toggleTuteeFlag = async (tutee_id: number) => {
-  try {
-    if (tutee_id > 0) {
-      const query = await db
-        .select()
-        .from(tuteeTable)
-        .where(eq(tuteeTable.id, tutee_id));
-
-      if (query.length > 0) {
-        const tutee = query[0];
-        const newFlag = !tutee.flagged;
-
-        await db
-          .update(tuteeTable)
-          .set({ flagged: newFlag })
-          .where(eq(tuteeTable.id, tutee_id));
-
-        return { success: true, message: "Tutee flag toggled" };
-      } else {
-        throw new Error("ID not found in tutee table");
-      }
-    } else {
-      throw new Error("Invalid ID");
-    }
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error toggling tutee flag");
   }
 };
