@@ -18,6 +18,13 @@ import { Resend } from "resend";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
+import Mailjet from 'node-mailjet';
+
+const mailjetClient = new Mailjet.Client({
+  apiKey: (process.env.MAILJETAPIKEY!),
+  apiSecret: (process.env.MAILJETSECRETKEY!),
+});
+
 const resend = new Resend(process.env.RESENDAPIKEY!);
 
 export const moveToInactive = async (req: Request, res: Response) => {
@@ -397,6 +404,8 @@ async function moveTuteeToUnmatched(tutee_id: number) {
   await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
 
+
+
 export const emailPair = async (req: Request, res: Response) => {
   try {
     // Aray and Sheza TODO: get the MatchId from the request and set the
@@ -407,34 +416,54 @@ export const emailPair = async (req: Request, res: Response) => {
     console.log("Inside email pair");
     console.log(tuteeParentEmail);
     console.log(tutorEmail);
-
     
+    const request = mailjetClient.post('send', { version: 'v3.1' }).request({
+      Messages: [
+        {
+          From: {
+            Email: (process.env.SENDEREMAIL!),
+            Name: 'LCSTutoring',
+          },
+          To: [
+            {
+              Email: tuteeParentEmail,
+              Name: 'Tutee Parent',
+            },
+          ],
+          Subject: 'My first Mailjet Email!',
+          TextPart: 'Greetings from Mailjet!',
+          HTMLPart:
+            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+        },
+        {
+          From: {
+            Email: (process.env.SENDEREMAIL!),
+            Name: 'LCSTutoring',
+          },
+          To: [
+            {
+              Email: tutorEmail,
+              Name: 'Tutor',
+            },
+          ],
+          Subject: 'My first Mailjet Email!',
+          TextPart: 'Greetings from Mailjet!',
+          HTMLPart:
+            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+        },
+      ],
+    })
 
+    console.log("Got request");
 
-    const { data, error } = await resend.emails.send({
-      from: "LCSTutoring <onboarding@resend.dev>",
-      // TODO: change this to the actual emails
-      to: ["brandon.dionisio@tufts.edu"],
-      subject: "New Tutoring Match Notification",
-      html: `<p>Dear Tutor and Parent,</p>
-         <p>We are pleased to inform you of a new tutoring match. Please coordinate to schedule your first session.</p>
-         <p>Tutor Email: ${tutorEmail}</p>
-         <p>If you have any questions, feel free to contact us.</p>
-         <p>Sincerely,</p>
-         <p>The LCSTutoring Team</p>`,
-    });
-    console.log("Data: ", data);
-    if (data?.id !== null) {
-      await db
-      .update(approvedMatchesTable)
-      .set({ sent_email: true })
-      .where(eq(approvedMatchesTable.id, req.body.matchId));
-      console.log("Email sent successfully");
-    }
-    console.log("Error: ", error);
-
-    res.status(200).send("Emails sent successfully.");
-  } catch (error) {
-    console.error(error);
-  }
+    request
+      .then((result: any) => {
+        console.log(result.body)
+      })
+      .catch((err: any) => {
+        console.log("Status code: ", err.statusCode)
+      })
+    } catch (err) {
+      console.error(err)
+    };
 };
