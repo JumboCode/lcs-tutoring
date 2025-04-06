@@ -14,7 +14,6 @@ import {
 } from "../db/schema";
 import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
-import { Resend } from "resend";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -24,8 +23,6 @@ const mailjetClient = new Mailjet.Client({
   apiKey: (process.env.MAILJETAPIKEY!),
   apiSecret: (process.env.MAILJETSECRETKEY!),
 });
-
-const resend = new Resend(process.env.RESENDAPIKEY!);
 
 export const moveToInactive = async (req: Request, res: Response) => {
   // return res.send("inside move to inactive");
@@ -99,7 +96,7 @@ export const deletePair = async (req: Request, res: Response) => {
     console.error(error);
     res.status(500).json("Error updating flag status");
   }
-  
+
 };
 
 /* returns all the approved matches */
@@ -147,7 +144,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
     } else {
       disability_pref = undefined;
     }
-    
+
     console.log("grades:", grades);
     console.log("subjects:", subjects);
     console.log("tutoring mode:", tutoringMode);
@@ -165,8 +162,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
 
     // getting all ids of the filtered matches
     const matchIds = filteredMatches
-      .map((match) => match.matchId)
-      .filter((id) => id !== undefined);
+      .map((match: any) => match.matchId)
+      .filter((id: any) => id !== undefined);
 
     // query to get all active matches
     const active_matches = await db
@@ -266,7 +263,8 @@ async function filterMatches(
       subjects: tuteeTable.subjects,
       tutoring_mode: tuteeTable.tutoring_mode,
       has_special_needs: tuteeTable.has_special_needs
-    }}).from(approvedMatchesTable)
+    }
+  }).from(approvedMatchesTable)
     .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
 
   const conditions: any[] = [];
@@ -345,9 +343,9 @@ export const unmatchPair = async (req: Request, res: Response) => {
     // Move the pair to inactive in Approved Matches Table
     await db
       .update(approvedMatchesTable)
-      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0]})
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
       .where(eq(approvedMatchesTable.id, Number(match_id)));
-    
+
     res.json({ success: true, message: "Pair unmatched" });
   } catch (error) {
     console.error(error);
@@ -416,7 +414,7 @@ export const emailPair = async (req: Request, res: Response) => {
     console.log("Inside email pair");
     console.log(tuteeParentEmail);
     console.log(tutorEmail);
-    
+
     const request = mailjetClient.post('send', { version: 'v3.1' }).request({
       Messages: [
         {
@@ -463,7 +461,7 @@ export const emailPair = async (req: Request, res: Response) => {
       .catch((err: any) => {
         console.log("Status code: ", err.statusCode)
       })
-    } catch (err) {
-      console.error(err)
-    };
+  } catch (err) {
+    console.error(err)
+  };
 };

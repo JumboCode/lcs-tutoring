@@ -19,7 +19,6 @@ const db = drizzle(process.env.DATABASE_URL!);
 
 export const tuteeSubmission = async (req: Request, res: Response) => {
   try {
-    console.log("This the req body: ", req.body);
     const request = req.body;
     const {
       childFirstName,
@@ -38,8 +37,6 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
       agreement,
       signature,
     } = request;
-    // bad practice, prefer to submit number directly
-    console.log("This the subjects: ", subjects);
     const [insertedTutee] = await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
@@ -59,16 +56,18 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
     await db.insert(unmatchedTable).values({
       tutee_id: insertedTutee.id,
     });
-    console.log("unmatched tutee id: ", insertedTutee.id,);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("ERROR POSTING NEW TUTEE");
+    return res.status(200).json({ message: "Tutee form submitted successfully" });
+  } catch (error: any) {
+    console.error("Error submitting tutee form:", error);
+  
+    return res.status(500).send(
+      error?.message || "Internal server error while submitting the tutee form"
+    );
   }
 };
 
 export const tutorSubmission = async (req: Request, res: Response) => {
   try {
-    console.log("This the req body: ", req.body);
     const request = req.body;
     const {
       firstName,
@@ -114,11 +113,23 @@ export const tutorSubmission = async (req: Request, res: Response) => {
     await db.insert(unmatchedTable).values({
       tutor_id: id,
     });
-    console.log("Tutor submitted: ", req.body);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error moving to matched");
-  }
+    return res.status(200).json({ message: "Tutor form submitted successfully" });
+   } catch (error: any) {
+      console.error("Error submitting tutor form:", error);
+    
+      // dupe id
+      if (error.code === "23505") {
+        if (error.constraint === "tutor_email_unique") {
+          return res.status(409).send("A tutor with this Tufts Email already exists.");
+        } else {
+          return res.status(409).send("A tutor with this Tufts ID already exists.");
+        }
+      }
+    
+      return res.status(500).send(
+        error?.message || "Internal server error while submitting the tutor form"
+      );
+    }
 };
 
 export const handleEList = async (req: Request, res: Response): Promise<any> => {

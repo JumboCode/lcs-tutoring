@@ -44,6 +44,7 @@ export default function TutorInfoBox({
     year_grad,
     phone,
     previous_tutee,
+    continuing_tutee_name,
     grade_level_pref = [],
     num_tutees,
     disability_pref,
@@ -205,7 +206,11 @@ export default function TutorInfoBox({
             </tr>
             <tr className="h-[55px] border-b text-sm">
               <td className="px-3 w-1/5">
-                {previous_tutee === true ? <span>Yes</span> : <span>No</span>}
+                {previous_tutee === true ? (
+                  <span>Yes: {continuing_tutee_name}</span>
+                ) : (
+                  <span>No</span>
+                )}
               </td>
               <td className="w-1/5">{grade_level_pref.join(", ")}</td>
               <td className="w-1/5">{num_tutees}</td>

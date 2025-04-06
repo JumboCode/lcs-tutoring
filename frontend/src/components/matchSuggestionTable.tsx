@@ -84,7 +84,9 @@ export default function MatchSuggestionTable() {
     <div>
       <div className="w-full flex justify-center flex-col">
         <h1 className="text-3xl font-bold">Match Suggestions</h1>
-        <h2 className="text-lg py-3 text-gray-500">Start pairing tutors and tutees</h2>
+        <h2 className="text-lg py-3 text-gray-500">
+          Start pairing tutors and tutees
+        </h2>
         <hr className="py-3"></hr>
 
         {/* When awaiting the fetch */}

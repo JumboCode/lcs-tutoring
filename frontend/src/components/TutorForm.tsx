@@ -81,7 +81,7 @@ const tutoring_mode_options = [
   { value: "Online", label: "Virtual only" },
   { value: "In-person", label: "In-person only" },
   { value: "Hybrid", label: "Hybrid" },
-  { value: "Anything", label: "Either is fine" },
+  { value: "Anything", label: "Anything is fine" },
 ];
 
 export default function TutorForm() {
@@ -287,15 +287,22 @@ export default function TutorForm() {
         },
         body: JSON.stringify(formData),
       })
-        .then((response) => response.json())
-        .then((data) => console.log(data))
-        .catch((error) => console.error(error));
-      console.log("Form submitted successfully:", formData);
-
-      setShowTextBox(false);
-      alert("Form submitted successfully!");
-
-      navigate("/success-page");
+        .then(async (response) => {
+          if (!response.ok) {
+            const errorText = await response.text();
+            alert("Error: " + errorText);
+            throw new Error(errorText);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Success:", data);
+          alert("Form submitted successfully!");
+          navigate("/success-page");
+        })
+        .catch((error) => {
+          console.error("Submission error:", error);
+        });
     } else {
       alert("Oops! Some fields have errors. Please check and try again.");
     }

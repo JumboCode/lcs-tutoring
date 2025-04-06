@@ -28,7 +28,6 @@ export default function EListForm() {
   });
 
   //for past tutee Desc.
-  const [showTextBox, setShowTextBox] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +93,6 @@ export default function EListForm() {
         alert("Unable to submit form. Please try again later.");
       }
 
-      setShowTextBox(false);
       alert("Form submitted successfully!");
 
       // navigate("/success-page");

@@ -23,7 +23,6 @@ import FilterModal from "./components/filters";
 import filtersIcon from "./assets/images/filter/filter.svg";
 import NavigationBar from "./components/navigationBar";
 import TuteeTable from "./components/TuteeTable";
-import TutorTable from "./components/TutorTable";
 import ApprovedMatches from "./components/ApprovedMatches";
 import AdminLogin from "./components/adminSignIn";
 import SuccessPage from "./components/SuccessPage";

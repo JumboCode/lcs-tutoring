@@ -75,8 +75,8 @@ export const getTutors = async (req: Request, res: Response) => {
 
     // getting all ids of the filtered tutors
     const tutorIds = filteredTutors
-      .map((tutor) => tutor.id)
-      .filter((id) => id !== undefined);
+      .map((tutor: any) => tutor.id)
+      .filter((id: any) => id !== undefined);
 
     const matchedTutors = await db
       .selectDistinct()
@@ -97,9 +97,9 @@ export const getTutors = async (req: Request, res: Response) => {
       .where(inArray(tutorTable.id, tutorIds));
 
     res.send({
-      matchedTutors: matchedTutors.map((row) => row.tutor),
-      unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
-      historyTutors: historyTutors.map((row) => row.tutor),
+      matchedTutors: matchedTutors.map((row: any) => row.tutor),
+      unmatchedTutors: unmatchedTutors.map((row: any) => row.tutor),
+      historyTutors: historyTutors.map((row: any) => row.tutor),
     });
   } catch (error) {
     console.error(error);
@@ -120,8 +120,8 @@ export const getUnmatchedTutors = async (req: Request, res: Response) => {
 
     // getting all ids of the filtered tutors
     const tutorIds = filteredTutors
-      .map((tutor) => tutor.id)
-      .filter((id) => id !== undefined);
+      .map((tutor: any) => tutor.id)
+      .filter((id: any) => id !== undefined);
 
     // getting the unmatched tutors with the filtered ids
     const unmatchedTutors = await db
@@ -131,7 +131,7 @@ export const getUnmatchedTutors = async (req: Request, res: Response) => {
       .where(inArray(tutorTable.id, tutorIds));
 
     res.send({
-      unmatchedTutors: unmatchedTutors.map((row) => row.tutor),
+      unmatchedTutors: unmatchedTutors.map((row: any) => row.tutor),
     });
   } catch (error) {
     console.error(error);
