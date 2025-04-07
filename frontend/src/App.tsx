@@ -39,17 +39,17 @@ function App() {
   const [adminModalShow, setAdminModalShow] = useState(false);
 
   return (
-    <ClerkProvider
-      appearance={{
-        layout: {
-          logoImageUrl: elephantLogo,
-        },
-      }}
-      publishableKey={PUBLISHABLE_KEY}
-      afterSignOutUrl="/admin"
-      signInUrl="/admin"
-    >
-      <Router>
+    <Router>
+      <ClerkProvider
+        appearance={{
+          layout: {
+            logoImageUrl: elephantLogo,
+          },
+        }}
+        publishableKey={PUBLISHABLE_KEY}
+        afterSignOutUrl="/admin"
+        signInUrl="/admin"
+      >
         <Routes>
           {/* Client View */}
           <Route
@@ -213,8 +213,8 @@ function App() {
             }
           ></Route>
         </Routes>
-      </Router>
-    </ClerkProvider>
+      </ClerkProvider>
+    </Router>
   );
 }
 

@@ -18,7 +18,7 @@ import TuteeTable from "./TuteeTable";
 import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
 import MatchSuggestionTable from "./matchSuggestionTable";
-
+import ManageAdmin from "./ManageAdmin";
 import { SignOutButton, UserButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
 
@@ -46,6 +46,7 @@ export default function NavigationBar() {
     { name: "Tutor Database", icon_gray: TutorDBGray, icon_blue: TutorDBBlue },
     { name: "Tutee Database", icon_gray: TuteeDBGray, icon_blue: TuteeDBBlue },
     { name: "Mailing List", icon_gray: MailGray, icon_blue: MailBlue },
+    { name: "Manage Admin", icon_gray: MailGray, icon_blue: MailBlue },
   ];
 
   // Define the nav bar width based on collapsed state
@@ -179,6 +180,7 @@ export default function NavigationBar() {
           {currentPage === "Tutor Database" && <TutorTable />}
           {currentPage === "Tutee Database" && <TuteeTable />}
           {currentPage === "Approved Matches" && <ApprovedMatches />}
+          {currentPage === "Manage Admin" && <ManageAdmin />}
           {currentPage === "Mailing List" && (
             <span>No functionality yet :(((((</span>
           )}
