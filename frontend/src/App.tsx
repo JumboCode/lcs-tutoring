@@ -36,6 +36,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 function App() {
   const [modalShow, setModalShow] = useState(false);
+  const [adminModalShow, setAdminModalShow] = useState(false);
 
   return (
     <ClerkProvider
@@ -196,7 +197,18 @@ function App() {
             path="/adminsignup"
             element={
               <div>
-                <AdminSignUp />
+                <button
+                  className={
+                    "flex flex-row items-center px-4 py-2 bg-[#FFFFFF] border-[#E7E7E7] rounded-lg border-1 text-[#888888]"
+                  }
+                  onClick={() => setAdminModalShow(true)}
+                >
+                  Add New Admin
+                </button>
+                <AdminSignUp
+                  show={adminModalShow}
+                  onHide={() => setAdminModalShow(false)}
+                />
               </div>
             }
           ></Route>

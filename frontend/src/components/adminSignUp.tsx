@@ -1,7 +1,14 @@
 import React, { useState } from "react";
+import { Modal } from "react-bootstrap";
 import config from "../config";
 
-export default function AdminSignUp() {
+interface AdminModalProps {
+  onHide: () => void;
+  show: boolean;
+}
+
+export default function AdminSignUp(props: AdminModalProps) {
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState(""); // New state for first name
@@ -45,11 +52,17 @@ export default function AdminSignUp() {
     }
   };
 
+
   return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+      contentClassName="border-0 bg-transparent"
+    >
+    <Modal.Body>
     <div className="flex flex-col justify-center items-center h-screen gap-4">
-      <h2 className="text-2xl font-semibold text-center">
-        Sign Up for LCS Admin
-      </h2>
 
       {/* Success message */}
       {success && (
@@ -67,7 +80,10 @@ export default function AdminSignUp() {
         </div>
       )}
 
-      <div className="bg-white shadow-lg rounded-lg p-6 w-[514px] h-[550px] flex flex-col justify-center gap-4">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-[514px] h-[600px] flex flex-col justify-center gap-4">
+      <h2 className="text-2xl font-semibold text-center pt-4">
+        Sign Up for LCS Admin
+      </h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="pb-3">
             <label className="block text-sm font-medium">First Name</label>
@@ -119,5 +135,7 @@ export default function AdminSignUp() {
         </form>
       </div>
     </div>
+    </Modal.Body>
+    </Modal>
   );
 }
