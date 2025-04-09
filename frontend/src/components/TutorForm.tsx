@@ -30,7 +30,7 @@ type FormErrors = {
 };
 
 const subject_options = [
-  { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
+  { value: "Early Reading", label: "Early Reading (Below grade 3)" },
   { value: "Reading", label: "Reading (Grades 3 and up)" },
   { value: "English", label: "English/Language Arts" },
   { value: "Math", label: "Math (1-8)" },

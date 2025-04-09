@@ -3,8 +3,6 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
-import InputMask from "react-input-mask";
-import { Phone } from "lucide-react";
 
 //lets TypeScript know what kind of data
 interface FormData {
@@ -30,7 +28,7 @@ type FormErrors = {
 };
 
 const subject_options = [
-  { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
+  { value: "Early Reading", label: "Early Reading (Below grade 3)" },
   { value: "Reading", label: "Reading (Grades 3 and up)" },
   { value: "English", label: "English/Language Arts" },
   { value: "Math", label: "Math (1-8)" },

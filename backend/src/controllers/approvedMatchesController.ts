@@ -164,6 +164,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
           special_needs: tuteeTable.special_needs,
+          parent_first_name: tuteeTable.parent_first_name,
+          parent_last_name: tuteeTable.parent_last_name,
         },
       })
       .from(approvedMatchesTable)
@@ -196,6 +198,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
           special_needs: tuteeTable.special_needs,
+          parent_first_name: tuteeTable.parent_first_name,
+          parent_last_name: tuteeTable.parent_last_name,
         },
       })
       .from(approvedMatchesTable)
@@ -376,18 +380,16 @@ async function moveTuteeToUnmatched(tutee_id: number) {
   await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
 
-
-
 export const emailPair = async (req: Request, res: Response) => {
   try {
-    // Aray and Sheza TODO: get the MatchId from the request and set the
-    //  `sent_email` field for that match to true.
-    const tuteeParentEmail = req.body.tuteeParentEmail;
+    const tutorName = req.body.tutorName;
     const tutorEmail = req.body.tutorEmail;
-    // TODO: remove all the console.log statements
-    console.log("Inside email pair");
-    console.log(tuteeParentEmail);
-    console.log(tutorEmail);
+    
+    const tuteeName = req.body.tuteeName;
+    const tuteeParentName = req.body.tuteeParentName;
+    const tuteeParentEmail = req.body.tuteeParentEmail;
+
+    const matchId = req.body.matchId;
 
     const request = mailjetClient.post('send', { version: 'v3.1' }).request({
       Messages: [
@@ -399,13 +401,29 @@ export const emailPair = async (req: Request, res: Response) => {
           To: [
             {
               Email: tuteeParentEmail,
-              Name: 'Tutee Parent',
+              Name: tuteeParentName,
             },
           ],
-          Subject: 'My first Mailjet Email!',
-          TextPart: 'Greetings from Mailjet!',
-          HTMLPart:
-            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+          Subject: 'LCSTutoring: New Tutor Match Confirmation',
+          TextPart: `Dear ${tuteeParentName},\n\nWe are pleased to inform you that ${tuteeName} has been matched with a tutor. Your child's tutor is ${tutorName}. Please expect communication from the tutor soon to schedule your first session.\n\nTutor Details:\nName: ${tutorName}\nEmail: ${tutorEmail}\n\nIf you have any questions or concerns, please don't hesitate to contact us.\n\nSincerely,\nThe LCSTutoring Team`,
+          HTMLPart: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #4a4a4a;">New Tutor Match Confirmation</h2>
+              </div>
+              <p>Dear ${tuteeParentName},</p>
+              <p>We are pleased to inform you that <strong>${tuteeName}</strong> has been matched with a tutor. Please expect communication from the tutor soon to schedule your first session.</p>
+              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #2c87c5;">Tutor Details</h3>
+                <p><strong>Name:</strong> ${tutorName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${tutorEmail}">${tutorEmail}</a></p>
+              </div>
+              <p>We recommend reaching out to the tutor if you don't hear from them within the next 48 hours.</p>
+              <p>If you have any questions or concerns, please don't hesitate to contact us.</p>
+              <p>Sincerely,</p>
+              <p><strong>The LCSTutoring Team</strong></p>
+            </div>
+          `,
         },
         {
           From: {
@@ -415,27 +433,54 @@ export const emailPair = async (req: Request, res: Response) => {
           To: [
             {
               Email: tutorEmail,
-              Name: 'Tutor',
+              Name: tutorName,
             },
           ],
-          Subject: 'My first Mailjet Email!',
-          TextPart: 'Greetings from Mailjet!',
-          HTMLPart:
-            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+          Subject: 'LCSTutoring: New Student Match Confirmation',
+          TextPart: `Dear ${tutorName},\n\nWe are pleased to inform you that you have been matched with a new student, ${tuteeName}. Please reach out to the student's parent to schedule your first tutoring session.\n\nStudent Details:\nName: ${tuteeName}\n\nParent Details:\nName: ${tuteeParentName}\nEmail: ${tuteeParentEmail}\n\nPlease contact the parent within the next 48 hours to introduce yourself and arrange your first session.\n\nIf you have any questions or need assistance, please don't hesitate to contact us.\n\nSincerely,\nThe LCSTutoring Team`,
+          HTMLPart: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="color: #4a4a4a;">New Student Match Confirmation</h2>
+              </div>
+              <p>Dear ${tutorName},</p>
+              <p>We are pleased to inform you that you have been matched with a new student, <strong>${tuteeName}</strong>. Please reach out to the student's parent to schedule your first tutoring session.</p>
+              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <h3 style="margin-top: 0; color: #2c87c5;">Student Details</h3>
+                <p><strong>Name:</strong> ${tuteeName}</p>
+                
+                <h3 style="color: #2c87c5;">Parent Details</h3>
+                <p><strong>Name:</strong> ${tuteeParentName}</p>
+                <p><strong>Email:</strong> <a href="mailto:${tuteeParentEmail}">${tuteeParentEmail}</a></p>
+              </div>
+              <p>Please contact the parent within the next 48 hours to introduce yourself and arrange your first session.</p>
+              <p>Remember to:</p>
+              <ul>
+                <li>Introduce yourself professionally</li>
+                <li>Discuss scheduling options for regular sessions</li>
+                <li>Ask about the student's specific learning needs</li>
+                <li>Share your tutoring approach</li>
+              </ul>
+              <p>If you have any questions or need assistance, please don't hesitate to contact us.</p>
+              <p>Sincerely,</p>
+              <p><strong>The LCSTutoring Team</strong></p>
+            </div>
+          `,
         },
       ],
     })
 
-    console.log("Got request");
+    const result = await request;
+    
+    await db.update(approvedMatchesTable)
+      .set({ sent_email: true })
+      .where(eq(approvedMatchesTable.id, matchId));
 
-    request
-      .then((result: any) => {
-        console.log(result.body)
-      })
-      .catch((err: any) => {
-        console.log("Status code: ", err.statusCode)
-      })
-  } catch (err) {
-    console.error(err)
-  };
+    console.log("Email sent:", result.body);
+    res.status(200).json({ message: "Emails sent successfully" });
+
+  } catch (err: any) {
+    console.error("Email sending error:", err);
+    res.status(500).json({ message: "Failed to send emails", error: err.message || err });
+  }
 };

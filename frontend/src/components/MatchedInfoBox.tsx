@@ -1,6 +1,6 @@
 import config from "../config.ts";
 ("use client");
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
@@ -52,6 +52,8 @@ export default function MatchedInfoBoxbox_props({
   const {
     tutee_first_name,
     tutee_last_name,
+    parent_first_name,
+    parent_last_name,
     parent_email,
     tutoring_mode,
     special_needs,
@@ -62,8 +64,6 @@ export default function MatchedInfoBoxbox_props({
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [emailSent, setEmailSent] = useState(sent_email);
-  console.log("email sent: ", emailSent);
-  console.log("SENT EMAIL: ", sent_email);
   const [showStudentPopup, setShowStudentPopup] = useState(false);
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -114,28 +114,23 @@ export default function MatchedInfoBoxbox_props({
         },
         body: JSON.stringify({
           matchId: matchId,
+          tutorName: `${first_name} ${last_name}`,
           tutorEmail: tutor_props.email,
+          tuteeName: `${tutee_first_name} ${tutee_last_name}`,
+          tuteeParentName: `${parent_first_name} ${parent_last_name}`,
           tuteeParentEmail: tutee_props.parent_email,
-          //email_sent: true,
         }),
       });
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      console.log("setting to true");
       setEmailSent(true);
-      localStorage.setItem(`emailSent-${matchId}`, "true");
     } catch (error) {
       console.error("Failed to send email!");
     }
   };
-
-  useEffect(() => {
-    const sentStatus = localStorage.getItem(`emailSent-${matchId}`);
-    if (sentStatus === "true") {
-      setEmailSent(true);
-    }
-  }, [matchId]);
 
   const handleToggleFlag = async () => {
     try {
