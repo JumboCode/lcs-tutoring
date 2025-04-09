@@ -135,18 +135,26 @@ export default function TutorForm() {
   //for past tutee Desc.
   const [showTextBox, setShowTextBox] = useState(false);
 
+  const formatPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, "").substring(0, 10);
+
+    const parts = [];
+    if (digits.length > 0) parts.push("(" + digits.substring(0, 3));
+    if (digits.length >= 4) parts.push(") " + digits.substring(3, 6));
+    if (digits.length >= 7) parts.push("-" + digits.substring(6, 10));
+
+    return parts.join("");
+  };
+
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: name === "comfortableSpecialNeeds" ? Boolean(value) : value,
     }));
-
     if (name === "pairedWithTutee") {
       setShowTextBox(value === "yes");
     }
-
     setErrors((prev) => ({
       ...prev,
       [name]: "", // clear error when user selects an option
@@ -155,9 +163,15 @@ export default function TutorForm() {
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
+    let newValue = value;
+
+    if (name === "phone") {
+      newValue = formatPhoneNumber(value); // apply formatting only to phone
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
 
     setErrors((prev) => ({
@@ -237,11 +251,6 @@ export default function TutorForm() {
         }
       }
 
-      if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
-        if (formData["phone"].length != 0) {
-          newErrors["phone"] = "Invalid Phone Number";
-        }
-      }
       console.log("DATE: ", new Date().getFullYear());
       if (
         formData["yearGrad"].length != 4 ||
@@ -260,12 +269,27 @@ export default function TutorForm() {
         }
       }
 
+      if (
+        formData["signature"] !==
+        formData["firstName"] + " " + formData["lastName"]
+      ) {
+        newErrors[
+          "signature"
+        ] = `Signature is not of the form "${formData["firstName"]} ${formData["lastName"]}".`;
+      }
+
       if (!formData["email"].endsWith("@tufts.edu")) {
         if (formData["email"].length != 0) {
           newErrors["email"] = "Invalid Tufts email";
         }
       }
     });
+
+    let digits = formData.phone.replace(/\D/g, "");
+
+    if (digits.length != 10) {
+      newErrors.phone = "Invalid Phone Number";
+    }
 
     //check that Yes has been selected for waiver agreement
     if (formData.agreement !== "Yes") {
@@ -280,6 +304,7 @@ export default function TutorForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
+      formData.phone = digits;
       fetch(`${config.backendUrl}/tutorsubmission`, {
         method: "POST",
         headers: {
@@ -339,7 +364,11 @@ export default function TutorForm() {
                     name={field.id}
                     onChange={handleChange}
                     value={formData[field.id as keyof FormData] as string}
-                    placeholder="Enter a description..."
+                    placeholder={
+                      field.id === "phone"
+                        ? "(123) 456-7890"
+                        : "Enter a description..."
+                    }
                     className={`rounded-lg border border-gray-300 p-2 ${
                       errors[field.id as keyof FormData]
                         ? "border-red-500"

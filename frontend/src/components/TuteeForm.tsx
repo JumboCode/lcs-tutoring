@@ -3,6 +3,8 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
+import InputMask from "react-input-mask";
+import { Phone } from "lucide-react";
 
 //lets TypeScript know what kind of data
 interface FormData {
@@ -125,6 +127,17 @@ export default function TuteeForm() {
   //for Special Needs Desc.
   const [showTextBox, setShowTextBox] = useState(false);
 
+  const formatPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, "").substring(0, 10);
+
+    const parts = [];
+    if (digits.length > 0) parts.push("(" + digits.substring(0, 3));
+    if (digits.length >= 4) parts.push(") " + digits.substring(3, 6));
+    if (digits.length >= 7) parts.push("-" + digits.substring(6, 10));
+
+    return parts.join("");
+  };
+
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
@@ -132,6 +145,12 @@ export default function TuteeForm() {
       [name]: value,
     }));
     if (name === "specialNeeds") {
+      if (value === "no") {
+        setFormData((prev) => ({
+          ...prev,
+          specialNeedsInfo: "",
+        }));
+      }
       setShowTextBox(value === "yes");
     }
     setErrors((prev) => ({
@@ -142,9 +161,16 @@ export default function TuteeForm() {
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
+    let newValue = value;
+
+    if (name === "phone") {
+      newValue = formatPhoneNumber(value); // apply formatting only to phone
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
 
     setErrors((prev) => ({
@@ -238,10 +264,19 @@ export default function TuteeForm() {
       }
     }
 
-    if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
-      if (formData["phone"].length != 0) {
-        newErrors["phone"] = "Invalid Phone Number";
-      }
+    let digits = formData.phone.replace(/\D/g, "");
+
+    if (digits.length != 10) {
+      newErrors.phone = "Invalid Phone Number";
+    }
+
+    if (
+      formData.signature !==
+      formData.parentFirstName + " " + formData.parentLastName
+    ) {
+      newErrors[
+        "signature"
+      ] = `Signature is not of the form "${formData.parentFirstName} ${formData.parentLastName}".`;
     }
 
     //check that Yes has been selected for waiver agreement
@@ -255,6 +290,7 @@ export default function TuteeForm() {
 
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
+      formData.phone = digits;
       fetch(`${config.backendUrl}/tuteesubmission`, {
         method: "POST",
         headers: {
@@ -426,7 +462,7 @@ export default function TuteeForm() {
               {[
                 { label: "First Name", id: "parentFirstName" },
                 { label: "Last Name", id: "parentLastName" },
-                { label: "Phone Number", id: "phone" },
+                { label: "Phone Number (US)", id: "phone" },
                 { label: "Email", id: "email" },
               ].map((field) => (
                 <div className="flex flex-col" key={field.id}>
@@ -439,7 +475,11 @@ export default function TuteeForm() {
                     name={field.id}
                     onChange={handleChange}
                     value={formData[field.id as keyof FormData]}
-                    placeholder="Enter a description..."
+                    placeholder={
+                      field.id === "phone"
+                        ? "(123) 456-7890"
+                        : "Enter a description..."
+                    }
                     className={`rounded-lg border p-2 ${
                       errors[field.id as keyof FormData]
                         ? "border-red-500"
@@ -515,7 +555,7 @@ export default function TuteeForm() {
               <div className="space-y-2">
                 <h1 className="text-base">
                   Anything else you would like to let us know? (Unlisted
-                  subject, accomodation, etc.)
+                  subject, accommodation, etc.)
                 </h1>
                 <input
                   type="text"

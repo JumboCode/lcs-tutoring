@@ -16,6 +16,7 @@ import { clerkClient } from '@clerk/express'
 import { Request, Response } from "express";
 
 const db = drizzle(process.env.DATABASE_URL!);
+process.env.CLERK_SECRET_KEY!;
 
 export const tuteeSubmission = async (req: Request, res: Response) => {
   try {
@@ -59,7 +60,7 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Tutee form submitted successfully" });
   } catch (error: any) {
     console.error("Error submitting tutee form:", error);
-  
+
     return res.status(500).send(
       error?.message || "Internal server error while submitting the tutee form"
     );
@@ -114,22 +115,22 @@ export const tutorSubmission = async (req: Request, res: Response) => {
       tutor_id: id,
     });
     return res.status(200).json({ message: "Tutor form submitted successfully" });
-   } catch (error: any) {
-      console.error("Error submitting tutor form:", error);
-    
-      // dupe id
-      if (error.code === "23505") {
-        if (error.constraint === "tutor_email_unique") {
-          return res.status(409).send("A tutor with this Tufts Email already exists.");
-        } else {
-          return res.status(409).send("A tutor with this Tufts ID already exists.");
-        }
+  } catch (error: any) {
+    console.error("Error submitting tutor form:", error);
+
+    // dupe id
+    if (error.code === "23505") {
+      if (error.constraint === "tutor_email_unique") {
+        return res.status(409).send("A tutor with this Tufts Email already exists.");
+      } else {
+        return res.status(409).send("A tutor with this Tufts ID already exists.");
       }
-    
-      return res.status(500).send(
-        error?.message || "Internal server error while submitting the tutor form"
-      );
     }
+
+    return res.status(500).send(
+      error?.message || "Internal server error while submitting the tutor form"
+    );
+  }
 };
 
 export const handleEList = async (req: Request, res: Response): Promise<any> => {
@@ -179,7 +180,7 @@ export const createAdmin = async (req: Request, res: Response): Promise<any> => 
     console.error("Error creating user:", error);
 
     if (error.status === 422) {
-      return res.status(422).json({error: error.errors[0].message});
+      return res.status(422).json({ error: error.errors[0].message });
     }
 
     res.status(500).json({ error: "Error submitting the form" });

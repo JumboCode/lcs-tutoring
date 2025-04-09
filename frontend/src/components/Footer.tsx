@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4">
           <img src={GrayLogo} alt="Your SVG" className="w-14 h-14" />
           <p className="text-[#2F3335] text-sm mt-5">
-            Tufts LCS Tutoring © 2024
+            Tufts LCS Tutoring © 2025
           </p>
         </div>
         <div className="w-1/2 flex flex-col justify-between justify-items-start space-y-4 items-end">

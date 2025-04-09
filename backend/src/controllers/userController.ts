@@ -1,5 +1,6 @@
 import { clerkClient } from "@clerk/express";
 import { Request, Response } from "express";
+
 export const fetchWhitelistedUsers = async (req: Request, res: Response) => {
   const { data: users } = await clerkClient.users.getUserList({
     limit: 100,
