@@ -7,6 +7,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import TrashCan from "../assets/images/delete.svg";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 const STYLES = {
   colors: {
@@ -55,6 +56,7 @@ export default function TutorInfoBox({
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const { handleAsyncOperation } = useRaceConditionHandler();
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
@@ -64,17 +66,30 @@ export default function TutorInfoBox({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setIsDropdownOpen(false);
-    fetch(`${config.backendUrl}/move-tutor-to-history/${id}`, {
-      method: "POST",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+
+    await handleAsyncOperation(async () => {
+      try {
+        const response = await fetch(
+          `${config.backendUrl}/move-tutor-to-history/${id}`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to move tutor to history");
+        }
+
+        const data = await response.json();
         if (onDelete) onDelete(box_props);
-      })
-      .catch((error) => console.error(error));
+        return data;
+      } catch (error) {
+        console.error("Error moving tutor to history:", error);
+        throw error;
+      }
+    });
   };
 
   return (

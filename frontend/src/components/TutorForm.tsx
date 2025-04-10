@@ -2,6 +2,7 @@ import config from "../config.ts";
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 interface FormData {
   firstName: string;
@@ -86,6 +87,7 @@ const tutoring_mode_options = [
 
 export default function TutorForm() {
   const navigate = useNavigate();
+  const { handleAsyncOperation } = useRaceConditionHandler();
 
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
@@ -213,99 +215,47 @@ export default function TutorForm() {
   };
 
   //submit function with data validation
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Validate form
     const newErrors: FormErrors = {};
-
-    // check for empty fields
     Object.keys(formData).forEach((key) => {
-      if (
-        // Check required fields, excluding optional ones or empty optional fields
-        formData[key as keyof typeof formData] === "" &&
-        key !== "languageProficiencies" &&
-        key !== "notes" &&
-        key !== "pairedTutee"
-      ) {
-        newErrors[key as keyof FormData] = "Field needs to be filled out.";
-      }
-
-      if (formData["id"].length != 7 || isNaN(Number(formData["id"]))) {
-        // && !isNaN(Number(formData["id"]))
-        if (formData["id"].length != 0) {
-          newErrors["id"] = "Invalid Tufts ID";
-        }
-      }
-
-      if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
-        if (formData["phone"].length != 0) {
-          newErrors["phone"] = "Invalid Phone Number";
-        }
-      }
-      console.log("DATE: ", new Date().getFullYear());
-      if (
-        formData["yearGrad"].length != 4 ||
-        isNaN(Number(formData["yearGrad"])) ||
-        !(
-          Number(formData["yearGrad"]) >= new Date().getFullYear() &&
-          Number(formData["yearGrad"]) <= new Date().getFullYear() + 10
-        )
-      ) {
-        if (formData["yearGrad"].length != 0) {
-          newErrors[
-            "yearGrad"
-          ] = `Invalid Year of Graduation (Between ${new Date().getFullYear()} - ${
-            new Date().getFullYear() + 10
-          })`;
-        }
-      }
-
-      if (!formData["email"].endsWith("@tufts.edu")) {
-        if (formData["email"].length != 0) {
-          newErrors["email"] = "Invalid Tufts email";
-        }
+      const value = formData[key as keyof FormData];
+      if (!value && key !== "pairedTutee" && key !== "notes") {
+        newErrors[key as keyof FormErrors] = `${key} is required`;
       }
     });
 
-    //check that Yes has been selected for waiver agreement
-    if (formData.agreement !== "Yes") {
-      newErrors.agreement = "You must agree to proceed.";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
-    setErrors(newErrors);
-
-    console.log("About to submit tutor form");
-    console.log(JSON.stringify(formData));
-    // console.log(Object.keys(newErrors));
-
-    // if no errors, process the form
-    if (Object.keys(newErrors).length === 0) {
-      fetch(`${config.backendUrl}/tutorsubmission`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            const errorText = await response.text();
-            alert("Error: " + errorText);
-            throw new Error(errorText);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Success:", data);
-          alert("Form submitted successfully!");
-          navigate("/success-page");
-        })
-        .catch((error) => {
-          console.error("Submission error:", error);
+    // Use race condition handler for submission
+    await handleAsyncOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/tutorsubmission`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         });
-    } else {
-      alert("Oops! Some fields have errors. Please check and try again.");
-    }
+
+        if (!response.ok) {
+          throw new Error("Failed to submit tutor form");
+        }
+
+        const data = await response.json();
+        navigate("/confirmation");
+        return data;
+      } catch (error) {
+        console.error("Error submitting tutor form:", error);
+        // Optionally show error to user
+        throw error;
+      }
+    });
   };
 
   return (

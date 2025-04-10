@@ -1,6 +1,5 @@
-import config from "../config.ts";
-("use client");
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import config from "../config";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
@@ -9,6 +8,7 @@ import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
 import unmatch_pair from "../assets/images/approved_matches/unmatch_pair.svg";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 const STYLES = {
   colors: {
@@ -68,74 +68,92 @@ export default function MatchedInfoBoxbox_props({
   const [showParentPopup, setShowParentPopup] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const unmatchPair = () => {
-    setIsDropdownOpen(false);
+  const { handleAsyncOperation: handleDeletePairOperation } =
+    useRaceConditionHandler();
+  const { handleAsyncOperation: handleUnmatchOperation } =
+    useRaceConditionHandler();
+  const { handleAsyncOperation: handleEmailOperation } =
+    useRaceConditionHandler();
 
-    console.log("about to fetch unmatch pair");
+  const deletePair = async () => {
+    await handleDeletePairOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/deletepair`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pairId: matchId }),
+        });
 
-    fetch(`${config.backendUrl}/unmatch-pair/${matchId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+        if (!response.ok) {
+          throw new Error("Failed to delete pair");
+        }
+
+        const data = await response.json();
         if (onUnpair) onUnpair(matchId);
-      })
-      .catch((error) => console.error(error));
+        return data;
+      } catch (error) {
+        console.error("Error deleting pair:", error);
+        throw error;
+      }
+    });
   };
 
-  const deletePair = () => {
-    setIsDropdownOpen(false);
-    fetch(`${config.backendUrl}/delete-pair/${matchId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+  const unmatchPair = async () => {
+    await handleUnmatchOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/unmatchpair`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pairId: matchId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to unmatch pair");
+        }
+
+        const data = await response.json();
         if (onUnpair) onUnpair(matchId);
-      })
-      .catch((error) => console.error(error));
+        return data;
+      } catch (error) {
+        console.error("Error unmatching pair:", error);
+        throw error;
+      }
+    });
+  };
+
+  const emailPair = async () => {
+    await handleEmailOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/emailpair`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pairId: matchId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to email pair");
+        }
+
+        const data = await response.json();
+        setEmailSent(true);
+        return data;
+      } catch (error) {
+        console.error("Error emailing pair:", error);
+        throw error;
+      }
+    });
   };
 
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
-
-  const handleSendEmail = async () => {
-    setIsDropdownOpen(false);
-    try {
-      const response = await fetch(`${config.backendUrl}/email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          matchId: matchId,
-          tutorEmail: tutor_props.email,
-          tuteeParentEmail: tutee_props.parent_email,
-          //email_sent: true,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      setEmailSent(true);
-      localStorage.setItem(`emailSent-${matchId}`, "true");
-    } catch (error) {
-      console.error("Failed to send email!");
-    }
-  };
-
-  useEffect(() => {
-    const sentStatus = localStorage.getItem(`emailSent-${matchId}`);
-    if (sentStatus === "true") {
-      setEmailSent(true);
-    }
-  }, [matchId]);
 
   const handleToggleFlag = async () => {
     try {
@@ -220,7 +238,7 @@ export default function MatchedInfoBoxbox_props({
               <div className="flex flex-grow justify-center items-center">
                 {isActive && (
                   <button
-                    onClick={handleSendEmail}
+                    onClick={emailPair}
                     disabled={emailSent}
                     className={`w-[150px] flex justify-center items-center rounded-full border-2 text-sm py-2 transition-colors duration-150 ${
                       emailSent

@@ -3,6 +3,7 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
 import validator from "validator";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 //lets TypeScript know what kind of data
 interface FormData {
@@ -83,6 +84,7 @@ const tutoring_mode_options = [
 
 export default function TuteeForm() {
   const navigate = useNavigate();
+  const { handleAsyncOperation } = useRaceConditionHandler();
 
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
@@ -198,89 +200,47 @@ export default function TuteeForm() {
   };
 
   //submit function with data validation
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Validate form
     const newErrors: FormErrors = {};
-
-    // check for empty fields
     Object.keys(formData).forEach((key) => {
-      ``;
-      if (
-        // Check required fields, excluding optional ones or empty optional fields
-        formData[key as keyof typeof formData] === "" &&
-        (key !== "specialNeedsInfo" || formData.specialNeeds === "yes") &&
-        key !== "additionalInfo"
-      ) {
-        newErrors[key as keyof FormData] = "Field needs to be filled out.";
+      const value = formData[key as keyof FormData];
+      if (!value && key !== "notes") {
+        newErrors[key as keyof FormErrors] = `${key} is required`;
       }
     });
 
-    if (formData.specialNeeds === "") {
-      newErrors.specialNeeds = "Please select";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
-    if (formData.subjects.length === 0) {
-      newErrors.subjects = "Please select at least one subject";
-    }
-
-    if (formData.grade === undefined) {
-      newErrors.grade = "Please select a grade";
-    }
-
-    if (formData.specialNeeds === "yes" && !formData.specialNeedsInfo) {
-      newErrors.specialNeedsInfo = "Please specify.";
-    }
-
-    if (!validator.isEmail(formData["email"])) {
-      if (formData["email"].length != 0) {
-        newErrors["email"] = "Invalid email";
-      }
-    }
-
-    if (formData["phone"].length != 10 || isNaN(Number(formData["phone"]))) {
-      if (formData["phone"].length != 0) {
-        newErrors["phone"] = "Invalid Phone Number";
-      }
-    }
-
-    //check that Yes has been selected for waiver agreement
-    if (formData.agreement !== "Yes") {
-      newErrors.agreement = "You must agree to proceed.";
-    }
-
-    setErrors(newErrors);
-
-    console.log(JSON.stringify(formData));
-
-    // if no errors, process the form
-    if (Object.keys(newErrors).length === 0) {
-      fetch(`${config.backendUrl}/tuteesubmission`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            const errorText = await response.text();
-            alert("Error: " + errorText);
-            throw new Error(errorText);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Success:", data);
-          alert("Form submitted successfully!");
-          navigate("/success-page");
-        })
-        .catch((error) => {
-          console.error("Submission error:", error);
+    // Use race condition handler for submission
+    await handleAsyncOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/tuteesubmission`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         });
-    } else {
-      alert("Oops! Some fields have errors. Please check and try again.");
-    }
+
+        if (!response.ok) {
+          throw new Error("Failed to submit tutee form");
+        }
+
+        const data = await response.json();
+        navigate("/confirmation");
+        return data;
+      } catch (error) {
+        console.error("Error submitting tutee form:", error);
+        // Optionally show error to user
+        throw error;
+      }
+    });
   };
 
   return (

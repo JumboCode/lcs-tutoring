@@ -22,6 +22,7 @@ import { tuteeInfo } from "../types";
 import { Modal } from "react-bootstrap";
 import { useState } from "react";
 import { Flag } from "lucide-react";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 // const BG_COLOR = "#fbfbfb";
 interface TuteeName {
@@ -41,55 +42,47 @@ const MatchSuggestionBlock = ({
   tutee1: tuteeInfo | null;
   tutee2: tuteeInfo | null;
   tutee3: tuteeInfo | null;
-  flagged: Boolean;
+  flagged: boolean;
   unmatched_names: TuteeName[];
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
   const [selectedCustomId, setselectedCustomId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [finishedSubmitting, setFinishedSubmitting] = useState(false);
+  const { handleAsyncOperation } = useRaceConditionHandler();
 
-  const handleApprove = async () => {
+  const approveMatch = async () => {
     setIsSubmitting(true);
-    try {
-      console.log("approve match");
-      console.log(tutor_info.id);
-      const tutorId = tutor_info.id;
+    await handleAsyncOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/approvematch`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            tutorId: tutor_info.id,
+            selectedTuteeId: selectedTuteeId,
+          }),
+        });
 
-      console.log(selectedTuteeId);
-      let idToSend = selectedTuteeId;
-      console.log(`start: ${idToSend}`);
-      if (selectedTuteeId == null) {
-        console.log(`here 1: ${idToSend}`);
-        if (selectedCustomId != null) {
-          idToSend = selectedCustomId;
-          console.log(`here 2: ${idToSend}`);
+        if (!response.ok) {
+          throw new Error("Failed to approve match");
         }
+
+        const data = await response.json();
+        setFinishedSubmitting(true);
+        // Handle successful match approval (e.g., update UI, show message)
+        return data;
+      } catch (error) {
+        console.error("Error approving match:", error);
+        throw error;
+      } finally {
+        setIsSubmitting(false);
       }
-      console.log(`final: ${idToSend}`);
-
-      const response = await fetch(`${config.backendUrl}/approve-match`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tutorId, selectedTuteeId: idToSend }),
-      });
-
-      console.log("Got response");
-
-      if (!response.ok) {
-        throw new Error("Failed to approve match");
-      }
-    } catch (error) {
-      console.error("Error approving match:", error);
-      alert("Failed to approve match. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-      setFinishedSubmitting(true);
-      console.log("Got here");
-    }
+    });
   };
+
   const {
     first_name,
     last_name,
@@ -215,7 +208,7 @@ const MatchSuggestionBlock = ({
                   : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
               }`}
               type="button"
-              onClick={handleApprove}
+              onClick={approveMatch}
               disabled={!selectedTuteeId || isSubmitting}
             >
               <span
@@ -270,7 +263,7 @@ const MatchSuggestionBlock = ({
                     ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2] border-0"
                     : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
                 }`}
-                onClick={handleApprove}
+                onClick={approveMatch}
                 disabled={!selectedCustomId || isSubmitting}
               >
                 Approve
