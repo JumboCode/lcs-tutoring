@@ -151,6 +151,7 @@ export const approveMatch = async (req: Request, res: Response) => {
         }),
       });
 
+      // Caitlyn Valentina TODO
       await db
         .delete(unmatchedTable)
         .where(

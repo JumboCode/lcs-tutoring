@@ -4,6 +4,8 @@ import MatchingGray from "../assets/images/nav_icons/match_suggestion_gray.svg";
 import TuteeDBGray from "../assets/images/nav_icons/tutee_db_gray.svg";
 import ApprovedMatchGray from "../assets/images/nav_icons/approved_match_gray.svg";
 import TutorDBGray from "../assets/images/nav_icons/tutor_db_gray.svg";
+import ManageAdminsGray from "../assets/images/nav_icons/manage_admins_gray.svg";
+import ManageAdminsBlue from "../assets/images/nav_icons/manage_admins_blue.svg";
 import MailBlue from "../assets/images/nav_icons/mailing_list_blue.svg";
 import MatchingBlue from "../assets/images/nav_icons/match_suggestion_blue.svg";
 import TuteeDBBlue from "../assets/images/nav_icons/tutee_db_blue.svg";
@@ -46,7 +48,11 @@ export default function NavigationBar() {
     { name: "Tutor Database", icon_gray: TutorDBGray, icon_blue: TutorDBBlue },
     { name: "Tutee Database", icon_gray: TuteeDBGray, icon_blue: TuteeDBBlue },
     { name: "Mailing List", icon_gray: MailGray, icon_blue: MailBlue },
-    { name: "Manage Admin", icon_gray: MailGray, icon_blue: MailBlue },
+    {
+      name: "Manage Admin",
+      icon_gray: ManageAdminsGray,
+      icon_blue: ManageAdminsBlue,
+    },
   ];
 
   // Define the nav bar width based on collapsed state

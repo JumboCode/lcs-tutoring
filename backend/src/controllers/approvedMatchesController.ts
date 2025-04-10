@@ -166,6 +166,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           special_needs: tuteeTable.special_needs,
           parent_first_name: tuteeTable.parent_first_name,
           parent_last_name: tuteeTable.parent_last_name,
+          parent_phone: tuteeTable.parent_phone,
         },
       })
       .from(approvedMatchesTable)
@@ -388,6 +389,20 @@ export const emailPair = async (req: Request, res: Response) => {
     const tuteeName = req.body.tuteeName;
     const tuteeParentName = req.body.tuteeParentName;
     const tuteeParentEmail = req.body.tuteeParentEmail;
+    const tuteeParentPhone = req.body.tuteeParentPhone;
+    const tuteeGrade = req.body.tuteeGrade;
+    const tuteeSubjects = req.body.tuteeSubjects;
+
+    const tuteeMessage = req.body.tuteeMessage.replaceAll("TUTEE_NAME", `${tuteeName}`).replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`);
+    const tutorMessage = req.body.tutorMessage.replaceAll("TUTOR_NAME", `${tutorName}`).replaceAll("TUTEE_NAME", `${tuteeName}`).replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`).replaceAll("TUTEE_GRADE", `${tuteeGrade == "0"
+      ? "Kindergarten"
+      : tuteeGrade == "1"
+      ? "1st"
+      : tuteeGrade == "2"
+      ? "2nd"
+      : tuteeGrade == "3"
+      ? "3rd"
+      : tuteeGrade + "th"}`).replaceAll("TUTEE_SUBJECTS", `${tuteeSubjects.join(", ")}`).replaceAll("TUTEE_PARENT_EMAIL", `${tuteeParentEmail}`).replaceAll("TUTEE_PARENT_PHONE", `${tuteeParentPhone}`);
 
     const matchId = req.body.matchId;
 
@@ -405,25 +420,17 @@ export const emailPair = async (req: Request, res: Response) => {
             },
           ],
           Subject: 'LCSTutoring: New Tutor Match Confirmation',
-          TextPart: `Dear ${tuteeParentName},\n\nWe are pleased to inform you that ${tuteeName} has been matched with a tutor. Your child's tutor is ${tutorName}. Please expect communication from the tutor soon to schedule your first session.\n\nTutor Details:\nName: ${tutorName}\nEmail: ${tutorEmail}\n\nIf you have any questions or concerns, please don't hesitate to contact us.\n\nSincerely,\nThe LCSTutoring Team`,
-          HTMLPart: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-              <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #4a4a4a;">New Tutor Match Confirmation</h2>
-              </div>
-              <p>Dear ${tuteeParentName},</p>
-              <p>We are pleased to inform you that <strong>${tuteeName}</strong> has been matched with a tutor. Please expect communication from the tutor soon to schedule your first session.</p>
-              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #2c87c5;">Tutor Details</h3>
-                <p><strong>Name:</strong> ${tutorName}</p>
-                <p><strong>Email:</strong> <a href="mailto:${tutorEmail}">${tutorEmail}</a></p>
-              </div>
-              <p>We recommend reaching out to the tutor if you don't hear from them within the next 48 hours.</p>
-              <p>If you have any questions or concerns, please don't hesitate to contact us.</p>
-              <p>Sincerely,</p>
-              <p><strong>The LCSTutoring Team</strong></p>
-            </div>
-          `,
+          TextPart: `Dear ${tuteeParentName},
+    
+    We are pleased to inform you that ${tuteeName} has been matched with a tutor. Your child's tutor will reach out to you directly within the next 48 hours to schedule your first session.
+    
+    If you do not hear from the tutor within 48 hours, please let us know and we will follow up.
+    
+    If you have any questions or concerns, please don't hesitate to contact us.
+    
+    Sincerely,
+    The LCSTutoring Team`,
+          HTMLPart: tuteeMessage,
         },
         {
           From: {
@@ -437,35 +444,51 @@ export const emailPair = async (req: Request, res: Response) => {
             },
           ],
           Subject: 'LCSTutoring: New Student Match Confirmation',
-          TextPart: `Dear ${tutorName},\n\nWe are pleased to inform you that you have been matched with a new student, ${tuteeName}. Please reach out to the student's parent to schedule your first tutoring session.\n\nStudent Details:\nName: ${tuteeName}\n\nParent Details:\nName: ${tuteeParentName}\nEmail: ${tuteeParentEmail}\n\nPlease contact the parent within the next 48 hours to introduce yourself and arrange your first session.\n\nIf you have any questions or need assistance, please don't hesitate to contact us.\n\nSincerely,\nThe LCSTutoring Team`,
-          HTMLPart: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-              <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: #4a4a4a;">New Student Match Confirmation</h2>
-              </div>
-              <p>Dear ${tutorName},</p>
-              <p>We are pleased to inform you that you have been matched with a new student, <strong>${tuteeName}</strong>. Please reach out to the student's parent to schedule your first tutoring session.</p>
-              <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
-                <h3 style="margin-top: 0; color: #2c87c5;">Student Details</h3>
-                <p><strong>Name:</strong> ${tuteeName}</p>
-                
-                <h3 style="color: #2c87c5;">Parent Details</h3>
-                <p><strong>Name:</strong> ${tuteeParentName}</p>
-                <p><strong>Email:</strong> <a href="mailto:${tuteeParentEmail}">${tuteeParentEmail}</a></p>
-              </div>
-              <p>Please contact the parent within the next 48 hours to introduce yourself and arrange your first session.</p>
-              <p>Remember to:</p>
-              <ul>
-                <li>Introduce yourself professionally</li>
-                <li>Discuss scheduling options for regular sessions</li>
-                <li>Ask about the student's specific learning needs</li>
-                <li>Share your tutoring approach</li>
-              </ul>
-              <p>If you have any questions or need assistance, please don't hesitate to contact us.</p>
-              <p>Sincerely,</p>
-              <p><strong>The LCSTutoring Team</strong></p>
-            </div>
-          `,
+          TextPart: `Dear ${tutorName},
+    
+    We are pleased to inform you that you have been matched with a new student, ${tuteeName}. Please reach out to the student's parent to schedule your first tutoring session.
+    
+    Student Details:
+    Name: ${tuteeName}
+    Grade: ${tuteeGrade == "0"
+      ? "Kindergarten"
+      : tuteeGrade == "1"
+      ? "1st"
+      : tuteeGrade == "2"
+      ? "2nd"
+      : tuteeGrade == "3"
+      ? "3rd"
+      : tuteeGrade + "th"}
+    Subjects: ${tuteeSubjects.join(", ")}
+    
+    Parent Details:
+    Name: ${tuteeParentName}
+    Email: ${tuteeParentEmail}
+    Phone: ${tuteeParentPhone}
+    
+    IMPORTANT NEXT STEPS:
+    1. Contact the parent within the next 48 hours to introduce yourself and arrange your first session.
+    2. After scheduling your session, please email us with:
+       - The scheduled date and time of your first session
+       - The modality (virtual or in-person)
+    
+    TRACKING YOUR SERVICE HOURS:
+    Remember to log all your tutoring hours in Tufts Civic Impact. This is important for:
+    - Keeping track of your community service
+    - Providing verification for your service commitments
+    - Helping us maintain program statistics
+    
+    To log hours:
+    1. Log in to your Tufts Civic Impact account
+    2. Navigate to the "Log Hours" section
+    3. Select "LCSTutoring" as your project
+    4. Enter the date, duration, and a brief description of your session
+    
+    If you have any questions or need assistance, please don't hesitate to contact us.
+    
+    Sincerely,
+    The LCSTutoring Team`,
+          HTMLPart: tutorMessage,
         },
       ],
     })

@@ -22,7 +22,7 @@ import Footer from "./components/Footer";
 import FilterModal from "./components/filters";
 import filtersIcon from "./assets/images/filter/filter.svg";
 import NavigationBar from "./components/navigationBar";
-import TuteeTable from "./components/TuteeTable";
+import TestText from "./components/testtext";
 import ApprovedMatches from "./components/ApprovedMatches";
 import AdminLogin from "./components/adminSignIn";
 import SuccessPage from "./components/SuccessPage";
@@ -164,10 +164,10 @@ function App() {
           ></Route>
 
           <Route
-            path="/tuteetable"
+            path="/testtext"
             element={
               <div>
-                <TuteeTable />
+                <TestText />
               </div>
             }
           ></Route>
