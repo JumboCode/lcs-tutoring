@@ -38,7 +38,7 @@ export default function MatchSuggestionTable() {
   useEffect(() => {
     console.log("im in approved match suggestions useeffect");
     const fetchSuggestions = async () => {
-      try {
+      try { 
         const response = await fetch(`${config.backendUrl}/match-suggestions`);
         if (!response.ok) {
           throw new Error("Failed to fetch match suggestions");

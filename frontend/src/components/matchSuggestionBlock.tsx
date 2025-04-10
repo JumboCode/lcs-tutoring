@@ -55,7 +55,7 @@ const MatchSuggestionBlock = ({
     setIsSubmitting(true);
     await handleAsyncOperation(async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/approvematch`, {
+        const response = await fetch(`${config.backendUrl}/approve-match`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

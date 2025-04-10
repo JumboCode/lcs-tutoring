@@ -78,7 +78,7 @@ export default function MatchedInfoBoxbox_props({
   const deletePair = async () => {
     await handleDeletePairOperation(async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/deletepair`, {
+        const response = await fetch(`${config.backendUrl}/delete-pair`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export default function MatchedInfoBoxbox_props({
   const unmatchPair = async () => {
     await handleUnmatchOperation(async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/unmatchpair`, {
+        const response = await fetch(`${config.backendUrl}/unmatch-pair`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -128,7 +128,7 @@ export default function MatchedInfoBoxbox_props({
   const emailPair = async () => {
     await handleEmailOperation(async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/emailpair`, {
+        const response = await fetch(`${config.backendUrl}/email`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
