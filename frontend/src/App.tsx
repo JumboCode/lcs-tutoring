@@ -22,7 +22,6 @@ import Footer from "./components/Footer";
 import FilterModal from "./components/filters";
 import filtersIcon from "./assets/images/filter/filter.svg";
 import NavigationBar from "./components/navigationBar";
-import TestText from "./components/testtext";
 import ApprovedMatches from "./components/ApprovedMatches";
 import AdminLogin from "./components/adminSignIn";
 import SuccessPage from "./components/SuccessPage";
@@ -159,15 +158,6 @@ function App() {
                     setModalShow(false);
                   }}
                 />
-              </div>
-            }
-          ></Route>
-
-          <Route
-            path="/testtext"
-            element={
-              <div>
-                <TestText />
               </div>
             }
           ></Route>
