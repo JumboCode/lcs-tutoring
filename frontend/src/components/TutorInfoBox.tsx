@@ -79,6 +79,21 @@ export default function TutorInfoBox({
       .catch((error) => console.error(error));
   };
 
+  const handlePermDelete = () => {
+    console.log("permdelete");
+    setIsDropdownOpen(false);
+    fetch(`${config.backendUrl}/perm-delete-tutor/${id}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
+      .catch((error) => console.error(error));
+  };
+
+
   return (
     <div
       className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
@@ -164,9 +179,15 @@ export default function TutorInfoBox({
                       ></div>
                     </button>
 
-                    {isDropdownOpen && (
+                    {(isDropdownOpen && !isHistory) && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit}>Delete Tutor</button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+                    {(isDropdownOpen && isHistory) && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handlePermDelete}>Permanently Delete</button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}

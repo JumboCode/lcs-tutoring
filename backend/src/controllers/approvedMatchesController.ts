@@ -507,3 +507,15 @@ export const emailPair = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to send emails", error: err.message || err });
   }
 };
+
+
+export const permDeleteMatch = async (req: Request, res: Response) => {
+  console.log("in backend for perm delete match")
+  try {
+    const match_id = req.params.match_id;
+    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, match_id));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error permanently deleting tutor");
+  }
+}
