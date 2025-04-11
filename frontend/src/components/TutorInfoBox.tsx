@@ -23,12 +23,14 @@ const STYLES = {
 type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   isUnmatched: boolean;
+  isHistory: boolean; 
   onDelete?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
   box_props,
   isUnmatched,
+  isHistory,
   onDelete,
 }: TutorInfoBoxProps) {
   const {
@@ -146,7 +148,7 @@ export default function TutorInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {isUnmatched && (
+                {(isUnmatched || isHistory) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}

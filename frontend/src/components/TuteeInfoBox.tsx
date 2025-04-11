@@ -23,12 +23,14 @@ const STYLES = {
 type TuteeInfoBoxProps = {
   box_props: tuteeBoxProps;
   isUnmatched: boolean;
+  isHistory: boolean;
   onDelete?: (tutee: tuteeBoxProps) => void;
 };
 
 export default function TuteeInfoBox({
   box_props,
   isUnmatched,
+  isHistory,
   onDelete,
 }: TuteeInfoBoxProps) {
   const {
@@ -154,7 +156,7 @@ export default function TuteeInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {isUnmatched && (
+                {(isUnmatched || isHistory) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}
