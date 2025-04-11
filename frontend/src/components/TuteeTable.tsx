@@ -239,6 +239,7 @@ export default function TuteeTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={true}
+                  isHistory={false}
                   onDelete={(deletedTutee) => {
                     // Remove the deleted tutee from unmatched tutees
                     setUnmatchedTutees((prev) =>
@@ -258,6 +259,7 @@ export default function TuteeTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={false}
+                  isHistory={false}
                 />
               ))}
             </div>
@@ -269,6 +271,7 @@ export default function TuteeTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={false}
+                  isHistory={true}
                 />
               ))}
             </div>
