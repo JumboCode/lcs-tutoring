@@ -111,9 +111,11 @@ export const tutorSubmission = async (req: Request, res: Response) => {
       notes: notes,
       language_proficiencies: languageProficiencies,
     });
-    await db.insert(unmatchedTable).values({
-      tutor_id: id,
-    });
+    for (let i = 0; i < numTutees; i++) {
+        await db.insert(unmatchedTable).values({
+                tutor_id: id,
+              });
+    }
     return res.status(200).json({ message: "Tutor form submitted successfully" });
   } catch (error: any) {
     console.error("Error submitting tutor form:", error);
