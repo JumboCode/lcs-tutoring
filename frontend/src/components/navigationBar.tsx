@@ -21,6 +21,7 @@ import TutorTable from "./TutorTable";
 import ApprovedMatches from "./ApprovedMatches";
 import MatchSuggestionTable from "./matchSuggestionTable";
 import ManageAdmin from "./ManageAdmin";
+import MailingList from "./MailingList"
 import { SignOutButton, UserButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
 
@@ -187,9 +188,7 @@ export default function NavigationBar() {
           {currentPage === "Tutee Database" && <TuteeTable />}
           {currentPage === "Approved Matches" && <ApprovedMatches />}
           {currentPage === "Manage Admin" && <ManageAdmin />}
-          {currentPage === "Mailing List" && (
-            <span>No functionality yet :(((((</span>
-          )}
+          {currentPage === "Mailing List" && <MailingList />}
           {/* TODO: other pages when finished */}
         </div>
       </div>

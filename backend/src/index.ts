@@ -7,6 +7,7 @@ import approved_matches_router from "./routes/approvedMatches";
 import match_suggestions_router from "./routes/matchSuggestions";
 import form_router from "./routes/form";
 import user_router from "./routes/users";
+import elist_router from "./routes/mailingList"
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
@@ -16,7 +17,8 @@ app.use(
   approved_matches_router,
   match_suggestions_router,
   form_router,
-  user_router
+  user_router,
+  elist_router,
 );
 
 app.get("/", (req: Request, res: Response) => {
