@@ -266,3 +266,15 @@ async function moveTutorToMatched(tutor_id: string) {
     }
   }
   
+
+export const permDeleteTutor = async (req: Request, res: Response) => {
+    console.log("in backend for perm delete")
+    try {
+      const tutor_id = req.params.id;
+      await db.delete(tutorTable).where(eq(tutorTable.id, tutor_id));
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error permanently deleting tutor");
+    }
+}
+  

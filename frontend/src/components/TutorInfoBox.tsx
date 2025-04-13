@@ -23,12 +23,14 @@ const STYLES = {
 type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   isUnmatched: boolean;
+  isHistory: boolean; 
   onDelete?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
   box_props,
   isUnmatched,
+  isHistory,
   onDelete,
 }: TutorInfoBoxProps) {
   const {
@@ -68,6 +70,20 @@ export default function TutorInfoBox({
   const handleSubmit = () => {
     setIsDropdownOpen(false);
     fetch(`${config.backendUrl}/move-tutor-to-history/${id}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handlePermDelete = () => {
+    console.log("permdelete");
+    setIsDropdownOpen(false);
+    fetch(`${config.backendUrl}/perm-delete-tutor/${id}`, {
       method: "POST",
     })
       .then((response) => response.json())
@@ -163,7 +179,7 @@ export default function TutorInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {isUnmatched && (
+                {(isUnmatched || isHistory) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}
@@ -179,9 +195,15 @@ export default function TutorInfoBox({
                       ></div>
                     </button>
 
-                    {isDropdownOpen && (
+                    {(isDropdownOpen && !isHistory) && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit}>Delete Tutor</button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+                    {(isDropdownOpen && isHistory) && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handlePermDelete}>Permanently Delete</button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}
