@@ -94,7 +94,8 @@ export default function TuteeInfoBox({
 
   return (
     <div
-    ref={wrapperRef} className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
+      ref={wrapperRef}
+      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
     >
       <table className="table-fixed w-full">
         <thead>

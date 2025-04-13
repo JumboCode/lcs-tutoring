@@ -12,8 +12,6 @@ interface FormData {
   yearGrad: string;
   phone: string;
   email: string;
-  pairedWithTutee: string;
-  pairedTutee: string;
   numTutees: string;
   gradeLevels: number[];
   comfortableSpecialNeeds: boolean | null;
@@ -97,8 +95,6 @@ export default function TutorForm() {
     yearGrad: "",
     phone: "",
     email: "",
-    pairedWithTutee: "",
-    pairedTutee: "",
     numTutees: "",
     gradeLevels: [],
     comfortableSpecialNeeds: null,
@@ -120,7 +116,6 @@ export default function TutorForm() {
     yearGrad: "",
     phone: "",
     email: "",
-    pairedWithTutee: "",
     numTutees: "",
     gradeLevels: "",
     comfortableSpecialNeeds: "",
@@ -131,9 +126,6 @@ export default function TutorForm() {
     agreement: "",
     signature: "",
   });
-
-  //for past tutee Desc.
-  const [showTextBox, setShowTextBox] = useState(false);
 
   const formatPhoneNumber = (value: string): string => {
     const digits = value.replace(/\D/g, "").substring(0, 10);
@@ -152,9 +144,6 @@ export default function TutorForm() {
       ...prev,
       [name]: name === "comfortableSpecialNeeds" ? Boolean(value) : value,
     }));
-    if (name === "pairedWithTutee") {
-      setShowTextBox(value === "yes");
-    }
     setErrors((prev) => ({
       ...prev,
       [name]: "", // clear error when user selects an option
@@ -238,8 +227,7 @@ export default function TutorForm() {
         // Check required fields, excluding optional ones or empty optional fields
         formData[key as keyof typeof formData] === "" &&
         key !== "languageProficiencies" &&
-        key !== "notes" &&
-        key !== "pairedTutee"
+        key !== "notes"
       ) {
         newErrors[key as keyof FormData] = "Field needs to be filled out.";
       }
@@ -390,49 +378,6 @@ export default function TutorForm() {
           <div className="bg-white px-3 space-y-2">
             <h2 className="text-xl font-bold text-left pb-3">LCS Tutee</h2>
             <form className="flex flex-col gap-3">
-              <div className="flex flex-col space-y-2">
-                <label>Were you paired with a tutee last semester?</label>
-                <div className="flex gap-3 pt-1">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="pairedWithTutee"
-                      value="yes"
-                      checked={formData.pairedWithTutee === "yes"}
-                      onChange={handleRadioChange}
-                      //required
-                    />{" "}
-                    Yes
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="pairedWithTutee"
-                      value="no"
-                      checked={formData.pairedWithTutee === "no"}
-                      onChange={handleRadioChange}
-                    />{" "}
-                    No
-                  </label>
-                  {errors.pairedWithTutee && (
-                    <span className="text-red-500 text-sm">
-                      {errors.pairedWithTutee}
-                    </span>
-                  )}
-                </div>
-                {showTextBox && (
-                  <input
-                    type="text"
-                    placeholder="If you are continuing with a student(s) from last semester, please name them here"
-                    name="pairedTutee"
-                    value={formData.pairedTutee}
-                    onChange={handleChange}
-                    className="mt-2 p-2 border border-gray-300 rounded"
-                    //required={formData.specialNeeds === "yes"}
-                  />
-                )}
-              </div>
-
               <div className="flex flex-col space-y-2">
                 <label>
                   How many students do you want to tutor? (Not including the

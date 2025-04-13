@@ -32,8 +32,6 @@ export type tutorBoxProps = {
   grade_level_pref: string[];
   disability_pref: boolean;
   tutoring_mode: string;
-  previous_tutee: boolean;
-  continuing_tutee_name?: string;
   num_tutees: number;
   notes: string;
   flagged: boolean;

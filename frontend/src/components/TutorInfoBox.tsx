@@ -43,8 +43,6 @@ export default function TutorInfoBox({
     major,
     year_grad,
     phone,
-    previous_tutee,
-    continuing_tutee_name,
     grade_level_pref = [],
     num_tutees,
     disability_pref,
@@ -96,7 +94,8 @@ export default function TutorInfoBox({
 
   return (
     <div
-      ref={wrapperRef} className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
+      ref={wrapperRef}
+      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
     >
       <table className="table-fixed w-full">
         <thead>
@@ -222,13 +221,7 @@ export default function TutorInfoBox({
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
             </tr>
             <tr className="h-[55px] border-b text-sm">
-              <td className="px-3 w-1/5">
-                {previous_tutee === true ? (
-                  <span>Yes: {continuing_tutee_name}</span>
-                ) : (
-                  <span>No</span>
-                )}
-              </td>
+              <td className="px-3 w-1/5">asd</td>
               <td className="w-1/5">{grade_level_pref.join(", ")}</td>
               <td className="w-1/5">{num_tutees}</td>
               <td className="w-1/5">
