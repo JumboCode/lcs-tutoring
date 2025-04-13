@@ -4,7 +4,6 @@ import { elist } from "../db/schema";
 
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
-import TutorMatcher from "../algorithm.js";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -20,9 +19,9 @@ export const fetchMailingList = async (req: Request, res: Response) => {
         // .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
         // .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
         // .where(and(eq(approvedMatchesTable.active, false), inArray(approvedMatchesTable.id, matchIds)));
-        res.send({
-            mailingList: members,
-        });
+    res.status(200).json({
+        mailingList: members,
+    });
 };
 
 export const deleteUser = async (req: Request, res: Response) => {

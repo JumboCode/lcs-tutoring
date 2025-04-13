@@ -1,12 +1,12 @@
 import {
     fetchMailingList,
-    //deleteUser,
+    deleteUser,
   } from "../controllers/mailingListController";
   import express from "express";
   
   const router = express.Router();
   
   router.get("/mailing-list", fetchMailingList);
-//   router.delete("/whitelisted-users/:userId", deleteUser);
+  // router.post("/", deleteUser);
   
   export default router;

@@ -213,7 +213,7 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
 export const permDeleteTutee = async (req: Request, res: Response) => {
   console.log("in backend for perm delete tutee")
   try {
-    const tutee_id = req.params.id;
+    const tutee_id = Number(req.params.id);
     await db.delete(tuteeTable).where(eq(tuteeTable.id, tutee_id));
   } catch (error) {
     console.error(error);
