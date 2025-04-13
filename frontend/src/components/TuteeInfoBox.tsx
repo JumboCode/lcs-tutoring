@@ -23,12 +23,14 @@ const STYLES = {
 type TuteeInfoBoxProps = {
   box_props: tuteeBoxProps;
   isUnmatched: boolean;
+  isHistory: boolean;
   onDelete?: (tutee: tuteeBoxProps) => void;
 };
 
 export default function TuteeInfoBox({
   box_props,
   isUnmatched,
+  isHistory,
   onDelete,
 }: TuteeInfoBoxProps) {
   const {
@@ -66,6 +68,19 @@ export default function TuteeInfoBox({
     setIsDropdownOpen(false);
     console.log("id from front end: ", id);
     fetch(`${config.backendUrl}/move-tutee-to-history/${id}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const handlePermDelete = () => {
+    setIsDropdownOpen(false);
+    fetch(`${config.backendUrl}/perm-delete-tutee/${id}`, {
       method: "POST",
     })
       .then((response) => response.json())
@@ -172,7 +187,7 @@ export default function TuteeInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {isUnmatched && (
+                {(isUnmatched || isHistory) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}
@@ -188,10 +203,19 @@ export default function TuteeInfoBox({
                       ></div>
                     </button>
 
-                    {isDropdownOpen && (
+                    {(isDropdownOpen && !isHistory) && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit} className="">
                           Delete Tutee
+                        </button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+
+                    {(isDropdownOpen && isHistory) && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handlePermDelete} className="">
+                          Permanently Delete
                         </button>
                         <img src={TrashCan} className="mx-2" />
                       </div>

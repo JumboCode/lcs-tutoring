@@ -242,6 +242,7 @@ export default function TutorTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={false}
+                  isHistory={false}
                 />
               ))}
             </div>
@@ -253,6 +254,7 @@ export default function TutorTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={false}
+                  isHistory={true}
                 />
               ))}
             </div>

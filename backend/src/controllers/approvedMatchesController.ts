@@ -50,7 +50,16 @@ export const deletePair = async (req: Request, res: Response) => {
       tutor_id: tutor_id,
     });
 
-    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+    const [deleteID] = await db
+    .select({id: matchedTable.id})
+    .from(matchedTable)
+    .where(
+      eq(matchedTable.tutor_id, tutor_id),
+    ).limit(1);
+
+    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+
+    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
 
     await db.update(tutorTable)
       .set({ history_date: new Date().toISOString().split("T")[0], })
@@ -59,6 +68,9 @@ export const deletePair = async (req: Request, res: Response) => {
     await db.insert(historyTable).values({
       tutee_id: tutee_id,
     });
+
+
+      
 
     await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 
@@ -358,7 +370,18 @@ async function moveTutorToUnmatched(tutor_id: string) {
     await db.insert(unmatchedTable).values({
       tutor_id: row.tutor_id,
     });
-    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+
+        const [deleteID] = await db
+        .select({id: matchedTable.id})
+        .from(matchedTable)
+        .where(
+        eq(matchedTable.tutor_id, tutor_id),
+        ).limit(1);
+
+    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+    
+    
+    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
 
@@ -507,3 +530,15 @@ export const emailPair = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to send emails", error: err.message || err });
   }
 };
+
+
+export const permDeleteMatch = async (req: Request, res: Response) => {
+  console.log("in backend for perm delete match")
+  try {
+    const match_id = req.params.match_id;
+    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, match_id));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error permanently deleting tutor");
+  }
+}

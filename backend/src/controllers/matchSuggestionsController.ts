@@ -152,13 +152,18 @@ export const approveMatch = async (req: Request, res: Response) => {
       });
 
       // Caitlyn Valentina TODO
-      await db
-        .delete(unmatchedTable)
+      const [deleteID] = await db
+        .select({id: unmatchedTable.id})
+        .from(unmatchedTable)
         .where(
-          or(
           eq(unmatchedTable.tutor_id, tutorId),
-          eq(unmatchedTable.tutee_id, selectedTuteeId))
-        );
+        ).limit(1);
+
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.id, deleteID.id));
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
+  
+
+        //console.log(deleteID.id);
 
       res.status(200).json({ success: true });
     } else {

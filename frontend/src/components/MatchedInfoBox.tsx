@@ -147,6 +147,20 @@ export default function MatchedInfoBoxbox_props({
       .catch((error) => console.error(error));
   };
 
+  const handlePermDelete = () => {
+    console.log("permdelete in match");
+    setIsDropdownOpen(false);
+    fetch(`${config.backendUrl}/perm-delete-match/${matchId}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onUnpair) onUnpair(matchId);
+      })
+      .catch((error) => console.error(error));
+  };
+
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
@@ -216,6 +230,8 @@ export default function MatchedInfoBoxbox_props({
     setModalVisible(false);
     handleSendEmail();
   };
+
+
 
   return (
     <div
@@ -429,6 +445,65 @@ export default function MatchedInfoBoxbox_props({
                             className="w-4 h-4 inline-block mr-2"
                           />
                           Delete Pair
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {!isActive && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="mb-2 ml-5 p-0 text-lg text-gray-400"
+                    >
+                      ...
+                      <div
+                        className={`transition-transform duration-300 ${
+                          isDropdownOpen ? "scale-y-[-1]" : "scale-y-[1]"
+                        }`}
+                      ></div>
+                    </button>
+                    {isDropdownOpen && (
+                      <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                        {/* <button className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100">
+                        <div className="className=" mr-2 w-4 h-4 inline-block>
+                          <BsTrashFill size={20} />
+                        </div>
+                        Remove Pair
+                      </button> */}
+                        {emailSent && (
+                          <button
+                            onClick={handleToggleFlag}
+                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          >
+                            {isCurrentlyFlagged ? (
+                              <>
+                                <img
+                                  src={RED_FLAG}
+                                  className="w-4 h-4 inline-block mr-2"
+                                />
+                                Unflag
+                              </>
+                            ) : (
+                              <>
+                                <img
+                                  src={FLAG}
+                                  className="w-4 h-4 inline-block mr-2"
+                                />
+                                Flag
+                              </>
+                            )}
+                          </button>
+                        )}
+                        <button
+                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          onClick={handlePermDelete}
+                        >
+                          <img
+                            src={deleteIcon}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          Permanently Delete
                         </button>
                       </div>
                     )}
