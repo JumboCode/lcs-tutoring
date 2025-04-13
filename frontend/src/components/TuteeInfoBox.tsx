@@ -1,6 +1,6 @@
 "use client";
 import config from "../config.ts";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import { tuteeBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
@@ -60,6 +60,7 @@ export default function TuteeInfoBox({
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = () => {
     setIsDropdownOpen(false);
@@ -75,9 +76,25 @@ export default function TuteeInfoBox({
       .catch((error) => console.error(error));
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
-      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
+    ref={wrapperRef} className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
     >
       <table className="table-fixed w-full">
         <thead>
