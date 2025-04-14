@@ -7,6 +7,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import TrashCan from "../assets/images/delete.svg";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 const STYLES = {
   colors: {
@@ -64,18 +65,33 @@ export default function TuteeInfoBox({
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = () => {
+  const { handleAsyncOperation } = useRaceConditionHandler();
+
+  const handleSubmit = async () => {
     setIsDropdownOpen(false);
     console.log("id from front end: ", id);
-    fetch(`${config.backendUrl}/move-tutee-to-history/${id}`, {
-      method: "POST",
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+
+    await handleAsyncOperation(async () => {
+      try {
+        const response = await fetch(
+          `${config.backendUrl}/move-tutee-to-history/${id}`,
+          {
+            method: "POST",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to move tutee to history");
+        }
+
+        const data = await response.json();
         if (onDelete) onDelete(box_props);
-      })
-      .catch((error) => console.error(error));
+        return data;
+      } catch (error) {
+        console.error("Error moving tutee to history:", error);
+        throw error;
+      }
+    });
   };
 
   const handlePermDelete = () => {
