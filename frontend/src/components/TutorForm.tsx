@@ -2,6 +2,7 @@ import config from "../config.ts";
 import { useState, ChangeEvent, FormEvent } from "react";
 import Select, { ActionMeta, SingleValue, MultiValue } from "react-select";
 import { useNavigate } from "react-router-dom";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 interface FormData {
   firstName: string;
@@ -84,6 +85,7 @@ const tutoring_mode_options = [
 
 export default function TutorForm() {
   const navigate = useNavigate();
+  const { handleAsyncOperation, isProcessing } = useRaceConditionHandler();
 
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
@@ -288,7 +290,7 @@ export default function TutorForm() {
       }
     });
 
-    let digits = formData.phone.replace(/\D/g, "");
+    const digits = formData.phone.replace(/\D/g, "");
 
     if (digits.length != 10) {
       newErrors.phone = "Invalid Phone Number";
@@ -308,29 +310,30 @@ export default function TutorForm() {
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
       formData.phone = digits;
-      fetch(`${config.backendUrl}/tutorsubmission`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-        .then(async (response) => {
-          if (!response.ok) {
-            const errorText = await response.text();
-            alert("Error: " + errorText);
-            throw new Error(errorText);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Success:", data);
-          alert("Form submitted successfully!");
-          navigate("/success-page");
-        })
-        .catch((error) => {
-          console.error("Submission error:", error);
+
+      handleAsyncOperation(async () => {
+        const response = await fetch(`${config.backendUrl}/tutorsubmission`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          alert("Error: " + errorText);
+          throw new Error(errorText);
+        }
+
+        const data = await response.json();
+        console.log("Success:", data);
+        alert("Form submitted successfully!");
+        navigate("/success-page");
+        return data;
+      }).catch((error) => {
+        console.error("Submission error:", error);
+      });
     } else {
       alert("Oops! Some fields have errors. Please check and try again.");
     }
@@ -642,9 +645,12 @@ export default function TutorForm() {
           <div className="flex justify-center mt-4 mb-8">
             <button
               type="submit"
-              className="bg-blue-900 text-white font-medium py-2 px-6 rounded-full hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-50"
+              disabled={isProcessing}
+              className={`bg-blue-900 text-white font-medium py-2 px-6 rounded-full hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-50 ${
+                isProcessing ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Submit
+              {isProcessing ? "Submitting..." : "Submit"}
             </button>
           </div>
         </div>

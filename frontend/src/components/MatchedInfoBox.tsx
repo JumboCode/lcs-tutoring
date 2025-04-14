@@ -1,5 +1,4 @@
 import config from "../config.ts";
-("use client");
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
@@ -10,6 +9,7 @@ import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
 import unmatch_pair from "../assets/images/approved_matches/unmatch_pair.svg";
+import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 const STYLES = {
   colors: {
@@ -116,35 +116,61 @@ export default function MatchedInfoBoxbox_props({
   const [tutee_input, setTuteeInput] = useState(tutee_email);
   const [tutor_input, setTutorInput] = useState(tutor_email);
 
-  const unmatchPair = () => {
-    setIsDropdownOpen(false);
+  const { handleAsyncOperation: handleDeletePairOperation } =
+    useRaceConditionHandler();
+  const { handleAsyncOperation: handleUnmatchOperation } =
+    useRaceConditionHandler();
+  const { handleAsyncOperation: handleEmailOperation } =
+    useRaceConditionHandler();
 
-    console.log("about to fetch unmatch pair");
+  const deletePair = async () => {
+    await handleDeletePairOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/delete-pair`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pairId: matchId }),
+        });
 
-    fetch(`${config.backendUrl}/unmatch-pair/${matchId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+        if (!response.ok) {
+          throw new Error("Failed to delete pair");
+        }
+
+        const data = await response.json();
         if (onUnpair) onUnpair(matchId);
-      })
-      .catch((error) => console.error(error));
+        return data;
+      } catch (error) {
+        console.error("Error deleting pair:", error);
+        throw error;
+      }
+    });
   };
 
-  const deletePair = () => {
-    setIsDropdownOpen(false);
-    fetch(`${config.backendUrl}/delete-pair/${matchId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
+  const unmatchPair = async () => {
+    await handleUnmatchOperation(async () => {
+      try {
+        const response = await fetch(`${config.backendUrl}/unmatch-pair`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pairId: matchId }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to unmatch pair");
+        }
+
+        const data = await response.json();
         if (onUnpair) onUnpair(matchId);
-      })
-      .catch((error) => console.error(error));
+        return data;
+      } catch (error) {
+        console.error("Error unmatching pair:", error);
+        throw error;
+      }
+    });
   };
 
   const handlePermDelete = () => {
@@ -166,34 +192,39 @@ export default function MatchedInfoBoxbox_props({
     setIsRotated(!isRotated);
   };
 
-  const handleSendEmail = async () => {
-    console.log("sending email: ", tutee_input);
-    try {
-      const response = await fetch(`${config.backendUrl}/email`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          matchId: matchId,
-          tutorName: `${first_name} ${last_name}`,
-          tutorEmail: tutor_props.email,
-          tuteeName: `${tutee_first_name} ${tutee_last_name}`,
-          tuteeParentName: `${parent_first_name} ${parent_last_name}`,
-          tuteeParentEmail: tutee_props.parent_email,
-          tuteeParentPhone: tutee_props.parent_phone,
-          tuteeSubjects: tutee_props.subjects,
-          tuteeGrade: tutee_props.grade,
-          tuteeMessage: tutee_input,
-          tutorMessage: tutor_input,
-        }),
-      });
 
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+  const handleSendEmail = async () => {
+    await handleEmailOperation(async () => {
+      console.log("sending email: ", tutee_input);
+      try {
+        const response = await fetch(`${config.backendUrl}/email`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            matchId: matchId,
+            tutorName: `${first_name} ${last_name}`,
+            tutorEmail: tutor_props.email,
+            tuteeName: `${tutee_first_name} ${tutee_last_name}`,
+            tuteeParentName: `${parent_first_name} ${parent_last_name}`,
+            tuteeParentEmail: tutee_props.parent_email,
+            tuteeParentPhone: tutee_props.parent_phone,
+            tuteeSubjects: tutee_props.subjects,
+            tuteeGrade: tutee_props.grade,
+            tuteeMessage: tutee_input,
+            tutorMessage: tutor_input,
+          }),
+        });
+        
+        const data = await response.json();
+        setEmailSent(true);
+        return data;
+      } catch (error) {
+        console.error("Error emailing pair:", error);
+        throw error;
       }
-      setEmailSent(true);
-    } catch (error) {}
+    });
   };
 
   const handleToggleFlag = async () => {
