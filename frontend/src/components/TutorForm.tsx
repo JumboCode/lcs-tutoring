@@ -13,8 +13,6 @@ interface FormData {
   yearGrad: string;
   phone: string;
   email: string;
-  pairedWithTutee: string;
-  pairedTutee: string;
   numTutees: string;
   gradeLevels: number[];
   comfortableSpecialNeeds: boolean | null;
@@ -31,7 +29,7 @@ type FormErrors = {
 };
 
 const subject_options = [
-  { value: "Early Reading", label: "Early Reading (Grades 3 and up)" },
+  { value: "Early Reading", label: "Early Reading (Below grade 3)" },
   { value: "Reading", label: "Reading (Grades 3 and up)" },
   { value: "English", label: "English/Language Arts" },
   { value: "Math", label: "Math (1-8)" },
@@ -87,7 +85,7 @@ const tutoring_mode_options = [
 
 export default function TutorForm() {
   const navigate = useNavigate();
-  const { handleAsyncOperation } = useRaceConditionHandler();
+  const { handleAsyncOperation, isProcessing } = useRaceConditionHandler();
 
   //variable that holds form data
   const [formData, setFormData] = useState<FormData>({
@@ -99,8 +97,6 @@ export default function TutorForm() {
     yearGrad: "",
     phone: "",
     email: "",
-    pairedWithTutee: "",
-    pairedTutee: "",
     numTutees: "",
     gradeLevels: [],
     comfortableSpecialNeeds: null,
@@ -122,7 +118,6 @@ export default function TutorForm() {
     yearGrad: "",
     phone: "",
     email: "",
-    pairedWithTutee: "",
     numTutees: "",
     gradeLevels: "",
     comfortableSpecialNeeds: "",
@@ -134,21 +129,23 @@ export default function TutorForm() {
     signature: "",
   });
 
-  //for past tutee Desc.
-  const [showTextBox, setShowTextBox] = useState(false);
+  const formatPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, "").substring(0, 10);
+
+    const parts = [];
+    if (digits.length > 0) parts.push("(" + digits.substring(0, 3));
+    if (digits.length >= 4) parts.push(") " + digits.substring(3, 6));
+    if (digits.length >= 7) parts.push("-" + digits.substring(6, 10));
+
+    return parts.join("");
+  };
 
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-
     setFormData((prev) => ({
       ...prev,
       [name]: name === "comfortableSpecialNeeds" ? Boolean(value) : value,
     }));
-
-    if (name === "pairedWithTutee") {
-      setShowTextBox(value === "yes");
-    }
-
     setErrors((prev) => ({
       ...prev,
       [name]: "", // clear error when user selects an option
@@ -157,9 +154,15 @@ export default function TutorForm() {
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
+
+    let newValue = value;
+
+    if (name === "phone") {
+      newValue = formatPhoneNumber(value); // apply formatting only to phone
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
 
     setErrors((prev) => ({
@@ -215,26 +218,85 @@ export default function TutorForm() {
   };
 
   //submit function with data validation
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Validate form
     const newErrors: FormErrors = {};
+
+    // check for empty fields
     Object.keys(formData).forEach((key) => {
-      const value = formData[key as keyof FormData];
-      if (!value && key !== "pairedTutee" && key !== "notes") {
-        newErrors[key as keyof FormErrors] = `${key} is required`;
+      if (
+        // Check required fields, excluding optional ones or empty optional fields
+        formData[key as keyof typeof formData] === "" &&
+        key !== "languageProficiencies" &&
+        key !== "notes"
+      ) {
+        newErrors[key as keyof FormData] = "Field needs to be filled out.";
+      }
+
+      if (formData["id"].length != 7 || isNaN(Number(formData["id"]))) {
+        // && !isNaN(Number(formData["id"]))
+        if (formData["id"].length != 0) {
+          newErrors["id"] = "Invalid Tufts ID";
+        }
+      }
+
+      console.log("DATE: ", new Date().getFullYear());
+      if (
+        formData["yearGrad"].length != 4 ||
+        isNaN(Number(formData["yearGrad"])) ||
+        !(
+          Number(formData["yearGrad"]) >= new Date().getFullYear() &&
+          Number(formData["yearGrad"]) <= new Date().getFullYear() + 10
+        )
+      ) {
+        if (formData["yearGrad"].length != 0) {
+          newErrors[
+            "yearGrad"
+          ] = `Invalid Year of Graduation (Between ${new Date().getFullYear()} - ${
+            new Date().getFullYear() + 10
+          })`;
+        }
+      }
+
+      if (
+        formData["signature"] !==
+        formData["firstName"] + " " + formData["lastName"]
+      ) {
+        newErrors[
+          "signature"
+        ] = `Signature is not of the form "${formData["firstName"]} ${formData["lastName"]}".`;
+      }
+
+      if (!formData["email"].endsWith("@tufts.edu")) {
+        if (formData["email"].length != 0) {
+          newErrors["email"] = "Invalid Tufts email";
+        }
       }
     });
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+    const digits = formData.phone.replace(/\D/g, "");
+
+    if (digits.length != 10) {
+      newErrors.phone = "Invalid Phone Number";
     }
 
-    // Use race condition handler for submission
-    await handleAsyncOperation(async () => {
-      try {
+    //check that Yes has been selected for waiver agreement
+    if (formData.agreement !== "Yes") {
+      newErrors.agreement = "You must agree to proceed.";
+    }
+
+    setErrors(newErrors);
+
+    console.log("About to submit tutor form");
+    console.log(JSON.stringify(formData));
+    // console.log(Object.keys(newErrors));
+
+    // if no errors, process the form
+    if (Object.keys(newErrors).length === 0) {
+      formData.phone = digits;
+
+      handleAsyncOperation(async () => {
         const response = await fetch(`${config.backendUrl}/tutorsubmission`, {
           method: "POST",
           headers: {
@@ -244,18 +306,22 @@ export default function TutorForm() {
         });
 
         if (!response.ok) {
-          throw new Error("Failed to submit tutor form");
+          const errorText = await response.text();
+          alert("Error: " + errorText);
+          throw new Error(errorText);
         }
 
         const data = await response.json();
-        navigate("/confirmation");
+        console.log("Success:", data);
+        alert("Form submitted successfully!");
+        navigate("/success-page");
         return data;
-      } catch (error) {
-        console.error("Error submitting tutor form:", error);
-        // Optionally show error to user
-        throw error;
-      }
-    });
+      }).catch((error) => {
+        console.error("Submission error:", error);
+      });
+    } else {
+      alert("Oops! Some fields have errors. Please check and try again.");
+    }
   };
 
   return (
@@ -289,7 +355,11 @@ export default function TutorForm() {
                     name={field.id}
                     onChange={handleChange}
                     value={formData[field.id as keyof FormData] as string}
-                    placeholder="Enter a description..."
+                    placeholder={
+                      field.id === "phone"
+                        ? "(123) 456-7890"
+                        : "Enter a description..."
+                    }
                     className={`rounded-lg border border-gray-300 p-2 ${
                       errors[field.id as keyof FormData]
                         ? "border-red-500"
@@ -311,49 +381,6 @@ export default function TutorForm() {
           <div className="bg-white px-3 space-y-2">
             <h2 className="text-xl font-bold text-left pb-3">LCS Tutee</h2>
             <form className="flex flex-col gap-3">
-              <div className="flex flex-col space-y-2">
-                <label>Were you paired with a tutee last semester?</label>
-                <div className="flex gap-3 pt-1">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="pairedWithTutee"
-                      value="yes"
-                      checked={formData.pairedWithTutee === "yes"}
-                      onChange={handleRadioChange}
-                      //required
-                    />{" "}
-                    Yes
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="pairedWithTutee"
-                      value="no"
-                      checked={formData.pairedWithTutee === "no"}
-                      onChange={handleRadioChange}
-                    />{" "}
-                    No
-                  </label>
-                  {errors.pairedWithTutee && (
-                    <span className="text-red-500 text-sm">
-                      {errors.pairedWithTutee}
-                    </span>
-                  )}
-                </div>
-                {showTextBox && (
-                  <input
-                    type="text"
-                    placeholder="If you are continuing with a student(s) from last semester, please name them here"
-                    name="pairedTutee"
-                    value={formData.pairedTutee}
-                    onChange={handleChange}
-                    className="mt-2 p-2 border border-gray-300 rounded"
-                    //required={formData.specialNeeds === "yes"}
-                  />
-                )}
-              </div>
-
               <div className="flex flex-col space-y-2">
                 <label>
                   How many students do you want to tutor? (Not including the
@@ -601,9 +628,12 @@ export default function TutorForm() {
           <div className="flex justify-center mt-4 mb-8">
             <button
               type="submit"
-              className="bg-blue-900 text-white font-medium py-2 px-6 rounded-full hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-50"
+              disabled={isProcessing}
+              className={`bg-blue-900 text-white font-medium py-2 px-6 rounded-full hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-50 ${
+                isProcessing ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              Submit
+              {isProcessing ? "Submitting..." : "Submit"}
             </button>
           </div>
         </div>
