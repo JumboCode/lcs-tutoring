@@ -231,8 +231,6 @@ export default function MatchedInfoBoxbox_props({
     handleSendEmail();
   };
 
-
-
   return (
     <div
       className={`${

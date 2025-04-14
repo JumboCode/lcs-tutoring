@@ -239,6 +239,21 @@ export default function TutorForm() {
         }
       }
 
+      if (
+        Array.isArray(formData.gradeLevels) &&
+        formData.gradeLevels.length === 0
+      ) {
+        newErrors.gradeLevels = "Select at least one grade level.";
+      }
+
+      if (Array.isArray(formData.subjects) && formData.subjects.length === 0) {
+        newErrors.subjects = "Select at least one subject.";
+      }
+
+      if (formData.comfortableSpecialNeeds === null) {
+        newErrors.comfortableSpecialNeeds = "Select an option.";
+      }
+
       console.log("DATE: ", new Date().getFullYear());
       if (
         formData["yearGrad"].length != 4 ||
@@ -540,7 +555,9 @@ export default function TutorForm() {
 
               <div className="space-y-2">
                 <h1 className="text-base">
-                  Anything else you would like to let us know?
+                  Anything else you would like to let us know? (If you had a
+                  previous tutee and would like to continue with them, let us
+                  know here)
                 </h1>
                 <input
                   type="text"

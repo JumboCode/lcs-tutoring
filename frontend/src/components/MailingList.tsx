@@ -1,6 +1,6 @@
 import config from "../config.ts";
 import React, { useState, useEffect } from "react";
-// import { Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 interface Member {
   id: string;
@@ -31,27 +31,28 @@ const MailingList: React.FC = () => {
     fetchMailingList();
   }, []);
 
-  //   const handleDeleteUser = async (userId: string) => {
-  //     try {
-  //       // Use Clerk's admin API to delete the user
-  //       const response = await fetch(
-  //         `${config.backendUrl}/whitelisted-users/${userId}`,
-  //         {
-  //           method: "DELETE",
-  //         }
-  //       );
-  //       if (!response.ok) {
-  //         throw new Error("Failed to delete user");
-  //       }
+  const handleDelete = async (elist_id: string) => {
+    try {
+      // Use Clerk's admin API to delete the user
 
-  //       // Remove the user from the local state
-  //       fetchMailingList((prevUsers) =>
-  //         prevUsers.filter((user) => user.id !== userId)
-  //       );
-  //     } catch (error) {
-  //       console.error("Error deleting user:", error);
-  //     }
-  //   };
+      const response = await fetch(
+        `${config.backendUrl}/delete-elist/${elist_id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to delete user from the elist");
+      }
+
+      // Remove the user from the local state
+      setMailingList((prevUsers) =>
+        prevUsers.filter((user) => user.id !== elist_id)
+      );
+    } catch (error) {
+      console.error("Error deleting user from elist:", error);
+    }
+  };
 
   // // Ensure only admins can access this page
   // if (!user || !user.publicMetadata?.role?.includes("admin")) {
@@ -68,7 +69,7 @@ const MailingList: React.FC = () => {
       {/* When awaiting the fetch */}
       {loading && (
         <div className="flex items-center justify-center py-10">
-          <p className="text-lg text-gray-500">Loading e-list...</p>
+          <p className="text-lg text-gray-500">Loading E-List...</p>
         </div>
       )}
 
@@ -87,14 +88,17 @@ const MailingList: React.FC = () => {
           <table className="w-full">
             <thead>
               <tr className="h-[35px] bg-[#F1F7FD]">
-                <td className="px-8 w-[40%]">
+                <td className="px-8 w-[30%]">
                   <h1 className="text-gray-500 text-lg">Name</h1>
                 </td>
-                <td className="w-[40%]">
+                <td className="w-[30%]">
                   <h1 className="text-gray-500 text-lg">E-Mail</h1>
                 </td>
-                <td className="w-[40%]">
+                <td className="w-[30%]">
                   <h1 className="text-gray-500 text-lg">Grad Year</h1>
+                </td>
+                <td className="w-[30%]">
+                  <h1 className="text-gray-500 text-lg">Delete</h1>
                 </td>
               </tr>
             </thead>
@@ -104,6 +108,15 @@ const MailingList: React.FC = () => {
                   <td className="py-2 px-8">{member.name}</td>
                   <td className="py-2">{member.email}</td>
                   <td className="py-2 pl-4">{member.gradYear}</td>
+                  <td className="py-2 pl-4">
+                    <button
+                      onClick={() => handleDelete(member.id)}
+                      className="text-red-500 hover:text-red-700"
+                      aria-label="Delete user"
+                    >
+                      <Trash2 />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
