@@ -29,12 +29,11 @@ export type tuteeBoxProps = {
 };
 
 type TutorObjectProps = {
-  tutorId: string,
-  tuteeId1: number,
-  tuteeId2: number,
-  tuteeId3: number
-}
-
+  tutorId: string;
+  tuteeId1: number;
+  tuteeId2: number;
+  tuteeId3: number;
+};
 
 /* returns all the tutor - tutee1-3 match suggestions */
 export const getMatchSuggestions = async (req: Request, res: Response) => {
@@ -55,75 +54,76 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
         console.log("Tutee 1 ID IS: ", match.tuteeId1);
         const tutor_obj = await db
           .select({
-              id: tutorTable.id,
-              first_name: tutorTable.first_name,
-              last_name: tutorTable.last_name,
-              phone: tutorTable.phone,
-              email: tutorTable.email,
-              subject: tutorTable.subject_pref,
-              grade_level_pref: tutorTable.grade_level_pref,
-              disability_pref: tutorTable.disability_pref,
-              tutoring_mode: tutorTable.tutoring_mode,
-              notes: tutorTable.notes})
+            id: tutorTable.id,
+            first_name: tutorTable.first_name,
+            last_name: tutorTable.last_name,
+            phone: tutorTable.phone,
+            email: tutorTable.email,
+            subject: tutorTable.subject_pref,
+            grade_level_pref: tutorTable.grade_level_pref,
+            disability_pref: tutorTable.disability_pref,
+            tutoring_mode: tutorTable.tutoring_mode,
+            notes: tutorTable.notes,
+          })
           .from(tutorTable)
           .where(eq(tutorTable.id, match.tutorId));
         const tutee1_obj = await db
           .select({
-              id: tuteeTable.id,
-              first_name: tuteeTable.tutee_first_name,
-              last_name: tuteeTable.tutee_last_name,
-              email: tuteeTable.parent_email,
-              grade: tuteeTable.grade,
-              subjects: tuteeTable.subjects,
-              special_needs: tuteeTable.special_needs,
-              tutoring_mode: tuteeTable.tutoring_mode,
-              notes: tuteeTable.notes,
-            })
+            id: tuteeTable.id,
+            first_name: tuteeTable.tutee_first_name,
+            last_name: tuteeTable.tutee_last_name,
+            email: tuteeTable.parent_email,
+            grade: tuteeTable.grade,
+            subjects: tuteeTable.subjects,
+            special_needs: tuteeTable.special_needs,
+            tutoring_mode: tuteeTable.tutoring_mode,
+            notes: tuteeTable.notes,
+          })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId1));
         const tutee2_obj = await db
           .select({
-              id: tuteeTable.id,
-              first_name: tuteeTable.tutee_first_name,
-              last_name: tuteeTable.tutee_last_name,
-              email: tuteeTable.parent_email,
-              grade: tuteeTable.grade,
-              subjects: tuteeTable.subjects,
-              special_needs: tuteeTable.special_needs,
-              tutoring_mode: tuteeTable.tutoring_mode,
-              notes: tuteeTable.notes,
-            })
+            id: tuteeTable.id,
+            first_name: tuteeTable.tutee_first_name,
+            last_name: tuteeTable.tutee_last_name,
+            email: tuteeTable.parent_email,
+            grade: tuteeTable.grade,
+            subjects: tuteeTable.subjects,
+            special_needs: tuteeTable.special_needs,
+            tutoring_mode: tuteeTable.tutoring_mode,
+            notes: tuteeTable.notes,
+          })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId2));
         const tutee3_obj = await db
           .select({
-              id: tuteeTable.id,
-              first_name: tuteeTable.tutee_first_name,
-              last_name: tuteeTable.tutee_last_name,
-              email: tuteeTable.parent_email,
-              grade: tuteeTable.grade,
-              subjects: tuteeTable.subjects,
-              special_needs: tuteeTable.special_needs,
-              tutoring_mode: tuteeTable.tutoring_mode,
-              notes: tuteeTable.notes,
+            id: tuteeTable.id,
+            first_name: tuteeTable.tutee_first_name,
+            last_name: tuteeTable.tutee_last_name,
+            email: tuteeTable.parent_email,
+            grade: tuteeTable.grade,
+            subjects: tuteeTable.subjects,
+            special_needs: tuteeTable.special_needs,
+            tutoring_mode: tuteeTable.tutoring_mode,
+            notes: tuteeTable.notes,
           })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId3));
 
-          let tutor = tutor_obj[0] || null;
-          let tutee1 = tutee1_obj[0] || null;
-          let tutee2 = tutee2_obj[0] || null;
-          let tutee3 = tutee3_obj[0] || null;
+        let tutor = tutor_obj[0] || null;
+        let tutee1 = tutee1_obj[0] || null;
+        let tutee2 = tutee2_obj[0] || null;
+        let tutee3 = tutee3_obj[0] || null;
 
-        return {tutor, tutee1, tutee2, tutee3}
+        return { tutor, tutee1, tutee2, tutee3 };
       })
     );
-      
+
     // console.log("these are the tutees: ", tutees);
     // console.log("these are the tutors: ", matchResults);
 
     res.send({
-      matchSuggestions: matchResults
+      matchSuggestions: matchResults,
     });
   } catch (error) {
     console.error(error);
@@ -135,7 +135,7 @@ export const approveMatch = async (req: Request, res: Response) => {
   console.log("IN APPROVE MATCH");
   try {
     const { tutorId, selectedTuteeId } = req.body;
-    
+
     if (tutorId > 0 && selectedTuteeId > 0) {
       await db.insert(matchedTable).values({
         tutee_id: selectedTuteeId,
@@ -155,10 +155,13 @@ export const approveMatch = async (req: Request, res: Response) => {
         .delete(unmatchedTable)
         .where(
           or(
-          eq(unmatchedTable.tutor_id, tutorId),
-          eq(unmatchedTable.tutee_id, selectedTuteeId))
+            eq(unmatchedTable.tutor_id, tutorId),
+            eq(unmatchedTable.tutee_id, selectedTuteeId)
+          )
         );
-
+      console.log(
+        "we have successfully inserted into matched and deleted from unmatched tables"
+      );
       res.status(200).json({ success: true });
     } else {
       throw new Error("Invalid Match");
@@ -168,7 +171,6 @@ export const approveMatch = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 /*
 if (tutee_id > 0) {
