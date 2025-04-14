@@ -96,10 +96,8 @@ export default function TutorTable() {
             console.log("FILTERS ARE: ", filters);
           }}
         />
-  
       </div>
       <hr className="border-t-1 border-gray w-full my-2 mt-3" />
-
 
       {/* When awaiting the fetch */}
       {loading && (
@@ -128,13 +126,21 @@ export default function TutorTable() {
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.UNMATCHED)}
                 >
-                  <h1 className={isActive === TABS.UNMATCHED ? COLORS.ACTIVE : COLORS.HISTORY}>
+                  <h1
+                    className={
+                      isActive === TABS.UNMATCHED
+                        ? COLORS.ACTIVE
+                        : COLORS.HISTORY
+                    }
+                  >
                     Unmatched
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.UNMATCHED ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                      (isActive === TABS.UNMATCHED
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.HISTORY_BG)
                     }
                   >
                     {unmatchedTutors.length}
@@ -145,13 +151,19 @@ export default function TutorTable() {
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.MATCHED)}
                 >
-                  <h1 className={isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY}>
+                  <h1
+                    className={
+                      isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY
+                    }
+                  >
                     Matched
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.MATCHED ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                      (isActive === TABS.MATCHED
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.HISTORY_BG)
                     }
                   >
                     {matchedTutors.length}
@@ -162,13 +174,19 @@ export default function TutorTable() {
                   className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
                   onClick={() => setIsActive(TABS.HISTORY)}
                 >
-                  <h1 className={isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY}>
+                  <h1
+                    className={
+                      isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY
+                    }
+                  >
                     History
                   </h1>
                   <div
                     className={
                       "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.HISTORY ? COLORS.ACTIVE_BG : COLORS.HISTORY_BG)
+                      (isActive === TABS.HISTORY
+                        ? COLORS.ACTIVE_BG
+                        : COLORS.HISTORY_BG)
                     }
                   >
                     {historyTutors.length}
@@ -194,7 +212,6 @@ export default function TutorTable() {
                 }}
               />
             </div>
-
           </div>
           <table className="w-full mt-4">
             <thead>
@@ -222,6 +239,7 @@ export default function TutorTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={true}
+                  isHistory={false}
                   onDelete={(deletedTutor) => {
                     console.log("Deleted tutor id: ", deletedTutor.id);
                     // Remove the deleted tutor from unmatched tutors
@@ -242,6 +260,7 @@ export default function TutorTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={false}
+                  isHistory={false}
                 />
               ))}
             </div>
@@ -253,6 +272,7 @@ export default function TutorTable() {
                   box_props={box_props}
                   key={index}
                   isUnmatched={false}
+                  isHistory={true}
                 />
               ))}
             </div>

@@ -1,6 +1,6 @@
 "use client";
 import config from "../config.ts";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import { tuteeBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
@@ -24,12 +24,14 @@ const STYLES = {
 type TuteeInfoBoxProps = {
   box_props: tuteeBoxProps;
   isUnmatched: boolean;
+  isHistory: boolean;
   onDelete?: (tutee: tuteeBoxProps) => void;
 };
 
 export default function TuteeInfoBox({
   box_props,
   isUnmatched,
+  isHistory,
   onDelete,
 }: TuteeInfoBoxProps) {
   const {
@@ -61,6 +63,7 @@ export default function TuteeInfoBox({
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { handleAsyncOperation } = useRaceConditionHandler();
 
@@ -91,8 +94,38 @@ export default function TuteeInfoBox({
     });
   };
 
+  const handlePermDelete = () => {
+    setIsDropdownOpen(false);
+    fetch(`${config.backendUrl}/perm-delete-tutee/${id}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
+      ref={wrapperRef}
       className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
     >
       <table className="table-fixed w-full">
@@ -170,7 +203,7 @@ export default function TuteeInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {isUnmatched && (
+                {(isUnmatched || isHistory) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}
@@ -186,10 +219,19 @@ export default function TuteeInfoBox({
                       ></div>
                     </button>
 
-                    {isDropdownOpen && (
+                    {(isDropdownOpen && !isHistory) && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit} className="">
                           Delete Tutee
+                        </button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+
+                    {(isDropdownOpen && isHistory) && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handlePermDelete} className="">
+                          Permanently Delete
                         </button>
                         <img src={TrashCan} className="mx-2" />
                       </div>

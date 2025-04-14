@@ -151,17 +151,20 @@ export const approveMatch = async (req: Request, res: Response) => {
         }),
       });
 
-      await db
-        .delete(unmatchedTable)
+      // Caitlyn Valentina TODO
+      const [deleteID] = await db
+        .select({id: unmatchedTable.id})
+        .from(unmatchedTable)
         .where(
-          or(
-            eq(unmatchedTable.tutor_id, tutorId),
-            eq(unmatchedTable.tutee_id, selectedTuteeId)
-          )
-        );
-      console.log(
-        "we have successfully inserted into matched and deleted from unmatched tables"
-      );
+          eq(unmatchedTable.tutor_id, tutorId),
+        ).limit(1);
+
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.id, deleteID.id));
+        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
+  
+
+        //console.log(deleteID.id);
+
       res.status(200).json({ success: true });
     } else {
       throw new Error("Invalid Match");

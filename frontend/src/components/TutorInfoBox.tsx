@@ -1,6 +1,6 @@
 "use client";
 import config from "../config.ts";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import { tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
@@ -24,12 +24,14 @@ const STYLES = {
 type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   isUnmatched: boolean;
+  isHistory: boolean; 
   onDelete?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
   box_props,
   isUnmatched,
+  isHistory,
   onDelete,
 }: TutorInfoBoxProps) {
   const {
@@ -44,8 +46,6 @@ export default function TutorInfoBox({
     major,
     year_grad,
     phone,
-    previous_tutee,
-    continuing_tutee_name,
     grade_level_pref = [],
     num_tutees,
     disability_pref,
@@ -64,7 +64,8 @@ export default function TutorInfoBox({
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async () => {
     setIsDropdownOpen(false);
@@ -92,8 +93,39 @@ export default function TutorInfoBox({
     });
   };
 
+  const handlePermDelete = () => {
+    console.log("permdelete");
+    setIsDropdownOpen(false);
+    fetch(`${config.backendUrl}/perm-delete-tutor/${id}`, {
+      method: "POST",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        if (onDelete) onDelete(box_props);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div
+      ref={wrapperRef}
       className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
     >
       <table className="table-fixed w-full">
@@ -161,7 +193,7 @@ export default function TutorInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {isUnmatched && (
+                {(isUnmatched || isHistory) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}
@@ -177,9 +209,15 @@ export default function TutorInfoBox({
                       ></div>
                     </button>
 
-                    {isDropdownOpen && (
+                    {(isDropdownOpen && !isHistory) && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit}>Delete Tutor</button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+                    {(isDropdownOpen && isHistory) && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handlePermDelete}>Permanently Delete</button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}
@@ -220,13 +258,7 @@ export default function TutorInfoBox({
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
             </tr>
             <tr className="h-[55px] border-b text-sm">
-              <td className="px-3 w-1/5">
-                {previous_tutee === true ? (
-                  <span>Yes: {continuing_tutee_name}</span>
-                ) : (
-                  <span>No</span>
-                )}
-              </td>
+              <td className="px-3 w-1/5">asd</td>
               <td className="w-1/5">{grade_level_pref.join(", ")}</td>
               <td className="w-1/5">{num_tutees}</td>
               <td className="w-1/5">

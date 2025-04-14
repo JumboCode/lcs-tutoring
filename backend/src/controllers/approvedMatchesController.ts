@@ -24,32 +24,6 @@ const mailjetClient = new Mailjet.Client({
   apiSecret: (process.env.MAILJETSECRETKEY!),
 });
 
-export const moveToInactive = async (req: Request, res: Response) => {
-  // return res.send("inside move to inactive");
-  console.log(req.params);
-  console.log(req.body);
-  try {
-    console.log(req.body);
-    const match_id = parseInt(req.body.matchId);
-    const [match] = await db
-      .select()
-      .from(approvedMatchesTable)
-      .where(eq(approvedMatchesTable.id, match_id));
-    if (!match) {
-      res.status(404).json("Match not found");
-    }
-    await db
-      .update(approvedMatchesTable)
-      .set({ active: false })
-      .where(eq(approvedMatchesTable.id, match_id));
-    console.log("Match moved to inactive");
-    res.status(200).json("Match moved to inactive");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json("Error updating flag status");
-  }
-};
-
 export const deletePair = async (req: Request, res: Response) => {
   try {
     const match_id = Number(req.params.id);
@@ -64,7 +38,7 @@ export const deletePair = async (req: Request, res: Response) => {
     console.log("here");
     await db
       .update(approvedMatchesTable)
-      .set({ active: false })
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
       .where(eq(approvedMatchesTable.id, match_id));
     console.log("Match moved to inactive");
     res.status(200).json("Match moved to inactive");
@@ -76,7 +50,16 @@ export const deletePair = async (req: Request, res: Response) => {
       tutor_id: tutor_id,
     });
 
-    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+    const [deleteID] = await db
+    .select({id: matchedTable.id})
+    .from(matchedTable)
+    .where(
+      eq(matchedTable.tutor_id, tutor_id),
+    ).limit(1);
+
+    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+
+    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
 
     await db.update(tutorTable)
       .set({ history_date: new Date().toISOString().split("T")[0], })
@@ -85,6 +68,9 @@ export const deletePair = async (req: Request, res: Response) => {
     await db.insert(historyTable).values({
       tutee_id: tutee_id,
     });
+
+
+      
 
     await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 
@@ -190,6 +176,9 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
           special_needs: tuteeTable.special_needs,
+          parent_first_name: tuteeTable.parent_first_name,
+          parent_last_name: tuteeTable.parent_last_name,
+          parent_phone: tuteeTable.parent_phone,
         },
       })
       .from(approvedMatchesTable)
@@ -222,6 +211,8 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
           subjects: tuteeTable.subjects,
           tutoring_mode: tuteeTable.tutoring_mode,
           special_needs: tuteeTable.special_needs,
+          parent_first_name: tuteeTable.parent_first_name,
+          parent_last_name: tuteeTable.parent_last_name,
         },
       })
       .from(approvedMatchesTable)
@@ -379,7 +370,18 @@ async function moveTutorToUnmatched(tutor_id: string) {
     await db.insert(unmatchedTable).values({
       tutor_id: row.tutor_id,
     });
-    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+
+        const [deleteID] = await db
+        .select({id: matchedTable.id})
+        .from(matchedTable)
+        .where(
+        eq(matchedTable.tutor_id, tutor_id),
+        ).limit(1);
+
+    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+    
+    
+    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
   }
 }
 
@@ -402,18 +404,30 @@ async function moveTuteeToUnmatched(tutee_id: number) {
   await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
 
-
-
 export const emailPair = async (req: Request, res: Response) => {
   try {
-    // Aray and Sheza TODO: get the MatchId from the request and set the
-    //  `sent_email` field for that match to true.
-    const tuteeParentEmail = req.body.tuteeParentEmail;
+    const tutorName = req.body.tutorName;
     const tutorEmail = req.body.tutorEmail;
-    // TODO: remove all the console.log statements
-    console.log("Inside email pair");
-    console.log(tuteeParentEmail);
-    console.log(tutorEmail);
+    
+    const tuteeName = req.body.tuteeName;
+    const tuteeParentName = req.body.tuteeParentName;
+    const tuteeParentEmail = req.body.tuteeParentEmail;
+    const tuteeParentPhone = req.body.tuteeParentPhone;
+    const tuteeGrade = req.body.tuteeGrade;
+    const tuteeSubjects = req.body.tuteeSubjects;
+
+    const tuteeMessage = req.body.tuteeMessage.replaceAll("TUTEE_NAME", `${tuteeName}`).replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`);
+    const tutorMessage = req.body.tutorMessage.replaceAll("TUTOR_NAME", `${tutorName}`).replaceAll("TUTEE_NAME", `${tuteeName}`).replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`).replaceAll("TUTEE_GRADE", `${tuteeGrade == "0"
+      ? "Kindergarten"
+      : tuteeGrade == "1"
+      ? "1st"
+      : tuteeGrade == "2"
+      ? "2nd"
+      : tuteeGrade == "3"
+      ? "3rd"
+      : tuteeGrade + "th"}`).replaceAll("TUTEE_SUBJECTS", `${tuteeSubjects.join(", ")}`).replaceAll("TUTEE_PARENT_EMAIL", `${tuteeParentEmail}`).replaceAll("TUTEE_PARENT_PHONE", `${tuteeParentPhone}`);
+
+    const matchId = req.body.matchId;
 
     const request = mailjetClient.post('send', { version: 'v3.1' }).request({
       Messages: [
@@ -425,13 +439,21 @@ export const emailPair = async (req: Request, res: Response) => {
           To: [
             {
               Email: tuteeParentEmail,
-              Name: 'Tutee Parent',
+              Name: tuteeParentName,
             },
           ],
-          Subject: 'My first Mailjet Email!',
-          TextPart: 'Greetings from Mailjet!',
-          HTMLPart:
-            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+          Subject: 'LCSTutoring: New Tutor Match Confirmation',
+          TextPart: `Dear ${tuteeParentName},
+    
+    We are pleased to inform you that ${tuteeName} has been matched with a tutor. Your child's tutor will reach out to you directly within the next 48 hours to schedule your first session.
+    
+    If you do not hear from the tutor within 48 hours, please let us know and we will follow up.
+    
+    If you have any questions or concerns, please don't hesitate to contact us.
+    
+    Sincerely,
+    The LCSTutoring Team`,
+          HTMLPart: tuteeMessage,
         },
         {
           From: {
@@ -441,27 +463,82 @@ export const emailPair = async (req: Request, res: Response) => {
           To: [
             {
               Email: tutorEmail,
-              Name: 'Tutor',
+              Name: tutorName,
             },
           ],
-          Subject: 'My first Mailjet Email!',
-          TextPart: 'Greetings from Mailjet!',
-          HTMLPart:
-            '<h3>Dear passenger 1, welcome to <a href="https://www.mailjet.com/">Mailjet</a>!</h3><br />May the delivery force be with you!',
+          Subject: 'LCSTutoring: New Student Match Confirmation',
+          TextPart: `Dear ${tutorName},
+    
+    We are pleased to inform you that you have been matched with a new student, ${tuteeName}. Please reach out to the student's parent to schedule your first tutoring session.
+    
+    Student Details:
+    Name: ${tuteeName}
+    Grade: ${tuteeGrade == "0"
+      ? "Kindergarten"
+      : tuteeGrade == "1"
+      ? "1st"
+      : tuteeGrade == "2"
+      ? "2nd"
+      : tuteeGrade == "3"
+      ? "3rd"
+      : tuteeGrade + "th"}
+    Subjects: ${tuteeSubjects.join(", ")}
+    
+    Parent Details:
+    Name: ${tuteeParentName}
+    Email: ${tuteeParentEmail}
+    Phone: ${tuteeParentPhone}
+    
+    IMPORTANT NEXT STEPS:
+    1. Contact the parent within the next 48 hours to introduce yourself and arrange your first session.
+    2. After scheduling your session, please email us with:
+       - The scheduled date and time of your first session
+       - The modality (virtual or in-person)
+    
+    TRACKING YOUR SERVICE HOURS:
+    Remember to log all your tutoring hours in Tufts Civic Impact. This is important for:
+    - Keeping track of your community service
+    - Providing verification for your service commitments
+    - Helping us maintain program statistics
+    
+    To log hours:
+    1. Log in to your Tufts Civic Impact account
+    2. Navigate to the "Log Hours" section
+    3. Select "LCSTutoring" as your project
+    4. Enter the date, duration, and a brief description of your session
+    
+    If you have any questions or need assistance, please don't hesitate to contact us.
+    
+    Sincerely,
+    The LCSTutoring Team`,
+          HTMLPart: tutorMessage,
         },
       ],
     })
 
-    console.log("Got request");
+    const result = await request;
+    
+    await db.update(approvedMatchesTable)
+      .set({ sent_email: true })
+      .where(eq(approvedMatchesTable.id, matchId));
 
-    request
-      .then((result: any) => {
-        console.log(result.body)
-      })
-      .catch((err: any) => {
-        console.log("Status code: ", err.statusCode)
-      })
-  } catch (err) {
-    console.error(err)
-  };
+    console.log("Email sent:", result.body);
+    res.status(200).json({ message: "Emails sent successfully" });
+
+  } catch (err: any) {
+    console.error("Email sending error:", err);
+    res.status(500).json({ message: "Failed to send emails", error: err.message || err });
+  }
 };
+
+
+export const permDeleteMatch = async (req: Request, res: Response) => {
+  console.log("in backend for perm delete match")
+  try {
+    const match_id = req.params.match_id;
+    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, match_id));
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error permanently deleting tutor");
+  }
+}
