@@ -1,9 +1,9 @@
-import { clerkClient } from "@clerk/express";
 import { Request, Response } from "express";
 import { elist } from "../db/schema";
 
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
+import { eq } from "drizzle-orm";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -16,16 +16,19 @@ export const fetchMailingList = async (req: Request, res: Response) => {
             gradYear: elist.year_grad
         })
         .from(elist)
-        // .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
-        // .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
-        // .where(and(eq(approvedMatchesTable.active, false), inArray(approvedMatchesTable.id, matchIds)));
     res.status(200).json({
         mailingList: members,
     });
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
-  const { userId } = req.params;
-  await clerkClient.users.deleteUser(userId);
-  res.status(200).json({ message: "User deleted successfully" });
+export const deleteEListUser = async (req: Request, res: Response) => {
+    console.log("Deleting user from mailing list");
+    try {
+        const { id } = req.params;
+        await db.delete(elist).where(eq(elist.id, Number(id)));
+        res.status(200).json({ message: "Elist user deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error deleting user from mailing list");
+    }
 };

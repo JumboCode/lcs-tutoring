@@ -18,7 +18,7 @@ import { Request, Response } from "express";
 const db = drizzle(process.env.DATABASE_URL!);
 process.env.CLERK_SECRET_KEY!;
 
-export const tuteeSubmission = async (req: Request, res: Response) => {
+export const tuteeSubmission = async (req: Request, res: Response): Promise<any> => {
   try {
     const request = req.body;
     const {
@@ -67,7 +67,7 @@ export const tuteeSubmission = async (req: Request, res: Response) => {
   }
 };
 
-export const tutorSubmission = async (req: Request, res: Response) => {
+export const tutorSubmission = async (req: Request, res: Response): Promise<any> => {
   try {
     const request = req.body;
     const {
