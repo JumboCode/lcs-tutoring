@@ -16,9 +16,9 @@ const router = express.Router();
 
 router.get("/approved-matches", getApprovedMatches);
 router.post("/flag/", flagApprovedMatch);
-router.post("/unmatch-pair/:id", unmatchPair);
+router.post("/unmatch-pair", unmatchPair);
 router.post("/email", emailPair);
-router.post("/delete-pair/:id", deletePair);
+router.post("/delete-pair", deletePair);
 router.post("/perm-delete-match/:match_id", permDeleteMatch);
 
 

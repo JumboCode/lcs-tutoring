@@ -26,7 +26,7 @@ const mailjetClient = new Mailjet.Client({
 
 export const deletePair = async (req: Request, res: Response) => {
   try {
-    const match_id = Number(req.params.id);
+    const match_id = Number(req.body.pairId);
 
     const match = await db
       .select()
@@ -320,7 +320,7 @@ export const flagApprovedMatch = async (req: Request, res: Response) => {
 export const unmatchPair = async (req: Request, res: Response) => {
   try {
     console.log("inside unmatch pair");
-    const match_id = req.params.id;
+    const match_id = req.body.pairId;
 
     // query to get the approved match
     const query = await db
@@ -536,9 +536,11 @@ export const permDeleteMatch = async (req: Request, res: Response) => {
   console.log("in backend for perm delete match")
   try {
     const match_id = req.params.match_id;
-    await db.delete(approvedMatchesTable).where(eq(approvedMatchesTable.id, match_id));
+    await db.delete(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, Number(match_id)));
+    res.status(200).json({ message: "Permanently deleting match successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error permanently deleting tutor");
+    res.status(500).json({ message: "Failed to permanently delete match", error: error });
   }
 }

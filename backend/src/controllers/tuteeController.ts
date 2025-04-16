@@ -191,7 +191,7 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
         await db.update(tuteeTable)
           .set({ history_date: new Date().toISOString().split("T")[0], })
           .where(eq(tuteeTable.id, tutee_id));
-
+        
         await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
   
         await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, tutee_id));
@@ -214,9 +214,11 @@ export const permDeleteTutee = async (req: Request, res: Response) => {
   console.log("in backend for perm delete tutee")
   try {
     const tutee_id = Number(req.params.id);
+    await db.delete(historyTable).where(eq(historyTable.tutee_id, tutee_id));
     await db.delete(tuteeTable).where(eq(tuteeTable.id, tutee_id));
+    res.status(200).json({ message: "Tutee permanently deleted" });
   } catch (error) {
     console.error(error);
-    res.status(500).send("Error permanently deleting tutor");
+    res.status(500).json({ message: "Error permanently deleting tutee", error: error});
   }
 }
