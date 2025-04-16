@@ -29,7 +29,7 @@ export default function TuteeSuggestionBox({
 
   const [showPopup, setShowPopup] = useState(false);
   return (
-    <div className="relative border rounded-lg w-full max-w-full min-h-[250px] h-full">
+    <div className="relative border rounded-lg min-h-[250px] h-full w-full max-w-full">
       <div className="flex gap-4 items-center ml-5 p-2">
         <input
           type="radio"
@@ -62,7 +62,7 @@ export default function TuteeSuggestionBox({
 
       {/*Display Tutee Special Request in box*/}
       {notes && (
-        <div className="mx-2 mb-2 px-4 py-2 bg-red-100 border-red-500 text-black">
+        <div className="mx-2 mb-2 px-4 py-2 bg-red-100 border-red-500 text-black break-words">
           <strong className="text-red-600 text-sm">Special Request: </strong>
           <span className="text-sm">{notes}</span>
         </div>
@@ -85,7 +85,7 @@ export default function TuteeSuggestionBox({
             : grade + "th"}
         </span>
         <p
-          className="w-1/2 overflow-hidden text-ellipsis whitespace-nowrap"
+          className="w-1/2 overflow-hidden text-ellipsis whitespace-nowrap max-w-full break-words"
           onMouseEnter={() => setShowPopup(true)}
           onMouseLeave={() => setShowPopup(false)}
         >

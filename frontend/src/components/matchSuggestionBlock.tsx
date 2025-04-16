@@ -20,7 +20,7 @@ import { tutorInfo } from "../types";
 import { tuteeInfo } from "../types";
 
 import { Modal } from "react-bootstrap";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
@@ -49,6 +49,8 @@ const MatchSuggestionBlock = ({
   const [selectedCustomId, setselectedCustomId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [finishedSubmitting, setFinishedSubmitting] = useState(false);
+  const [maxHeight, setMaxHeight] = useState(0);
+  const tuteeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { handleAsyncOperation } = useRaceConditionHandler();
 
   const approveMatch = async () => {
@@ -82,6 +84,28 @@ const MatchSuggestionBlock = ({
       }
     });
   };
+
+  useEffect(() => {
+    // Reset the refs array
+    tuteeRefs.current = tuteeRefs.current.slice(0, 3);
+
+    // Find the maximum height after the component renders
+    const calculateMaxHeight = () => {
+      const heights = tuteeRefs.current
+        .filter((ref): ref is HTMLDivElement => ref !== null) // Type guard to filter out nulls
+        .map((ref) => ref.getBoundingClientRect().height);
+
+      if (heights.length > 0) {
+        const max = Math.max(...heights);
+        setMaxHeight(max);
+      }
+    };
+
+    requestAnimationFrame(calculateMaxHeight);
+
+    window.addEventListener("resize", calculateMaxHeight);
+    return () => window.removeEventListener("resize", calculateMaxHeight);
+  }, [tutee1, tutee2, tutee3]);
 
   const {
     first_name,
@@ -176,27 +200,48 @@ const MatchSuggestionBlock = ({
 
           {/*tutee info in below div*/}
           <div className="flex flex-row m-6 space-x-6 items-center justify-between">
-            {tutee1 && (
-              <TuteeSuggestionBox
-                tutee_info={tutee1}
-                isSelected={selectedTuteeId === tutee1.id}
-                onSelect={() => setselectedTuteeId(tutee1.id)}
-              />
-            )}
-            {tutee2 && (
-              <TuteeSuggestionBox
-                tutee_info={tutee2}
-                isSelected={selectedTuteeId === tutee2.id}
-                onSelect={() => setselectedTuteeId(tutee2.id)}
-              />
-            )}
-            {tutee3 && (
-              <TuteeSuggestionBox
-                tutee_info={tutee3}
-                isSelected={selectedTuteeId === tutee3.id}
-                onSelect={() => setselectedTuteeId(tutee3.id)}
-              />
-            )}
+            <div className="w-1/3">
+              {tutee1 && (
+                <div
+                  ref={(el) => (tuteeRefs.current[0] = el)}
+                  style={maxHeight > 0 ? { height: `${maxHeight}px` } : {}}
+                >
+                  <TuteeSuggestionBox
+                    tutee_info={tutee1}
+                    isSelected={selectedTuteeId === tutee1.id}
+                    onSelect={() => setselectedTuteeId(tutee1.id)}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="w-1/3">
+              {tutee2 && (
+                <div
+                  ref={(el) => (tuteeRefs.current[1] = el)}
+                  style={maxHeight > 0 ? { height: `${maxHeight}px` } : {}}
+                >
+                  <TuteeSuggestionBox
+                    tutee_info={tutee2}
+                    isSelected={selectedTuteeId === tutee2.id}
+                    onSelect={() => setselectedTuteeId(tutee2.id)}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="w-1/3">
+              {tutee3 && (
+                <div
+                  ref={(el) => (tuteeRefs.current[2] = el)}
+                  style={maxHeight > 0 ? { height: `${maxHeight}px` } : {}}
+                >
+                  <TuteeSuggestionBox
+                    tutee_info={tutee3}
+                    isSelected={selectedTuteeId === tutee3.id}
+                    onSelect={() => setselectedTuteeId(tutee3.id)}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           {/*buttons*/}
