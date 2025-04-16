@@ -24,8 +24,9 @@ const STYLES = {
 type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   isUnmatched: boolean;
-  isHistory: boolean; 
+  isHistory: boolean;
   onDelete?: (tutor: tutorBoxProps) => void;
+  onPermDelete?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
@@ -33,6 +34,7 @@ export default function TutorInfoBox({
   isUnmatched,
   isHistory,
   onDelete,
+  onPermDelete,
 }: TutorInfoBoxProps) {
   const {
     id,
@@ -102,7 +104,7 @@ export default function TutorInfoBox({
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        if (onDelete) onDelete(box_props);
+        if (onPermDelete) onPermDelete(box_props);
       })
       .catch((error) => console.error(error));
   };
@@ -209,15 +211,17 @@ export default function TutorInfoBox({
                       ></div>
                     </button>
 
-                    {(isDropdownOpen && !isHistory) && (
+                    {isDropdownOpen && !isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit}>Delete Tutor</button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}
-                    {(isDropdownOpen && isHistory) && (
+                    {isDropdownOpen && isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handlePermDelete}>Permanently Delete</button>
+                        <button onClick={handlePermDelete}>
+                          Permanently Delete
+                        </button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}

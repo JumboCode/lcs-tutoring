@@ -338,6 +338,7 @@ export default function TuteeForm() {
                 <div className="flex flex-col" key={field.id}>
                   <label htmlFor={field.id} className="pb-1">
                     {field.label}
+                    <sup className="text-red-500 font-bold"> *</sup>
                   </label>
                   <input
                     type="text"
@@ -362,7 +363,9 @@ export default function TuteeForm() {
             </div>
             <div className="flex space-x-4 pt-3">
               <div className="w-1/2 space-y-2">
-                <h1 className="text-base space-y-2">Gender</h1>
+                <h1 className="text-base space-y-2">
+                  Gender<sup className="text-red-500 font-bold"> *</sup>
+                </h1>
                 <Select
                   id="small"
                   name="gender"
@@ -382,7 +385,9 @@ export default function TuteeForm() {
                 )}
               </div>
               <div className="w-1/2 space-y-2">
-                <h1 className="text-base space-y-2">Grade</h1>
+                <h1 className="text-base space-y-2">
+                  Grade<sup className="text-red-500 font-bold"> *</sup>
+                </h1>
                 <Select
                   id="small"
                   name="grade"
@@ -403,7 +408,9 @@ export default function TuteeForm() {
               </div>
             </div>
             <div className="pt-3 flex flex-col">
-              <label>Special Needs?</label>
+              <label>
+                Special Needs?<sup className="text-red-500 font-bold"> *</sup>
+              </label>
               <div className="flex gap-3 pt-1">
                 <label className="flex items-center gap-2">
                   <input
@@ -468,6 +475,7 @@ export default function TuteeForm() {
                 <div className="flex flex-col" key={field.id}>
                   <label htmlFor={field.id} className="pb-1">
                     {field.label}
+                    <sup className="text-red-500 font-bold"> *</sup>
                   </label>
                   <input
                     type="text"
@@ -505,7 +513,9 @@ export default function TuteeForm() {
                 Tutoring Preference
               </h1>
               <div className="space-y-2">
-                <h1 className="text-base space-y-2">Subjects</h1>
+                <h1 className="text-base space-y-2">
+                  Subjects<sup className="text-red-500 font-bold"> *</sup>
+                </h1>
                 <Select
                   isMulti
                   name="subjects"
@@ -530,7 +540,7 @@ export default function TuteeForm() {
                 <h1 className="text-base space-y-2">
                   What are your preferences regarding in-person tutoring?
                   (Please note: students must come to Tufts campus to be tutored
-                  in person)
+                  in person)<sup className="text-red-500 font-bold"> *</sup>
                 </h1>
                 <Select
                   name="tutoringMode"
@@ -576,7 +586,7 @@ export default function TuteeForm() {
             <h1 className="text-xl text-left pb-3 font-bold">Agreement</h1>
             <p>
               I understand and agree to the "Tufts Campus - Minor" waiver (shown
-              below)
+              below)<sup className="text-red-500 font-bold"> *</sup>
             </p>
             <div className="flex space-x-3 py-2">
               <label className="inline-flex items-center space-x-2 text-black">
@@ -621,6 +631,7 @@ export default function TuteeForm() {
               <p className="text-black text-bold">
                 Electronic Signature (Please note that your electronic signature
                 has the same legality as one that is hand-signed)
+                <sup className="text-red-500 font-bold"> *</sup>
               </p>
               <input
                 type="text"

@@ -363,6 +363,7 @@ export default function TutorForm() {
                 <div className="flex flex-col" key={field.id}>
                   <label htmlFor={field.id} className="pb-1">
                     {field.label}
+                    <sup className="text-red-500 font-bold"> *</sup>
                   </label>
                   <input
                     type="text"
@@ -400,6 +401,7 @@ export default function TutorForm() {
                 <label>
                   How many students do you want to tutor? (Not including the
                   student if stated above)
+                  <sup className="text-red-500 font-bold"> *</sup>
                 </label>
                 <Select
                   id="small"
@@ -426,6 +428,7 @@ export default function TutorForm() {
               <div className="flex flex-col space-y-2">
                 <label>
                   What grade levels are you comfortable working with?
+                  <sup className="text-red-500 font-bold"> *</sup>
                 </label>
                 <Select
                   isMulti
@@ -453,6 +456,7 @@ export default function TutorForm() {
                   needs (including but not limited to learning disabilities,
                   ADD/ADHD, Autism, etc)? We will provide resources to assist
                   while tutoring.
+                  <sup className="text-red-500 font-bold"> *</sup>
                 </label>
                 <div className="flex gap-3 pt-1">
                   <label className="flex items-center gap-2">
@@ -497,6 +501,7 @@ export default function TutorForm() {
               <div className="space-y-2">
                 <h1 className="text-base space-y-2">
                   What subjects would you like to tutor?
+                  <sup className="text-red-500 font-bold"> *</sup>
                 </h1>
                 <Select
                   isMulti
@@ -533,7 +538,9 @@ export default function TutorForm() {
               </div>
 
               <div className="space-y-2">
-                <h1 className="text-base">Tutoring Mode</h1>
+                <h1 className="text-base">
+                  Tutoring Mode<sup className="text-red-500 font-bold"> *</sup>
+                </h1>
                 <Select
                   id="small"
                   name="tutoringMode"
@@ -580,7 +587,7 @@ export default function TutorForm() {
             <h1 className="text-xl text-left pb-3 font-bold">Agreement</h1>
             <p>
               I understand and agree to the "Tufts Tutor Code of Conduct" (shown
-              below)
+              below)<sup className="text-red-500 font-bold"> *</sup>
             </p>
             <div className="flex space-x-3 py-2">
               <label className="inline-flex items-center space-x-2 text-black">
@@ -627,6 +634,7 @@ export default function TutorForm() {
               <p className="text-black text-bold">
                 Electronic Signature (Please note that your electronic signature
                 has the same legality as one that is hand-signed)
+                <sup className="text-red-500 font-bold"> *</sup>
               </p>
               <input
                 type="text"

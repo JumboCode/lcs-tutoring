@@ -272,6 +272,12 @@ export default function TuteeTable() {
                   key={index}
                   isUnmatched={false}
                   isHistory={true}
+                  onPermDelete={(deletedTutee) => {
+                    // Remove the deleted tutee from unmatched tutees
+                    setHistoryTutees((prev) =>
+                      prev.filter((tutee) => tutee.id !== deletedTutee.id)
+                    );
+                  }}
                 />
               ))}
             </div>

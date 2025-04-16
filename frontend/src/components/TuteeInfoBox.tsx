@@ -26,6 +26,7 @@ type TuteeInfoBoxProps = {
   isUnmatched: boolean;
   isHistory: boolean;
   onDelete?: (tutee: tuteeBoxProps) => void;
+  onPermDelete?: (tutee: tuteeBoxProps) => void;
 };
 
 export default function TuteeInfoBox({
@@ -33,6 +34,7 @@ export default function TuteeInfoBox({
   isUnmatched,
   isHistory,
   onDelete,
+  onPermDelete,
 }: TuteeInfoBoxProps) {
   const {
     id,
@@ -102,7 +104,7 @@ export default function TuteeInfoBox({
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        if (onDelete) onDelete(box_props);
+        if (onPermDelete) onPermDelete(box_props);
       })
       .catch((error) => console.error(error));
   };
@@ -219,7 +221,7 @@ export default function TuteeInfoBox({
                       ></div>
                     </button>
 
-                    {(isDropdownOpen && !isHistory) && (
+                    {isDropdownOpen && !isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handleSubmit} className="">
                           Delete Tutee
@@ -228,7 +230,7 @@ export default function TuteeInfoBox({
                       </div>
                     )}
 
-                    {(isDropdownOpen && isHistory) && (
+                    {isDropdownOpen && isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
                         <button onClick={handlePermDelete} className="">
                           Permanently Delete

@@ -29,7 +29,7 @@ export default function TuteeSuggestionBox({
 
   const [showPopup, setShowPopup] = useState(false);
   return (
-    <div className="relative border rounded-lg w-full max-w-full min-h-[250px]">
+    <div className="relative border rounded-lg w-full max-w-full min-h-[250px] h-full">
       <div className="flex gap-4 items-center ml-5 p-2">
         <input
           type="radio"

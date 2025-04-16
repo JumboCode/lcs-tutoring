@@ -88,7 +88,6 @@ export default function ApprovedMatches() {
   //   console.log("Inactive matches: ", inactive_matches); // Added logging
   // }, [active_matches, inactive_matches]);
 
-
   return (
     <div className="w-full flex justify-end flex-col">
       <div className="flex flex-row justify-between">
@@ -228,6 +227,14 @@ export default function ApprovedMatches() {
                   pair_date={match.pair_date}
                   inactive_date={match.inactive_date}
                   isActive={false}
+                  onPermDelete={(deletedMatchId) => {
+                    // Remove the deleted match from inactive matches
+                    setInactiveMatches((prev) =>
+                      prev.filter(
+                        (pair) => pair.matchId.toString() !== deletedMatchId
+                      )
+                    );
+                  }}
                 />
               ))}
             </div>

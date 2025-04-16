@@ -35,6 +35,7 @@ type MatchedInfoBoxProps = {
   isActive: boolean;
   sent_email: boolean;
   onUnpair?: (matchId: string) => void;
+  onPermDelete?: (matchId: string) => void;
 };
 
 export default function MatchedInfoBoxbox_props({
@@ -47,6 +48,7 @@ export default function MatchedInfoBoxbox_props({
   isActive,
   sent_email,
   onUnpair,
+  onPermDelete,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
 
@@ -182,7 +184,7 @@ export default function MatchedInfoBoxbox_props({
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        if (onUnpair) onUnpair(matchId);
+        if (onPermDelete) onPermDelete(matchId);
       })
       .catch((error) => console.error(error));
   };
@@ -191,7 +193,6 @@ export default function MatchedInfoBoxbox_props({
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
   };
-
 
   const handleSendEmail = async () => {
     await handleEmailOperation(async () => {
@@ -216,7 +217,7 @@ export default function MatchedInfoBoxbox_props({
             tutorMessage: tutor_input,
           }),
         });
-        
+
         const data = await response.json();
         setEmailSent(true);
         return data;

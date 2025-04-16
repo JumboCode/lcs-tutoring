@@ -273,6 +273,12 @@ export default function TutorTable() {
                   key={index}
                   isUnmatched={false}
                   isHistory={true}
+                  onPermDelete={(deletedTutor) => {
+                    // Remove the deleted tutor from unmatched tutors
+                    setHistoryTutors((prev) =>
+                      prev.filter((tutor) => tutor.id !== deletedTutor.id)
+                    );
+                  }}
                 />
               ))}
             </div>
