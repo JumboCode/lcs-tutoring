@@ -72,11 +72,12 @@ export default function MatchedInfoBoxbox_props({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [tutee_email, _] =
-    useState(`<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-<div style="text-align: center; margin-bottom: 20px;">
+    useState(`<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;"><div style="text-align: center; margin-bottom: 20px;">
 <h2 style="color: #4a4a4a;">New Tutor Match Confirmation</h2></div>
 <p>Dear TUTEE_PARENT_NAME,</p>
-<p>We are pleased to inform you that <strong>TUTEE_NAME</strong> has been matched with a tutor. Your child's tutor will reach out to you directly within the next 48 hours to schedule your first session.</p>
+<p>We are pleased to inform you that 
+<strong>TUTEE_NAME</strong>
+has been matched with a tutor. Your child's tutor will reach out to you directly within the next 48 hours to schedule your first session.</p>
 <p>If you do not hear from the tutor within 48 hours, please let us know and we will follow up.</p>
 <p>If you have any questions or concerns, please don't hesitate to contact us.</p>
 <p>Sincerely,</p>

@@ -67,36 +67,52 @@ export const getTutees = async ( req: Request, res: Response) => {
       tutoringMode?.toString(),
     );
 
-    // console.log(filteredTutees);
-
     // getting all ids of the filtered tutors
     const tuteeIds = filteredTutees
       .map((tutee) => tutee.id)
       .filter((id) => id !== undefined);
 
+    // getting all the matched tutees but only one of each instance in the matchedTable
     const matchedTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id))
-      .where(inArray(tuteeTable.id, tuteeIds));
+      .where(
+        inArray(
+          tuteeTable.id,
+          db.select({ id: matchedTable.tutee_id })
+            .from(matchedTable)
+            .where(inArray(matchedTable.tutee_id, tuteeIds))
+            .groupBy(matchedTable.tutee_id))
+    );
 
     const unmatchedTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id))
-      .where(inArray(tuteeTable.id, tuteeIds));
+      .where(
+        inArray(
+          tuteeTable.id,
+          db.select({ id: unmatchedTable.tutee_id })
+            .from(unmatchedTable)
+            .where(inArray(unmatchedTable.tutee_id, tuteeIds))
+            .groupBy(unmatchedTable.tutee_id))
+    );
 
     const historyTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id))
-      .where(inArray(tuteeTable.id, tuteeIds));
+      .where(
+        inArray(
+          tuteeTable.id,
+          db.select({ id: historyTable.tutee_id })
+            .from(historyTable)
+            .where(inArray(historyTable.tutee_id, tuteeIds))
+            .groupBy(historyTable.tutee_id))
+    );
 
-    console.log("sending tutees");
     res.send({
-      matchedTutees: matchedTutees.map((row) => row.tutee),
-      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
-      historyTutees: historyTutees.map((row) => row.tutee),
+      matchedTutees: matchedTutees,
+      unmatchedTutees: unmatchedTutees,
+      historyTutees: historyTutees,
     });
   } catch (error) {
     console.error(error);

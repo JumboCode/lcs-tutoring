@@ -242,12 +242,17 @@ export default function TutorTable() {
                   isHistory={false}
                   onDelete={(deletedTutor) => {
                     console.log("Deleted tutor id: ", deletedTutor.id);
+                    const updatedTutor = {
+                      ...deletedTutor,
+                      history_date: new Date().toISOString().split("T")[0],
+                    };
+
                     // Remove the deleted tutor from unmatched tutors
                     setUnmatchedTutors((prev) =>
                       prev.filter((tutor) => tutor.id !== deletedTutor.id)
                     );
                     // Add the deleted tutor to history tutors
-                    setHistoryTutors((prev) => [...prev, deletedTutor]);
+                    setHistoryTutors((prev) => [...prev, updatedTutor]);
                   }}
                 />
               ))}

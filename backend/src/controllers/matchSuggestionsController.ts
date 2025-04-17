@@ -139,8 +139,11 @@ export const approveMatch = async (req: Request, res: Response) => {
     if (tutorId > 0 && selectedTuteeId > 0) {
       await db.insert(matchedTable).values({
         tutee_id: selectedTuteeId,
+      });
+      await db.insert(matchedTable).values({
         tutor_id: tutorId,
       });
+      
       console.log("Are we inserting into matched table??");
 
       await db.insert(approvedMatchesTable).values({
@@ -174,22 +177,3 @@ export const approveMatch = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-/*
-if (tutee_id > 0) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutee_id, tutee_id)); //returns an array with only one element
-
-    if (query.length > 0) {
-      await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-
-    } else {
-      throw new Error("ID not found in matched table");
-    }
-  } else {
-    throw new Error("Invalid ID");
-  }*/

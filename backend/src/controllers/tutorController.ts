@@ -10,7 +10,7 @@ import {
   unmatchedTable,
   historyTable,
 } from "../db/schema";
-import { or, inArray, arrayContains, and, eq } from "drizzle-orm";
+import { or, inArray, notInArray, arrayContains, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
 
 const db = drizzle(process.env.DATABASE_URL!);
@@ -81,25 +81,55 @@ export const getTutors = async (req: Request, res: Response) => {
     const matchedTutors = await db
       .selectDistinct()
       .from(tutorTable)
-      .innerJoin(matchedTable, eq(tutorTable.id, matchedTable.tutor_id))
-      .where(inArray(tutorTable.id, tutorIds));
-
+      .where(
+        inArray(
+          tutorTable.id,
+          db.select({ id: matchedTable.tutor_id })
+            .from(matchedTable)
+            .where(inArray(matchedTable.tutor_id, tutorIds))
+            .groupBy(matchedTable.tutor_id))
+      );
+    
     const unmatchedTutors = await db
       .selectDistinct()
       .from(tutorTable)
-      .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
-      .where(inArray(tutorTable.id, tutorIds));
+      .where(
+        and(
+          inArray(
+            tutorTable.id,
+            db.select({ id: unmatchedTable.tutor_id })
+              .from(unmatchedTable)
+              .where(inArray(unmatchedTable.tutor_id, tutorIds))
+              .groupBy(unmatchedTable.tutor_id)),
+          notInArray(
+            tutorTable.id,
+            db.select({ id: matchedTable.tutor_id })
+              .from(matchedTable)
+          )
+        )
+      );  
     
+    const test = await db.select({ id: matchedTable.tutor_id })
+    .from(matchedTable)
+
+    console.log("matched table:", test);
+                
     const historyTutors = await db
       .selectDistinct()
       .from(tutorTable)
-      .innerJoin(historyTable, eq(tutorTable.id, historyTable.tutor_id))
-      .where(inArray(tutorTable.id, tutorIds));
+      .where(
+        inArray(
+          tutorTable.id,
+          db.select({ id: historyTable.tutor_id })
+            .from(historyTable)
+            .where(inArray(historyTable.tutor_id, tutorIds))
+            .groupBy(historyTable.tutor_id))
+      );  
 
     res.send({
-      matchedTutors: matchedTutors.map((row: any) => row.tutor),
-      unmatchedTutors: unmatchedTutors.map((row: any) => row.tutor),
-      historyTutors: historyTutors.map((row: any) => row.tutor),
+      matchedTutors: matchedTutors,
+      unmatchedTutors: unmatchedTutors,
+      historyTutors: historyTutors,
     });
   } catch (error) {
     console.error(error);

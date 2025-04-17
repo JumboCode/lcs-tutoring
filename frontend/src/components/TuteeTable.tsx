@@ -59,6 +59,7 @@ export default function TuteeTable() {
         );
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
+        console.log("Matched Tutees: ", matchedTutees);
         // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
         setMatchedTutees(matchedTutees);
         setUnmatchedTutees(unmatchedTutees);
@@ -241,12 +242,16 @@ export default function TuteeTable() {
                   isUnmatched={true}
                   isHistory={false}
                   onDelete={(deletedTutee) => {
+                    const updatedTutee = {
+                      ...deletedTutee,
+                      history_date: new Date().toISOString().split("T")[0],
+                    };
                     // Remove the deleted tutee from unmatched tutees
                     setUnmatchedTutees((prev) =>
                       prev.filter((tutee) => tutee.id !== deletedTutee.id)
                     );
                     // Add the deleted tutee to history tutees
-                    setHistoryTutees((prev) => [...prev, deletedTutee]);
+                    setHistoryTutees((prev) => [...prev, updatedTutee]);
                   }}
                 />
               ))}
