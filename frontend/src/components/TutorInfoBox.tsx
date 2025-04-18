@@ -53,11 +53,12 @@ export default function TutorInfoBox({
     disability_pref,
     tutoring_mode,
     notes,
-    flagged,
+    priority,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [isPriority, setIsPriority] = useState(false);
   const { handleAsyncOperation } = useRaceConditionHandler();
 
   const handleToggleDescription = () => {
@@ -69,7 +70,7 @@ export default function TutorInfoBox({
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async () => {
+  const handleDelete = async () => {
     setIsDropdownOpen(false);
 
     await handleAsyncOperation(async () => {
@@ -94,7 +95,30 @@ export default function TutorInfoBox({
       }
     });
   };
-
+  const checkPriorityFlag = async () => {
+    console.log("priority");
+    const POST_BODY = { tutor_id: id };
+    console.log(POST_BODY);
+    setIsDropdownOpen(false);
+    const response = await fetch(`${config.backendUrl}/check-priority-flag`, {
+      method: "POST",
+      body: JSON.stringify(POST_BODY),
+    });
+    const data = await response.json();
+    console.log(data.priority);
+    return data.priority;
+  };
+  const handleTogglePriority = async () => {
+    console.log("priority");
+    const POST_BODY = { tutor_id: id };
+    setIsDropdownOpen(false);
+    const response = await fetch(`${config.backendUrl}/toggle-priority-flag`, {
+      method: "POST",
+      body: JSON.stringify(POST_BODY),
+    });
+    const data = await response.json();
+    setIsPriority(data.priority);
+  };
   const handlePermDelete = () => {
     console.log("permdelete");
     setIsDropdownOpen(false);
@@ -110,6 +134,9 @@ export default function TutorInfoBox({
   };
 
   useEffect(() => {
+    checkPriorityFlag().then((priority) => {
+      setIsPriority(priority);
+    });
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
@@ -117,9 +144,8 @@ export default function TutorInfoBox({
       ) {
         setIsDropdownOpen(false);
       }
+      document.addEventListener("mousedown", handleClickOutside);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -147,7 +173,7 @@ export default function TutorInfoBox({
               </span>
               <span className="text-[#D70000]">
                 {notes && ` *`}
-                {flagged && (
+                {priority && (
                   <img
                     src={RED_FLAG}
                     className="w-4 h-4 inline-block ml-3 mr-2"
@@ -213,7 +239,15 @@ export default function TutorInfoBox({
 
                     {isDropdownOpen && !isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handleSubmit}>Delete Tutor</button>
+                        <button onClick={handleDelete}>Delete Tutor</button>
+                        <img src={TrashCan} className="mx-2" />
+                      </div>
+                    )}
+                    {isDropdownOpen && !isHistory && (
+                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <button onClick={handleTogglePriority}>
+                          {isPriority ? "Deprioritize" : "Priority"} Tutor
+                        </button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}
