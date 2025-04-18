@@ -7,6 +7,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import TrashCan from "../assets/images/delete.svg";
+import PriorityFlag from "../assets/images/admin_view/flag.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 const STYLES = {
@@ -102,6 +103,9 @@ export default function TutorInfoBox({
     setIsDropdownOpen(false);
     const response = await fetch(`${config.backendUrl}/check-priority-flag`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(POST_BODY),
     });
     const data = await response.json();
@@ -109,15 +113,18 @@ export default function TutorInfoBox({
     return data.priority;
   };
   const handleTogglePriority = async () => {
-    console.log("priority");
+    console.log("priority toggle");
     const POST_BODY = { tutor_id: id };
-    setIsDropdownOpen(false);
     const response = await fetch(`${config.backendUrl}/toggle-priority-flag`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(POST_BODY),
     });
     const data = await response.json();
     setIsPriority(data.priority);
+    setIsDropdownOpen(false);
   };
   const handlePermDelete = () => {
     console.log("permdelete");
@@ -154,7 +161,9 @@ export default function TutorInfoBox({
   return (
     <div
       ref={wrapperRef}
-      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
+      className={`h-auto border-b-1 text-left ${
+        STYLES.transitions.colors
+      } odd:bg-white even:bg-gray-50 ${isPriority ? "bg-yellow-100" : ""}`}
     >
       <table className="table-fixed w-full">
         <thead>
@@ -238,17 +247,22 @@ export default function TutorInfoBox({
                     </button>
 
                     {isDropdownOpen && !isHistory && (
-                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handleDelete}>Delete Tutor</button>
-                        <img src={TrashCan} className="mx-2" />
-                      </div>
-                    )}
-                    {isDropdownOpen && !isHistory && (
-                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handleTogglePriority}>
-                          {isPriority ? "Deprioritize" : "Priority"} Tutor
-                        </button>
-                        <img src={TrashCan} className="mx-2" />
+                      <div className="flex flex-col whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                        <div className="flex items-center mb-2">
+                          <img src={TrashCan} className="w-4 h-4 mr-2" />
+                          <button onClick={handleDelete} className="mr-2">
+                            Delete Tutor
+                          </button>
+                        </div>
+                        <div className="flex items-center mb-2">
+                          <img src={PriorityFlag} className="w-4 h-4 mr-2" />
+                          <button
+                            onClick={handleTogglePriority}
+                            className="mr-2"
+                          >
+                            {isPriority ? "Deprioritize" : "Priority"} Tutor
+                          </button>
+                        </div>
                       </div>
                     )}
                     {isDropdownOpen && isHistory && (
