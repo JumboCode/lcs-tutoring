@@ -72,47 +72,28 @@ export const getTutees = async ( req: Request, res: Response) => {
       .map((tutee) => tutee.id)
       .filter((id) => id !== undefined);
 
-    // getting all the matched tutees but only one of each instance in the matchedTable
     const matchedTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .where(
-        inArray(
-          tuteeTable.id,
-          db.select({ id: matchedTable.tutee_id })
-            .from(matchedTable)
-            .where(inArray(matchedTable.tutee_id, tuteeIds))
-            .groupBy(matchedTable.tutee_id))
-    );
+      .innerJoin(matchedTable, eq(tuteeTable.id, matchedTable.tutee_id))
+      .where(inArray(tuteeTable.id, tuteeIds));
 
     const unmatchedTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .where(
-        inArray(
-          tuteeTable.id,
-          db.select({ id: unmatchedTable.tutee_id })
-            .from(unmatchedTable)
-            .where(inArray(unmatchedTable.tutee_id, tuteeIds))
-            .groupBy(unmatchedTable.tutee_id))
-    );
+      .innerJoin(unmatchedTable, eq(tuteeTable.id, unmatchedTable.tutee_id))
+      .where(inArray(tuteeTable.id, tuteeIds));
 
     const historyTutees = await db
       .selectDistinct()
       .from(tuteeTable)
-      .where(
-        inArray(
-          tuteeTable.id,
-          db.select({ id: historyTable.tutee_id })
-            .from(historyTable)
-            .where(inArray(historyTable.tutee_id, tuteeIds))
-            .groupBy(historyTable.tutee_id))
-    );
+      .innerJoin(historyTable, eq(tuteeTable.id, historyTable.tutee_id))
+      .where(inArray(tuteeTable.id, tuteeIds));
 
     res.send({
-      matchedTutees: matchedTutees,
-      unmatchedTutees: unmatchedTutees,
-      historyTutees: historyTutees,
+      matchedTutees: matchedTutees.map((row) => row.tutee),
+      unmatchedTutees: unmatchedTutees.map((row) => row.tutee),
+      historyTutees: historyTutees.map((row) => row.tutee),
     });
   } catch (error) {
     console.error(error);

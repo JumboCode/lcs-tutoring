@@ -90,6 +90,13 @@ export const getTutors = async (req: Request, res: Response) => {
             .groupBy(matchedTable.tutor_id))
       );
     
+    const matched_ids = await db.select({ id: matchedTable.tutor_id })
+      .from(matchedTable)
+  
+    const matched_ids_arr = matched_ids
+      .map((row) => row.id)
+      .filter((id): id is string => id !== null);
+    
     const unmatchedTutors = await db
       .selectDistinct()
       .from(tutorTable)
@@ -103,16 +110,10 @@ export const getTutors = async (req: Request, res: Response) => {
               .groupBy(unmatchedTable.tutor_id)),
           notInArray(
             tutorTable.id,
-            db.select({ id: matchedTable.tutor_id })
-              .from(matchedTable)
+            matched_ids_arr
           )
         )
-      );  
-    
-    const test = await db.select({ id: matchedTable.tutor_id })
-    .from(matchedTable)
-
-    console.log("matched table:", test);
+      );
                 
     const historyTutors = await db
       .selectDistinct()

@@ -14,7 +14,7 @@ export type tuteeBoxProps = {
   parent_last_name: string;
   parent_phone: string;
   notes?: string;
-  flagged: boolean;
+  priority: boolean;
 };
 
 export type tutorBoxProps = {
@@ -34,7 +34,7 @@ export type tutorBoxProps = {
   tutoring_mode: string;
   num_tutees: number;
   notes: string;
-  flagged: boolean;
+  priority: boolean;
 };
 
 export interface tutorInfo {

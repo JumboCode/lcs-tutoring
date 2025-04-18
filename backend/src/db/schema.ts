@@ -18,7 +18,7 @@ export const tutorTable = pgTable("tutor", {
   previous_tutee: boolean('previous_tutee').default(false).notNull(),
   continuing_tutee_name: varchar({ length: 50 }),
   num_tutees: integer().default(0).notNull(),
-  flagged: boolean('flagged').notNull().default(false),
+  priority: boolean('priority').notNull().default(false),
   notes: text(),
   language_proficiencies: varchar({ length: 100 }),
 });
@@ -37,7 +37,7 @@ export const tuteeTable = pgTable("tutee", {
   parent_email: varchar({ length: 100 }).notNull(),
   subjects: varchar({ length: 50 }).array(),
   tutoring_mode: varchar({ length: 50 }).notNull(),
-  flagged: boolean('flagged').notNull().default(false),
+  priority: boolean('priority').notNull().default(false),
   notes: text(),
   date: date().notNull(),
   history_date: date(),
