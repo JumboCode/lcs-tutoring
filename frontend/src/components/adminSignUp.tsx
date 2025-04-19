@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
 import config from "../config";
+import CloseButton from "../assets/images/filter/close_button.svg";
+import BlueCloseButton from "../assets/images/filter/blue_close.svg";
 
 interface AdminModalProps {
   onHide: () => void;
@@ -15,6 +17,7 @@ export default function AdminSignUp(props: AdminModalProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [closeButton, setCloseButton] = useState(CloseButton);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,9 +40,10 @@ export default function AdminSignUp(props: AdminModalProps) {
       });
 
       const result = await response.json();
+      console.log(result)
       if (response.ok) {
         setSuccess(true);
-        console.log("User created successfully:", result.user);
+        console.log("User created successfully:", result);
       } else {
         setError(result.error || "Failed to create account.");
       }
@@ -54,13 +58,12 @@ export default function AdminSignUp(props: AdminModalProps) {
   return (
     <Modal
       {...props}
-      size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
       contentClassName="border-0 bg-transparent"
     >
       <Modal.Body>
-        <div className="flex flex-col justify-center items-center h-screen gap-4">
+        <div className="flex flex-col justify-center items-center gap-4">
           {/* Success message */}
           {success && (
             <div className="w-[514px] h-[60px] p-4 bg-green-100 text-green-700 border border-green-400 rounded flex items-center">
@@ -77,10 +80,21 @@ export default function AdminSignUp(props: AdminModalProps) {
             </div>
           )}
 
-          <div className="bg-white shadow-lg rounded-lg p-6 w-[514px] h-[600px] flex flex-col justify-center gap-4">
-            <h2 className="text-2xl font-semibold text-center pt-4">
-              Add a new LCS Admin
-            </h2>
+          <div className="relative bg-white shadow-lg rounded-lg p-6 w-[514px] h-[600px] flex flex-col justify-center gap-4">
+              <img 
+                className="w-[30px] h-[30px] absolute right-5 top-5"
+                src={closeButton}
+                onMouseOver={() => setCloseButton(BlueCloseButton)}
+                onMouseLeave={() => setCloseButton(CloseButton)}
+                onClick={() => {
+                  props.onHide();
+                  setCloseButton(CloseButton);
+                }}
+              />
+              <h2 className="text-2xl font-semibold text-center pt-5">
+                Add a new LCS Admin
+              </h2>
+            
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="pb-3">
                 <label className="block text-sm font-medium">First Name</label>
@@ -124,7 +138,7 @@ export default function AdminSignUp(props: AdminModalProps) {
 
               <button
                 type="submit"
-                className="w-full bg-blue-100 text-black font-semibold py-2 rounded hover:bg-blue-200"
+                className="w-full bg-blue-100 text-black font-semibold py-2 rounded hover:bg-blue-200 mb-4"
                 disabled={loading}
               >
                 {loading ? "Signing Up..." : "Sign Up"}

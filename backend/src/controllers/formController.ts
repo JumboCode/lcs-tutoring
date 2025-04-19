@@ -6,6 +6,7 @@ import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
 
+
 import {
   tuteeTable,
   tutorTable,
@@ -160,8 +161,15 @@ export const handleEList = async (req: Request, res: Response): Promise<any> => 
 
 export const createAdmin = async (req: Request, res: Response): Promise<any> => {
   const { emailAddress, password, firstName, lastName } = req.body;
-
-  if (!emailAddress[0].endsWith("@tufts.edu")) {
+  const regex = /[^A-Za-z0-9]/;
+  
+  if (emailAddress[0] == "" || password == "" || firstName == "" || lastName == "") {
+    return res.status(400).json({ error: "Please fill out all the fields to add a new admin." });
+  }
+  else if (regex.test(firstName) || regex.test(lastName)) {
+    return res.status(400).json({ error: "Please double check the first and last name of the new admin." });
+  }
+  else if (!emailAddress[0].endsWith("@tufts.edu")) {
     return res.status(400).json({ error: "Only Tufts University emails (@tufts.edu) are allowed." });
   }
 
