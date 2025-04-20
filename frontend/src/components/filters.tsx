@@ -38,10 +38,14 @@ export default function FilterModal(props: FilterModalProps) {
   const [imageSrc, setImageSrc] = useState(GrayCloseButton);
 
   const handleToggleDisability = (button: boolean) => {
-    setSelectedButtonDisability(button);
+    setSelectedButtonDisability((prevSelected) =>
+      prevSelected === button ? undefined : button
+    );
   };
   const handleToggleMode = (button: string) => {
-    setSelectedButtonMode(button);
+    setSelectedButtonMode((prevSelected) =>
+      prevSelected === button ? "" : button
+    );
   };
 
   const handleGradeClick = (gradeLevel: number) => {
