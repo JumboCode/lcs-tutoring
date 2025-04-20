@@ -151,25 +151,6 @@ const ManageAdmin: React.FC = () => {
                 </td>
               </tr>
             ))}
-              {/* {whitelistedUsers.map((adminUser) => (
-                <tr key={adminUser.id} className="border-b">
-                  <td className="py-2 px-8">
-                    {adminUser.firstName} {adminUser.lastName}
-                  </td>
-                  <td className="py-2">
-                    {adminUser.emailAddresses[0].emailAddress}
-                  </td>
-                  <td className="py-2 pl-4">
-                    <button
-                      onClick={() => handleDeleteUser(adminUser.id)}
-                      className="text-red-500 hover:text-red-700"
-                      aria-label="Delete user"
-                    >
-                      <Trash2 />
-                    </button>
-                  </td>
-                </tr>
-              ))} */}
             </tbody>
           </table>
         </div>
