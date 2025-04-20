@@ -64,6 +64,8 @@ export default function TutorInfoBox({
   const [isPriority, setIsPriority] = useState(false);
   const { handleAsyncOperation } = useRaceConditionHandler();
 
+  const { getToken } = useAuth();
+
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
@@ -72,9 +74,9 @@ export default function TutorInfoBox({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  
+
   const handleDelete = async () => {
-  const { getToken } = useAuth();
+    const { getToken } = useAuth();
     setIsDropdownOpen(false);
 
     await handleAsyncOperation(async () => {
@@ -129,6 +131,7 @@ export default function TutorInfoBox({
       console.error("Error permanently deleting tutor:", error);
       throw error;
     }
+  };
 
   const checkPriorityFlag = async () => {
     console.log("priority");
@@ -146,7 +149,7 @@ export default function TutorInfoBox({
     console.log(data.priority);
     return data.priority;
   };
- 
+
   const handleTogglePriority = async () => {
     console.log("priority toggle");
     const POST_BODY = { tutor_id: id };
