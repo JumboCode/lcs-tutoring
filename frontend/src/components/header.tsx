@@ -10,27 +10,26 @@ export default function Header() {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
-
   const handleNavClick = () => {
     window.scrollTo(0, 0);
     setIsDropdownOpen(false);
   };
 
   useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-          if (
-            dropdownRef.current &&
-            !dropdownRef.current.contains(event.target as Node)
-          ) {
-            setIsDropdownOpen(false);
-          }
-        };
-    
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-          document.removeEventListener("mousedown", handleClickOutside);
-        };
-      }, []);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="border-gray-200 border-b py-3 bg-blue-100 sticky top-0 z-50">
