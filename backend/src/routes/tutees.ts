@@ -2,14 +2,17 @@
  * This file is for the route defs involving tutees
  ***********************************************/
 
+import "dotenv/config";
 import { getTutees, getUnmatchedTutees, unmatchedToHistory, permDeleteTutee } from "../controllers/tuteeController";
 import express from "express";
+import { requireAuth } from "@clerk/express";
 
 const router = express.Router();
+const { FRONTEND_URL } = process.env;
 
-router.get("/tutees", getTutees);
-router.get("/unmatched-tutees", getUnmatchedTutees);
-router.post("/move-tutee-to-history/:id", unmatchedToHistory);
-router.post("/perm-delete-tutee/:id", permDeleteTutee);
+router.get("/tutees", requireAuth({signInUrl:FRONTEND_URL}), getTutees);
+router.get("/unmatched-tutees", requireAuth({signInUrl:FRONTEND_URL}), getUnmatchedTutees);
+router.post("/move-tutee-to-history/:id", requireAuth({signInUrl:FRONTEND_URL}), unmatchedToHistory);
+router.post("/perm-delete-tutee/:id", requireAuth({signInUrl:FRONTEND_URL}), permDeleteTutee);
 
 export default router;

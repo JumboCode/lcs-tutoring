@@ -1,6 +1,7 @@
 import config from "../config.ts";
 import React, { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
+import { useAuth } from "@clerk/clerk-react";
 
 interface Member {
   id: string;
@@ -14,10 +15,17 @@ const MailingList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
     const fetchMailingList = async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/mailing-list`);
+        const token = await getToken();
+        const response = await fetch(`${config.backendUrl}/mailing-list`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setMailingList(data.mailingList);
       } catch (error) {
@@ -34,11 +42,14 @@ const MailingList: React.FC = () => {
   const handleDelete = async (elist_id: string) => {
     try {
       // Use Clerk's admin API to delete the user
-
+      const token = await getToken();
       const response = await fetch(
         `${config.backendUrl}/delete-elist/${elist_id}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       if (!response.ok) {

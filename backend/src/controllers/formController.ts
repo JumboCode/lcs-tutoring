@@ -151,7 +151,7 @@ export const handleEList = async (req: Request, res: Response): Promise<any> => 
       year_grad: gradYear
     });
 
-    console.log("Email added to mailing list: ", tuftsEmail);
+    // console.log("Email added to mailing list: ", tuftsEmail);
     res.status(200).json({ success: true, message: "Email added to mailing list" });
   } catch (error) {
     console.error("Error adding email to mailing list", error);

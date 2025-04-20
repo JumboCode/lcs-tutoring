@@ -23,6 +23,7 @@ import { Modal } from "react-bootstrap";
 import { useState, useRef, useEffect } from "react";
 import { Flag } from "lucide-react";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
+import { useAuth } from "@clerk/clerk-react";
 
 // const BG_COLOR = "#fbfbfb";
 interface TuteeName {
@@ -52,15 +53,18 @@ const MatchSuggestionBlock = ({
   const [maxHeight, setMaxHeight] = useState(0);
   const tuteeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { handleAsyncOperation } = useRaceConditionHandler();
+  const { getToken } = useAuth();
 
   const approveMatch = async () => {
     setIsSubmitting(true);
     await handleAsyncOperation(async () => {
       try {
+        const token = await getToken();
         const response = await fetch(`${config.backendUrl}/approve-match`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             tutorId: tutor_info.id,
@@ -86,13 +90,11 @@ const MatchSuggestionBlock = ({
   };
 
   useEffect(() => {
-    // Reset the refs array
     tuteeRefs.current = tuteeRefs.current.slice(0, 3);
 
-    // Find the maximum height after the component renders
     const calculateMaxHeight = () => {
       const heights = tuteeRefs.current
-        .filter((ref): ref is HTMLDivElement => ref !== null) // Type guard to filter out nulls
+        .filter((ref): ref is HTMLDivElement => ref !== null)
         .map((ref) => ref.getBoundingClientRect().height);
 
       if (heights.length > 0) {

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import FilterModal from "./filters";
+import { useAuth } from "@clerk/clerk-react";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -50,10 +51,13 @@ export default function ApprovedMatches() {
     null
   );
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
     console.log("im in approved matches useeffect");
     const fetchMatches = async () => {
       try {
+        const token = await getToken();
         const queryFilter = new URLSearchParams(
           appliedFilters as any
         ).toString();
@@ -63,6 +67,7 @@ export default function ApprovedMatches() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           }
         );

@@ -3,9 +3,9 @@ declare class TutorMatcher {
     addTutor(tutor: any): void;
     addTutee(tutee: any): void;
     fetchMatches(): void;
-    fetchData(): void;
-    fetchTutors(): void;
-    fetchTutees(): void;
+    fetchData(authToken): void;
+    fetchTutors(authToken): void;
+    fetchTutees(authToken): void;
     findMatches(): Array;
     _calculateGradeScore(tutor: any, tutee: any): number;
     _calculateMatchScore(tutor: any, tutee: any): number;

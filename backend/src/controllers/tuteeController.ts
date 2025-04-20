@@ -18,7 +18,7 @@ const db = drizzle(process.env.DATABASE_URL!);
 /* returns all the matched and unmatched tutees with the filter applied */
 export const getTutees = async ( req: Request, res: Response) => {
   try {
-    console.log("GETTING TUTEES")
+    // console.log("GETTING TUTEES")
     let { gradeLevels, selectedSubjects, tutoringMode, disability } = req.query;
 
     // converting URL query string to arrays
@@ -104,7 +104,7 @@ export const getTutees = async ( req: Request, res: Response) => {
 /* returns all the unmatched tutees */
 export const getUnmatchedTutees = async ( req: Request, res: Response) => {
   try {
-    console.log("Inside unmatched tutees endpoint");
+    // console.log("Inside unmatched tutees endpoint");
 
     const unmatchedTutees = await db
       .select()
@@ -175,8 +175,8 @@ async function filterTutees(
 export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
-    console.log("id as a string: ", id);
-    console.log(Number(id));
+    // console.log("id as a string: ", id);
+    // console.log(Number(id));
     const tutee_id = (Number(id));
     if (tutee_id > 0) {
       const query = await db

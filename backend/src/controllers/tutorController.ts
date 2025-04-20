@@ -59,10 +59,10 @@ export const getTutors = async (req: Request, res: Response) => {
       disability_pref = undefined;
     }
     
-    console.log("grades:", grades);
-    console.log("subjects:", subjects);
-    console.log("tutoring mode:", tutoringMode);
-    console.log("disability:", disability_pref);
+    // console.log("grades:", grades);
+    // console.log("subjects:", subjects);
+    // console.log("tutoring mode:", tutoringMode);
+    // console.log("disability:", disability_pref);
     // applying the filter
     const filteredTutors = await filterTutors(
       grades,
@@ -71,7 +71,7 @@ export const getTutors = async (req: Request, res: Response) => {
       tutoringMode?.toString(),
     );
 
-    console.log(filteredTutors);
+    // console.log(filteredTutors);
 
     // getting all ids of the filtered tutors
     const tutorIds = filteredTutors
@@ -299,7 +299,7 @@ async function moveTutorToMatched(tutor_id: string) {
   
 
 export const permDeleteTutor = async (req: Request, res: Response) => {
-    console.log("in backend for perm delete")
+    // console.log("in backend for perm delete")
     try {
       const tutor_id = req.params.id;
       await db.delete(historyTable).where(eq(historyTable.tutor_id, tutor_id));

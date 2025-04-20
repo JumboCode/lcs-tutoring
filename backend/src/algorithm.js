@@ -63,13 +63,19 @@ export default class TutorMatcher {
   }
 
 
-  async fetchData() {
-    await Promise.all([this.fetchTutors(), this.fetchTutees()]);
+  async fetchData(authToken) {
+    await Promise.all([this.fetchTutors(authToken), this.fetchTutees(authToken)]);
   }
 
-  async fetchTutors() {
+  async fetchTutors(authToken) {
     console.log("fetching tutors");
-    const response = await fetch(`${this.url}/unmatched-tutors`);
+    const response = await fetch(`${this.url}/unmatched-tutors`,
+      {
+        headers: {
+          Authorization: authToken,
+        },
+      }
+    );
     const {unmatchedTutors} = await response.json();
     // console.log(unmatchedTutors);
     for (const unmatchedTutor of unmatchedTutors) {
@@ -78,9 +84,15 @@ export default class TutorMatcher {
     // console.log("All tutees: ", this.tutees);
   }
 
-  async fetchTutees() {
+  async fetchTutees(authToken) {
     console.log("fetching tutees");
-    const response = await fetch(`${this.url}/unmatched-tutees`);
+    const response = await fetch(`${this.url}/unmatched-tutees`,
+      {
+        headers: {
+          Authorization: authToken,
+        },
+      }
+    );
     const {unmatchedTutees} = await response.json();
     // console.log(unmatchedTutees);
     for (const unmatchedTutee of unmatchedTutees) {

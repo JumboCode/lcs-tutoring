@@ -2,6 +2,7 @@ import config from "../config.ts";
 import React, { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import AdminSignUp from "./adminSignUp.tsx";
+import { useAuth } from "@clerk/clerk-react";
 
 interface WhitelistedUser {
   id: string;
@@ -20,10 +21,17 @@ const ManageAdmin: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
     const fetchWhitelistedUsers = async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/whitelisted-users`);
+        const token = await getToken();
+        const response = await fetch(`${config.backendUrl}/whitelisted-users`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
         setWhitelistedUsers(data);
       } catch (error) {
@@ -40,10 +48,14 @@ const ManageAdmin: React.FC = () => {
   const handleDeleteUser = async (userId: string) => {
     try {
       // Use Clerk's admin API to delete the user
+      const token = await getToken();
       const response = await fetch(
         `${config.backendUrl}/whitelisted-users/${userId}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
       if (!response.ok) {

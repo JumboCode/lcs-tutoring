@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
 import { tutorBoxProps } from "../types";
 import FilterModal from "./filters";
+import { useAuth } from "@clerk/clerk-react";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -42,24 +43,25 @@ export default function TutorTable() {
     null
   );
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
     const fetchTutors = async () => {
       try {
+        const token = await getToken();
         const queryFilter = new URLSearchParams(
           appliedFilters as any
         ).toString();
         const response = await fetch(
           `${config.backendUrl}/tutors?${queryFilter}`,
           {
-            method: "GET",
             headers: {
-              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
         const data = await response.json();
         const { matchedTutors, unmatchedTutors, historyTutors } = data;
-        // console.log("history tutors:", historyTutors);
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
         setHistoryTutors(historyTutors);

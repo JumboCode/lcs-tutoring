@@ -3,6 +3,7 @@ import { Modal } from "react-bootstrap";
 import config from "../config";
 import CloseButton from "../assets/images/filter/close_button.svg";
 import BlueCloseButton from "../assets/images/filter/blue_close.svg";
+import { useAuth } from "@clerk/clerk-react";
 
 interface AdminModalProps {
   onHide: () => void;
@@ -19,6 +20,8 @@ export default function AdminSignUp(props: AdminModalProps) {
   const [success, setSuccess] = useState(false);
   const [closeButton, setCloseButton] = useState(CloseButton);
 
+  const { getToken } = useAuth();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -26,10 +29,12 @@ export default function AdminSignUp(props: AdminModalProps) {
     setSuccess(false);
 
     try {
+      const token = await getToken();
       const response = await fetch(`${config.backendUrl}/create-admin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           emailAddress: [email], // Email should be an array
@@ -40,7 +45,7 @@ export default function AdminSignUp(props: AdminModalProps) {
       });
 
       const result = await response.json();
-      console.log(result)
+      console.log(result);
       if (response.ok) {
         setSuccess(true);
         console.log("User created successfully:", result);
@@ -81,20 +86,20 @@ export default function AdminSignUp(props: AdminModalProps) {
           )}
 
           <div className="relative bg-white shadow-lg rounded-lg p-6 w-[514px] h-[600px] flex flex-col justify-center gap-4">
-              <img 
-                className="w-[30px] h-[30px] absolute right-5 top-5"
-                src={closeButton}
-                onMouseOver={() => setCloseButton(BlueCloseButton)}
-                onMouseLeave={() => setCloseButton(CloseButton)}
-                onClick={() => {
-                  props.onHide();
-                  setCloseButton(CloseButton);
-                }}
-              />
-              <h2 className="text-2xl font-semibold text-center pt-5">
-                Add a new LCS Admin
-              </h2>
-            
+            <img
+              className="w-[30px] h-[30px] absolute right-5 top-5"
+              src={closeButton}
+              onMouseOver={() => setCloseButton(BlueCloseButton)}
+              onMouseLeave={() => setCloseButton(CloseButton)}
+              onClick={() => {
+                props.onHide();
+                setCloseButton(CloseButton);
+              }}
+            />
+            <h2 className="text-2xl font-semibold text-center pt-5">
+              Add a new LCS Admin
+            </h2>
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="pb-3">
                 <label className="block text-sm font-medium">First Name</label>

@@ -10,6 +10,7 @@ import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
 import unmatch_pair from "../assets/images/approved_matches/unmatch_pair.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
+import { useAuth } from "@clerk/clerk-react";
 
 const STYLES = {
   colors: {
@@ -126,13 +127,17 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const { handleAsyncOperation: handleEmailOperation } =
     useRaceConditionHandler();
 
+  const { getToken } = useAuth();
+
   const deletePair = async () => {
     await handleDeletePairOperation(async () => {
       try {
+        const token = await getToken();
         const response = await fetch(`${config.backendUrl}/delete-pair`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ pairId: matchId }),
         });
@@ -154,10 +159,12 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const unmatchPair = async () => {
     await handleUnmatchOperation(async () => {
       try {
+        const token = await getToken();
         const response = await fetch(`${config.backendUrl}/unmatch-pair`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ pairId: matchId }),
         });
@@ -177,10 +184,14 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   };
 
   const handlePermDelete = () => {
-    console.log("permdelete in match");
     setIsDropdownOpen(false);
+    const token = getToken();
     fetch(`${config.backendUrl}/perm-delete-match/${matchId}`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => {
@@ -197,12 +208,13 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
 
   const handleSendEmail = async () => {
     await handleEmailOperation(async () => {
-      console.log("sending email: ", tutee_input);
       try {
+        const token = await getToken();
         const response = await fetch(`${config.backendUrl}/email`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             matchId: matchId,
@@ -231,9 +243,13 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
 
   const handleToggleFlag = async () => {
     try {
+      const token = await getToken();
       const response = await fetch(`${config.backendUrl}/flag/`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ matchId: matchId }),
       });
       if (response.ok) {

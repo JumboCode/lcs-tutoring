@@ -9,6 +9,8 @@ import { FiPhone } from "react-icons/fi";
 import TrashCan from "../assets/images/delete.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
+import { useAuth } from "@clerk/clerk-react";
+
 const STYLES = {
   colors: {
     textGray: "#888888",
@@ -52,7 +54,7 @@ export default function TuteeInfoBox({
     parent_last_name,
     parent_phone,
     notes,
-    flagged,
+    priority,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -69,16 +71,22 @@ export default function TuteeInfoBox({
 
   const { handleAsyncOperation } = useRaceConditionHandler();
 
+  const { getToken } = useAuth();
+
   const handleSubmit = async () => {
     setIsDropdownOpen(false);
     console.log("id from front end: ", id);
 
     await handleAsyncOperation(async () => {
       try {
+        const token = await getToken();
         const response = await fetch(
           `${config.backendUrl}/move-tutee-to-history/${id}`,
           {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -98,8 +106,12 @@ export default function TuteeInfoBox({
 
   const handlePermDelete = () => {
     setIsDropdownOpen(false);
+    const token = getToken();
     fetch(`${config.backendUrl}/perm-delete-tutee/${id}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => {
@@ -147,7 +159,7 @@ export default function TuteeInfoBox({
               </span>
               <span className="text-[#D70000]">
                 {notes && ` *`}
-                {flagged && (
+                {priority && (
                   <img
                     src={RED_FLAG}
                     className="w-4 h-4 inline-block ml-3 mr-2"

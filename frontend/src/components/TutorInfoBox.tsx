@@ -9,6 +9,8 @@ import { FiPhone } from "react-icons/fi";
 import TrashCan from "../assets/images/delete.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
+import { useAuth } from "@clerk/clerk-react";
+
 const STYLES = {
   colors: {
     textGray: "#888888",
@@ -53,7 +55,7 @@ export default function TutorInfoBox({
     disability_pref,
     tutoring_mode,
     notes,
-    flagged,
+    priority,
   } = box_props;
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
@@ -69,15 +71,21 @@ export default function TutorInfoBox({
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  const { getToken } = useAuth();
+
   const handleSubmit = async () => {
     setIsDropdownOpen(false);
 
     await handleAsyncOperation(async () => {
       try {
+        const token = await getToken();
         const response = await fetch(
           `${config.backendUrl}/move-tutor-to-history/${id}`,
           {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -96,10 +104,13 @@ export default function TutorInfoBox({
   };
 
   const handlePermDelete = () => {
-    console.log("permdelete");
     setIsDropdownOpen(false);
+    const token = getToken();
     fetch(`${config.backendUrl}/perm-delete-tutor/${id}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => {
@@ -147,7 +158,7 @@ export default function TutorInfoBox({
               </span>
               <span className="text-[#D70000]">
                 {notes && ` *`}
-                {flagged && (
+                {priority && (
                   <img
                     src={RED_FLAG}
                     className="w-4 h-4 inline-block ml-3 mr-2"
