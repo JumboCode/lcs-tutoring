@@ -10,6 +10,8 @@ import TrashCan from "../assets/images/delete.svg";
 import PriorityFlag from "../assets/images/admin_view/flag.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
+import { useAuth } from "@clerk/clerk-react";
+
 const STYLES = {
   colors: {
     textGray: "#888888",
@@ -70,16 +72,21 @@ export default function TutorInfoBox({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
+  
   const handleDelete = async () => {
+  const { getToken } = useAuth();
     setIsDropdownOpen(false);
 
     await handleAsyncOperation(async () => {
       try {
+        const token = await getToken();
         const response = await fetch(
           `${config.backendUrl}/move-tutor-to-history/${id}`,
           {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -127,10 +134,13 @@ export default function TutorInfoBox({
     setIsDropdownOpen(false);
   };
   const handlePermDelete = () => {
-    console.log("permdelete");
     setIsDropdownOpen(false);
+    const token = getToken();
     fetch(`${config.backendUrl}/perm-delete-tutor/${id}`, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => response.json())
       .then((data) => {

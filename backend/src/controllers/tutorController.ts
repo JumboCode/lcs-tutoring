@@ -58,11 +58,6 @@ export const getTutors = async (req: Request, res: Response) => {
     } else {
       disability_pref = undefined;
     }
-
-    console.log("grades:", grades);
-    console.log("subjects:", subjects);
-    console.log("tutoring mode:", tutoringMode);
-    console.log("disability:", disability_pref);
     // applying the filter
     const filteredTutors = await filterTutors(
       grades,
@@ -71,7 +66,7 @@ export const getTutors = async (req: Request, res: Response) => {
       tutoringMode?.toString()
     );
 
-    console.log(filteredTutors);
+    // console.log(filteredTutors);
 
     // getting all ids of the filtered tutors
     const tutorIds = filteredTutors
@@ -353,6 +348,15 @@ export const togglePriorityFlag = async (req: Request, res: Response) => {
       res.json({ priority: !currentPriority });
     } else {
       res.status(404).json({ message: "Tutor not found" });
+    // console.log("in backend for perm delete")
+    try {
+      const tutor_id = req.params.id;
+      await db.delete(historyTable).where(eq(historyTable.tutor_id, tutor_id));
+      await db.delete(tutorTable).where(eq(tutorTable.id, tutor_id));
+      res.status(200).json({ message: "Tutor permanently deleted" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error permanently deleting tutor", error: error});
     }
   } catch (error) {
     console.error(error);

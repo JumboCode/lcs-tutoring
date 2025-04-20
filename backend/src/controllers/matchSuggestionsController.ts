@@ -11,7 +11,7 @@ import {
   matchedTable,
   approvedMatchesTable,
 } from "../db/schema";
-import { eq, and, or } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
 import TutorMatcher from "../algorithm.js";
 
@@ -38,20 +38,18 @@ type TutorObjectProps = {
 /* returns all the tutor - tutee1-3 match suggestions */
 export const getMatchSuggestions = async (req: Request, res: Response) => {
   try {
-    console.log("Inside match suggestions endpoint");
-    // query logic
-    // NOTE: Algorithm implementation somewhere here
-
+    const authHeader = req.headers.authorization;
+    console.log("AUTH HEADER IS: ", authHeader);
     // Step 1: Pull all unmatched tutees
     // Step 2: Pull all unmatched tutors
     const tutorMatcher = new TutorMatcher();
-    await tutorMatcher.fetchData();
+    await tutorMatcher.fetchData(authHeader!);
     // Step 3: For each tutor, call the algorithm on all the tutees to find the top 3
     let tutorObject = await tutorMatcher.findMatches();
 
     const matchResults = await Promise.all(
       tutorObject.map(async (match: TutorObjectProps) => {
-        console.log("Tutee 1 ID IS: ", match.tuteeId1);
+        // console.log("Tutee 1 ID IS: ", match.tuteeId1);
         const tutor_obj = await db
           .select({
             id: tutorTable.id,
@@ -132,7 +130,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 };
 
 export const approveMatch = async (req: Request, res: Response) => {
-  console.log("IN APPROVE MATCH");
+  // console.log("IN APPROVE MATCH");
   try {
     const { tutorId, selectedTuteeId } = req.body;
 
@@ -144,7 +142,7 @@ export const approveMatch = async (req: Request, res: Response) => {
         tutor_id: tutorId,
       });
       
-      console.log("Are we inserting into matched table??");
+      // console.log("Are we inserting into matched table??");
 
       await db.insert(approvedMatchesTable).values({
         tutee_id: selectedTuteeId,

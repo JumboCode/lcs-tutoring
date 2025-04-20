@@ -11,8 +11,8 @@ import config from "../config.ts";
 import MatchSuggestionBlock from "./matchSuggestionBlock";
 import { useState, useEffect } from "react";
 import { tuteeInfo, tutorInfo } from "../types";
-// import FilterButton from "./FilterButton";
-// tutees not passed in from algorithm yet
+import { useAuth } from "@clerk/clerk-react";
+
 interface MatchSuggestion {
   flagged: boolean;
   tutor: tutorInfo;
@@ -35,17 +35,22 @@ export default function MatchSuggestionTable() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
-    console.log("im in approved match suggestions useeffect");
+    // console.log("im in approved match suggestions useeffect");
     const fetchSuggestions = async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/match-suggestions`);
+        const token = await getToken();
+        const response = await fetch(`${config.backendUrl}/match-suggestions`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch match suggestions");
         }
         const data = await response.json();
-        console.log("Match Suggestions:", data);
-        console.log("GONNA SET");
         setMatchSuggestions(data.matchSuggestions);
       } catch (error) {
         setError((error as Error).message);
@@ -56,7 +61,12 @@ export default function MatchSuggestionTable() {
 
     const fetchTutees = async () => {
       try {
-        const response = await fetch(`${config.backendUrl}/tutees`);
+        const token = await getToken();
+        const response = await fetch(`${config.backendUrl}/tutees`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!response.ok) {
           throw new Error("Failed to fetch tutees");
         }

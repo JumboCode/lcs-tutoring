@@ -14,10 +14,9 @@ import {
 } from "../db/schema";
 import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import Mailjet from 'node-mailjet';
 
 const db = drizzle(process.env.DATABASE_URL!);
-
-import Mailjet from 'node-mailjet';
 
 const mailjetClient = new Mailjet.Client({
   apiKey: (process.env.MAILJETAPIKEY!),
@@ -35,12 +34,12 @@ export const deletePair = async (req: Request, res: Response) => {
     if (!match) {
       res.status(404).json("Match not found");
     }
-    console.log("here");
+    // console.log("here");
     await db
       .update(approvedMatchesTable)
       .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
       .where(eq(approvedMatchesTable.id, match_id));
-    console.log("Match moved to inactive");
+    // console.log("Match moved to inactive");
     res.status(200).json("Match moved to inactive");
 
     const tutor_id = match[0].tutor_id;
@@ -88,7 +87,7 @@ export const deletePair = async (req: Request, res: Response) => {
 /* returns all the approved matches */
 export const getApprovedMatches = async (req: Request, res: Response) => {
   try {
-    console.log("Inside approved matches endpoint");
+    // console.log("Inside approved matches endpoint");
 
     let { gradeLevels, selectedSubjects, tutoringMode, disability } = req.query;
 
@@ -131,11 +130,11 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       disability_pref = undefined;
     }
 
-    console.log("grades:", grades);
-    console.log("subjects:", subjects);
-    console.log("tutoring mode:", tutoringMode);
-    console.log("disability:", disability_pref);
-    console.log("Inside tutees endpoint");
+    // console.log("grades:", grades);
+    // console.log("subjects:", subjects);
+    // console.log("tutoring mode:", tutoringMode);
+    // console.log("disability:", disability_pref);
+    // console.log("Inside tutees endpoint");
 
     const filteredMatches = await filterMatches(
       grades,
@@ -292,10 +291,10 @@ async function filterMatches(
 
 // backend/src/index.ts
 export const flagApprovedMatch = async (req: Request, res: Response) => {
-  console.log("Flagging approved match");
-  console.log(req.body);
+  // console.log("Flagging approved match");
+  // console.log(req.body);
   const id = parseInt(req.body.matchId);
-  console.log("Match id: ", id);
+  // console.log("Match id: ", id);
   try {
     const [match] = await db
       .select()
@@ -319,7 +318,7 @@ export const flagApprovedMatch = async (req: Request, res: Response) => {
  * the tutor and tutee to unmatched */
 export const unmatchPair = async (req: Request, res: Response) => {
   try {
-    console.log("inside unmatch pair");
+    // console.log("inside unmatch pair");
     const match_id = req.body.pairId;
 
     // query to get the approved match
@@ -360,7 +359,7 @@ async function moveTutorToUnmatched(tutor_id: string) {
       .select()
       .from(matchedTable)
       .where(eq(matchedTable.tutor_id, tutor_id));
-    console.log(query);
+    // console.log(query);
 
     if (!query) {
       throw new Error("Tutor id does not exist in matched table");
@@ -390,7 +389,7 @@ async function moveTuteeToUnmatched(tutee_id: number) {
     .select()
     .from(matchedTable)
     .where(eq(matchedTable.tutee_id, tutee_id));
-  console.log(query);
+  // console.log(query);
 
   if (!query) {
     throw new Error("Tutee id does not exist in matched table");
@@ -522,7 +521,7 @@ export const emailPair = async (req: Request, res: Response) => {
       .set({ sent_email: true })
       .where(eq(approvedMatchesTable.id, matchId));
 
-    console.log("Email sent:", result.body);
+    // console.log("Email sent:", result.body);
     res.status(200).json({ message: "Emails sent successfully" });
 
   } catch (err: any) {
@@ -533,7 +532,7 @@ export const emailPair = async (req: Request, res: Response) => {
 
 
 export const permDeleteMatch = async (req: Request, res: Response) => {
-  console.log("in backend for perm delete match")
+  // console.log("in backend for perm delete match")
   try {
     const match_id = req.params.match_id;
     await db.delete(approvedMatchesTable)

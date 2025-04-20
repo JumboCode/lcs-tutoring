@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
 import { tuteeBoxProps } from "../types";
 import FilterModal from "./filters";
+import { useAuth } from "@clerk/clerk-react";
 
 // Add these constants at the top of the file, after imports
 const TABS = {
@@ -42,9 +43,12 @@ export default function TuteeTable() {
     null
   );
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
     const fetchTutees = async () => {
       try {
+        const token = await getToken();
         const queryFilter = new URLSearchParams(
           appliedFilters as any
         ).toString();
@@ -54,9 +58,15 @@ export default function TuteeTable() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
+        if (response.status === 401) {
+          // not signed in — handle however you'd like
+          window.location.href = "/"; // or redirect to login
+          return;
+        }
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
         console.log("Matched Tutees: ", matchedTutees);
