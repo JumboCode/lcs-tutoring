@@ -15,7 +15,7 @@ export default function Header() {
   };
 
   return (
-    <header className="border-gray-200 border-b py-3 bg-white sticky top-0 z-50">
+    <header className="border-gray-200 border-b py-3 bg-blue-100 sticky top-0 z-50">
       <div className="flex justify-between items-center w-[90vw] mx-auto">
         <Link to="/" onClick={handleNavClick}>
           <img className="h-12 w-12" src={elephantLogo} alt="Elephant Logo" />

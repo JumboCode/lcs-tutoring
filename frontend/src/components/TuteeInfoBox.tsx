@@ -104,21 +104,31 @@ export default function TuteeInfoBox({
     });
   };
 
-  const handlePermDelete = () => {
-    setIsDropdownOpen(false);
-    const token = getToken();
-    fetch(`${config.backendUrl}/perm-delete-tutee/${id}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (onPermDelete) onPermDelete(box_props);
-      })
-      .catch((error) => console.error(error));
+  const handlePermDelete = async () => {
+    try {
+      setIsDropdownOpen(false);
+      const token = await getToken();
+      const response = await fetch(
+        `${config.backendUrl}/perm-delete-tutee/${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to permanently delete tutee");
+      }
+
+      const data = await response.json();
+      if (onPermDelete) onPermDelete(box_props);
+      return data;
+    } catch (error) {
+      console.error("Error permanently deleting tutee:", error);
+      throw error;
+    }
   };
 
   useEffect(() => {

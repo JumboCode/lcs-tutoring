@@ -38,7 +38,6 @@ export default function MatchSuggestionTable() {
   const { getToken } = useAuth();
 
   useEffect(() => {
-    // console.log("im in approved match suggestions useeffect");
     const fetchSuggestions = async () => {
       try {
         const token = await getToken();
@@ -80,7 +79,6 @@ export default function MatchSuggestionTable() {
         }));
         setUnmatchedNames(names);
         console.log("Unmatched Tutee Names: ", names);
-        //console.log(data);
       } catch (error) {
         console.error("Error fetching tutees: ", error);
       }
