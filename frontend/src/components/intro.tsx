@@ -8,7 +8,7 @@ export default function Intro() {
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">
             <span className="font-interBlack text-lg mr-2 text-gray-700">
-              TUFTS LCS TUTORING
+              LEONARD CARMICHAEL SOCIETY TUTORING
             </span>
             <div
               className="border-b border-gray-600"
@@ -16,7 +16,7 @@ export default function Intro() {
             ></div>
           </div>
           <p className="font-bold italic text-left text-[3.5rem] md:w-[600px] mb-6">
-            Leonard Carmichael Society Tutoring
+            Tufts LCS Tutoring
           </p>
           <Link
             className="font-inter bg-[#BFDBF7] hover:bg-blue-300 w-[180px] rounded-full font-semibold py-3 text-center"
