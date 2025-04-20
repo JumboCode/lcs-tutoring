@@ -226,29 +226,26 @@ async function filterTutors(
 export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
     const tutor_id = req.params.id;
-    // const request = req.body;
     if (tutor_id.length == 7 || tutor_id.length == 8) {
-      const query = await db
-        .select()
-        .from(unmatchedTable)
-        .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
-
-      if (query.length > 0) {
-        await db
-          .update(tutorTable)
-          .set({ history_date: new Date().toISOString().split("T")[0] })
-          .where(eq(tutorTable.id, tutor_id));
-
-        await db.insert(historyTable).values(query[0]);
-
-        await db
-          .delete(unmatchedTable)
+      await db.transaction(async (trx) => {
+        const query = await trx
+          .select()
+          .from(unmatchedTable)
           .where(eq(unmatchedTable.tutor_id, tutor_id));
-
-        res.json({ success: true, message: "Tutor moved" });
-      } else {
-        throw new Error("ID not found in matched table");
-      }
+        if (query.length > 0) {
+          await trx
+            .update(tutorTable)
+            .set({ history_date: new Date().toISOString().split("T")[0] })
+            .where(eq(tutorTable.id, tutor_id));
+          await trx.insert(historyTable).values(query[0]);
+          await trx
+            .delete(unmatchedTable)
+            .where(eq(unmatchedTable.tutor_id, tutor_id));
+          res.json({ success: true, message: "Tutor moved" });
+        } else {
+          throw new Error("ID not found in matched table");
+        }
+      });
     } else {
       throw new Error("Invalid ID");
     }
@@ -275,24 +272,23 @@ export const unmatchedToMatched = async (req: Request, res: Response) => {
  ******************************************************************/
 async function moveTutorToMatched(tutor_id: string) {
   if (tutor_id.length == 7 || tutor_id.length == 8) {
-    const query = await db
-      .select()
-      .from(unmatchedTable)
-      .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
-    if (query.length > 0) {
-      await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
-
-      await db
-        .delete(unmatchedTable)
+    await db.transaction(async (trx) => {
+      const query = await trx
+        .select()
+        .from(unmatchedTable)
         .where(eq(unmatchedTable.tutor_id, tutor_id));
-
-      for (let i = 0; i < query.length - 1; i++) {
-        //adding rows back in
-        await db.insert(unmatchedTable).values(query[0]);
+      if (query.length > 0) {
+        await trx.insert(matchedTable).values(query[0]);
+        await trx
+          .delete(unmatchedTable)
+          .where(eq(unmatchedTable.tutor_id, tutor_id));
+        for (let i = 0; i < query.length - 1; i++) {
+          await trx.insert(unmatchedTable).values(query[0]);
+        }
+      } else {
+        throw new Error("ID not found in unmatched table");
       }
-    } else {
-      throw new Error("ID not found in unmatched table");
-    }
+    });
   } else {
     throw new Error("Invalid ID");
   }

@@ -14,74 +14,59 @@ import {
 } from "../db/schema";
 import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
-import Mailjet from 'node-mailjet';
+import Mailjet from "node-mailjet";
 
 const db = drizzle(process.env.DATABASE_URL!);
 
 const mailjetClient = new Mailjet.Client({
-  apiKey: (process.env.MAILJETAPIKEY!),
-  apiSecret: (process.env.MAILJETSECRETKEY!),
+  apiKey: process.env.MAILJETAPIKEY!,
+  apiSecret: process.env.MAILJETSECRETKEY!,
 });
 
 export const deletePair = async (req: Request, res: Response) => {
   try {
     const match_id = Number(req.body.pairId);
-
-    const match = await db
-      .select()
-      .from(approvedMatchesTable)
-      .where(eq(approvedMatchesTable.id, match_id));
-    if (!match) {
-      res.status(404).json("Match not found");
-    }
-    // console.log("here");
-    await db
-      .update(approvedMatchesTable)
-      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
-      .where(eq(approvedMatchesTable.id, match_id));
-    // console.log("Match moved to inactive");
-    res.status(200).json("Match moved to inactive");
-
-    const tutor_id = match[0].tutor_id;
-    const tutee_id = match[0].tutee_id;
-
-    await db.insert(historyTable).values({
-      tutor_id: tutor_id,
+    await db.transaction(async (trx) => {
+      const match = await trx
+        .select()
+        .from(approvedMatchesTable)
+        .where(eq(approvedMatchesTable.id, match_id));
+      if (!match) {
+        res.status(404).json("Match not found");
+        return;
+      }
+      await trx
+        .update(approvedMatchesTable)
+        .set({
+          active: false,
+          inactive_date: new Date().toISOString().split("T")[0],
+        })
+        .where(eq(approvedMatchesTable.id, match_id));
+      const tutor_id = match[0].tutor_id;
+      const tutee_id = match[0].tutee_id;
+      await trx.insert(historyTable).values({ tutor_id: tutor_id });
+      const [deleteID] = await trx
+        .select({ id: matchedTable.id })
+        .from(matchedTable)
+        .where(eq(matchedTable.tutor_id, tutor_id))
+        .limit(1);
+      await trx.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+      await trx
+        .update(tutorTable)
+        .set({ history_date: new Date().toISOString().split("T")[0] })
+        .where(eq(tutorTable.id, tutor_id));
+      await trx.insert(historyTable).values({ tutee_id: tutee_id });
+      await trx.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+      await trx
+        .update(tuteeTable)
+        .set({ history_date: new Date().toISOString().split("T")[0] })
+        .where(eq(tuteeTable.id, tutee_id));
+      res.status(200).json("Match moved to inactive");
     });
-
-    const [deleteID] = await db
-    .select({id: matchedTable.id})
-    .from(matchedTable)
-    .where(
-      eq(matchedTable.tutor_id, tutor_id),
-    ).limit(1);
-
-    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
-
-    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
-
-    await db.update(tutorTable)
-      .set({ history_date: new Date().toISOString().split("T")[0], })
-      .where(eq(tutorTable.id, tutor_id));
-
-    await db.insert(historyTable).values({
-      tutee_id: tutee_id,
-    });
-
-
-      
-
-    await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-
-    await db.update(tuteeTable)
-      .set({ history_date: new Date().toISOString().split("T")[0], })
-      .where(eq(tuteeTable.id, tutee_id));
-
   } catch (error) {
     console.error(error);
     res.status(500).json("Error updating flag status");
   }
-
 };
 
 /* returns all the approved matches */
@@ -103,7 +88,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       grades = undefined;
     } else {
       // kindergarten is -1 because query url default undefined is [0]
-      grades = grades.map((grade) => (grade === -1 ? 0 : grade))
+      grades = grades.map((grade) => (grade === -1 ? 0 : grade));
     }
 
     // converting URL query string to arrays
@@ -140,7 +125,7 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       grades,
       subjects,
       disability_pref,
-      tutoringMode?.toString(),
+      tutoringMode?.toString()
     );
 
     // console.log(filteredMatches);
@@ -183,7 +168,12 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       .from(approvedMatchesTable)
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
       .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
-      .where(and(eq(approvedMatchesTable.active, true), inArray(approvedMatchesTable.id, matchIds)));
+      .where(
+        and(
+          eq(approvedMatchesTable.active, true),
+          inArray(approvedMatchesTable.id, matchIds)
+        )
+      );
 
     // query to get all the inactive matches
     const inactive_matches = await db
@@ -217,7 +207,12 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
       .from(approvedMatchesTable)
       .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
       .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
-      .where(and(eq(approvedMatchesTable.active, false), inArray(approvedMatchesTable.id, matchIds)));
+      .where(
+        and(
+          eq(approvedMatchesTable.active, false),
+          inArray(approvedMatchesTable.id, matchIds)
+        )
+      );
 
     res.send({
       activeApprovedMatches: active_matches,
@@ -246,15 +241,17 @@ async function filterMatches(
   disabilityPref?: boolean,
   tutoringMode?: string
 ) {
-  const query = db.select({
-    matchId: approvedMatchesTable.id,
-    tutee: {
-      grade: tuteeTable.grade,
-      subjects: tuteeTable.subjects,
-      tutoring_mode: tuteeTable.tutoring_mode,
-      has_special_needs: tuteeTable.has_special_needs
-    }
-  }).from(approvedMatchesTable)
+  const query = db
+    .select({
+      matchId: approvedMatchesTable.id,
+      tutee: {
+        grade: tuteeTable.grade,
+        subjects: tuteeTable.subjects,
+        tutoring_mode: tuteeTable.tutoring_mode,
+        has_special_needs: tuteeTable.has_special_needs,
+      },
+    })
+    .from(approvedMatchesTable)
     .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id));
 
   const conditions: any[] = [];
@@ -318,25 +315,23 @@ export const flagApprovedMatch = async (req: Request, res: Response) => {
  * the tutor and tutee to unmatched */
 export const unmatchPair = async (req: Request, res: Response) => {
   try {
-    // console.log("inside unmatch pair");
     const match_id = req.body.pairId;
-
-    // query to get the approved match
-    const query = await db
-      .select()
-      .from(approvedMatchesTable)
-      .where(eq(approvedMatchesTable.id, Number(match_id)));
-
-    moveTutorToUnmatched(query[0].tutor_id);
-    moveTuteeToUnmatched(query[0].tutee_id);
-
-    // Move the pair to inactive in Approved Matches Table
-    await db
-      .update(approvedMatchesTable)
-      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
-      .where(eq(approvedMatchesTable.id, Number(match_id)));
-
-    res.json({ success: true, message: "Pair unmatched" });
+    await db.transaction(async (trx) => {
+      const query = await trx
+        .select()
+        .from(approvedMatchesTable)
+        .where(eq(approvedMatchesTable.id, Number(match_id)));
+      await moveTutorToUnmatched(query[0].tutor_id);
+      await moveTuteeToUnmatched(query[0].tutee_id);
+      await trx
+        .update(approvedMatchesTable)
+        .set({
+          active: false,
+          inactive_date: new Date().toISOString().split("T")[0],
+        })
+        .where(eq(approvedMatchesTable.id, Number(match_id)));
+      res.json({ success: true, message: "Pair unmatched" });
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to inactive");
@@ -355,59 +350,46 @@ export const unmatchPair = async (req: Request, res: Response) => {
  ******************************************************************/
 async function moveTutorToUnmatched(tutor_id: string) {
   if (tutor_id.length == 7) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutor_id, tutor_id));
-    // console.log(query);
-
-    if (!query) {
-      throw new Error("Tutor id does not exist in matched table");
-    }
-
-    const row = query[0];
-    await db.insert(unmatchedTable).values({
-      tutor_id: row.tutor_id,
-    });
-
-        const [deleteID] = await db
-        .select({id: matchedTable.id})
+    await db.transaction(async (trx) => {
+      const query = await trx
+        .select()
         .from(matchedTable)
-        .where(
-        eq(matchedTable.tutor_id, tutor_id),
-        ).limit(1);
-
-    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
-    
-    
-    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+        .where(eq(matchedTable.tutor_id, tutor_id));
+      if (!query) {
+        throw new Error("Tutor id does not exist in matched table");
+      }
+      const row = query[0];
+      await trx.insert(unmatchedTable).values({ tutor_id: row.tutor_id });
+      const [deleteID] = await trx
+        .select({ id: matchedTable.id })
+        .from(matchedTable)
+        .where(eq(matchedTable.tutor_id, tutor_id))
+        .limit(1);
+      await trx.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+    });
   }
 }
 
 async function moveTuteeToUnmatched(tutee_id: number) {
-  const query = await db
-    .select()
-    .from(matchedTable)
-    .where(eq(matchedTable.tutee_id, tutee_id));
-  // console.log(query);
-
-  if (!query) {
-    throw new Error("Tutee id does not exist in matched table");
-  }
-
-  const row = query[0];
-  await db.insert(unmatchedTable).values({
-    tutee_id: row.tutee_id,
+  await db.transaction(async (trx) => {
+    const query = await trx
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id));
+    if (!query) {
+      throw new Error("Tutee id does not exist in matched table");
+    }
+    const row = query[0];
+    await trx.insert(unmatchedTable).values({ tutee_id: row.tutee_id });
+    await trx.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
   });
-
-  await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
 
 export const emailPair = async (req: Request, res: Response) => {
   try {
     const tutorName = req.body.tutorName;
     const tutorEmail = req.body.tutorEmail;
-    
+
     const tuteeName = req.body.tuteeName;
     const tuteeParentName = req.body.tuteeParentName;
     const tuteeParentEmail = req.body.tuteeParentEmail;
@@ -415,25 +397,39 @@ export const emailPair = async (req: Request, res: Response) => {
     const tuteeGrade = req.body.tuteeGrade;
     const tuteeSubjects = req.body.tuteeSubjects;
 
-    const tuteeMessage = req.body.tuteeMessage.replaceAll("TUTEE_NAME", `${tuteeName}`).replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`);
-    const tutorMessage = req.body.tutorMessage.replaceAll("TUTOR_NAME", `${tutorName}`).replaceAll("TUTEE_NAME", `${tuteeName}`).replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`).replaceAll("TUTEE_GRADE", `${tuteeGrade == "0"
-      ? "Kindergarten"
-      : tuteeGrade == "1"
-      ? "1st"
-      : tuteeGrade == "2"
-      ? "2nd"
-      : tuteeGrade == "3"
-      ? "3rd"
-      : tuteeGrade + "th"}`).replaceAll("TUTEE_SUBJECTS", `${tuteeSubjects.join(", ")}`).replaceAll("TUTEE_PARENT_EMAIL", `${tuteeParentEmail}`).replaceAll("TUTEE_PARENT_PHONE", `${tuteeParentPhone}`);
+    const tuteeMessage = req.body.tuteeMessage
+      .replaceAll("TUTEE_NAME", `${tuteeName}`)
+      .replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`);
+    const tutorMessage = req.body.tutorMessage
+      .replaceAll("TUTOR_NAME", `${tutorName}`)
+      .replaceAll("TUTEE_NAME", `${tuteeName}`)
+      .replaceAll("TUTEE_PARENT_NAME", `${tuteeParentName}`)
+      .replaceAll(
+        "TUTEE_GRADE",
+        `${
+          tuteeGrade == "0"
+            ? "Kindergarten"
+            : tuteeGrade == "1"
+            ? "1st"
+            : tuteeGrade == "2"
+            ? "2nd"
+            : tuteeGrade == "3"
+            ? "3rd"
+            : tuteeGrade + "th"
+        }`
+      )
+      .replaceAll("TUTEE_SUBJECTS", `${tuteeSubjects.join(", ")}`)
+      .replaceAll("TUTEE_PARENT_EMAIL", `${tuteeParentEmail}`)
+      .replaceAll("TUTEE_PARENT_PHONE", `${tuteeParentPhone}`);
 
     const matchId = req.body.matchId;
 
-    const request = mailjetClient.post('send', { version: 'v3.1' }).request({
+    const request = mailjetClient.post("send", { version: "v3.1" }).request({
       Messages: [
         {
           From: {
-            Email: (process.env.SENDEREMAIL!),
-            Name: 'LCSTutoring',
+            Email: process.env.SENDEREMAIL!,
+            Name: "LCSTutoring",
           },
           To: [
             {
@@ -441,7 +437,7 @@ export const emailPair = async (req: Request, res: Response) => {
               Name: tuteeParentName,
             },
           ],
-          Subject: 'LCSTutoring: New Tutor Match Confirmation',
+          Subject: "LCSTutoring: New Tutor Match Confirmation",
           TextPart: `Dear ${tuteeParentName},
     
     We are pleased to inform you that ${tuteeName} has been matched with a tutor. Your child's tutor will reach out to you directly within the next 48 hours to schedule your first session.
@@ -456,8 +452,8 @@ export const emailPair = async (req: Request, res: Response) => {
         },
         {
           From: {
-            Email: (process.env.SENDEREMAIL!),
-            Name: 'LCSTutoring',
+            Email: process.env.SENDEREMAIL!,
+            Name: "LCSTutoring",
           },
           To: [
             {
@@ -465,22 +461,24 @@ export const emailPair = async (req: Request, res: Response) => {
               Name: tutorName,
             },
           ],
-          Subject: 'LCSTutoring: New Student Match Confirmation',
+          Subject: "LCSTutoring: New Student Match Confirmation",
           TextPart: `Dear ${tutorName},
     
     We are pleased to inform you that you have been matched with a new student, ${tuteeName}. Please reach out to the student's parent to schedule your first tutoring session.
     
     Student Details:
     Name: ${tuteeName}
-    Grade: ${tuteeGrade == "0"
-      ? "Kindergarten"
-      : tuteeGrade == "1"
-      ? "1st"
-      : tuteeGrade == "2"
-      ? "2nd"
-      : tuteeGrade == "3"
-      ? "3rd"
-      : tuteeGrade + "th"}
+    Grade: ${
+      tuteeGrade == "0"
+        ? "Kindergarten"
+        : tuteeGrade == "1"
+        ? "1st"
+        : tuteeGrade == "2"
+        ? "2nd"
+        : tuteeGrade == "3"
+        ? "3rd"
+        : tuteeGrade + "th"
+    }
     Subjects: ${tuteeSubjects.join(", ")}
     
     Parent Details:
@@ -513,33 +511,39 @@ export const emailPair = async (req: Request, res: Response) => {
           HTMLPart: tutorMessage,
         },
       ],
-    })
+    });
 
     const result = await request;
-    
-    await db.update(approvedMatchesTable)
+
+    await db
+      .update(approvedMatchesTable)
       .set({ sent_email: true })
       .where(eq(approvedMatchesTable.id, matchId));
 
     // console.log("Email sent:", result.body);
     res.status(200).json({ message: "Emails sent successfully" });
-
   } catch (err: any) {
     console.error("Email sending error:", err);
-    res.status(500).json({ message: "Failed to send emails", error: err.message || err });
+    res
+      .status(500)
+      .json({ message: "Failed to send emails", error: err.message || err });
   }
 };
-
 
 export const permDeleteMatch = async (req: Request, res: Response) => {
   // console.log("in backend for perm delete match")
   try {
     const match_id = req.params.match_id;
-    await db.delete(approvedMatchesTable)
+    await db
+      .delete(approvedMatchesTable)
       .where(eq(approvedMatchesTable.id, Number(match_id)));
-    res.status(200).json({ message: "Permanently deleting match successfully" });
+    res
+      .status(200)
+      .json({ message: "Permanently deleting match successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to permanently delete match", error: error });
+    res
+      .status(500)
+      .json({ message: "Failed to permanently delete match", error: error });
   }
-}
+};
