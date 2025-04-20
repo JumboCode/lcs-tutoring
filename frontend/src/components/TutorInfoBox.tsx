@@ -103,6 +103,33 @@ export default function TutorInfoBox({
       }
     });
   };
+
+  const handlePermDelete = async () => {
+    try {
+      setIsDropdownOpen(false);
+      const token = await getToken();
+      const response = await fetch(
+        `${config.backendUrl}/perm-delete-tutor/${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to permanently delete tutor");
+      }
+
+      const data = await response.json();
+      if (onPermDelete) onPermDelete(box_props);
+      return data;
+    } catch (error) {
+      console.error("Error permanently deleting tutor:", error);
+      throw error;
+    }
+
   const checkPriorityFlag = async () => {
     console.log("priority");
     const POST_BODY = { tutor_id: id };
@@ -119,6 +146,7 @@ export default function TutorInfoBox({
     console.log(data.priority);
     return data.priority;
   };
+ 
   const handleTogglePriority = async () => {
     console.log("priority toggle");
     const POST_BODY = { tutor_id: id };
@@ -132,22 +160,6 @@ export default function TutorInfoBox({
     const data = await response.json();
     setIsPriority(data.priority);
     setIsDropdownOpen(false);
-  };
-  const handlePermDelete = () => {
-    setIsDropdownOpen(false);
-    const token = getToken();
-    fetch(`${config.backendUrl}/perm-delete-tutor/${id}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (onPermDelete) onPermDelete(box_props);
-      })
-      .catch((error) => console.error(error));
   };
 
   useEffect(() => {
