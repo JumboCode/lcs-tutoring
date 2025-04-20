@@ -161,9 +161,9 @@ export default function TutorInfoBox({
   return (
     <div
       ref={wrapperRef}
-      className={`h-auto border-b-1 text-left ${
-        STYLES.transitions.colors
-      } odd:bg-white even:bg-gray-50 ${isPriority ? "bg-yellow-100" : ""}`}
+      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}  ${
+        isPriority ? "bg-yellow-100" : "odd:bg-white even:bg-gray-50"
+      }`}
     >
       <table className="table-fixed w-full">
         <thead>
