@@ -136,6 +136,9 @@ export default function TutorInfoBox({
     };
   }, []);
 
+  const [showTutorDeleteDialog, setShowTutorDeleteDialog] = useState(false);
+  const [showTutorPermDeleteDialog, setShowTutorPermDeleteDialog] = useState(false);
+
   return (
     <div
       ref={wrapperRef}
@@ -224,13 +227,13 @@ export default function TutorInfoBox({
 
                     {isDropdownOpen && !isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handleSubmit}>Delete Tutor</button>
+                        <button onClick={() => setShowTutorDeleteDialog(true)}>Delete Tutor</button>
                         <img src={TrashCan} className="mx-2" />
                       </div>
                     )}
                     {isDropdownOpen && isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handlePermDelete}>
+                        <button onClick={() => setShowTutorPermDeleteDialog(true)}>
                           Permanently Delete
                         </button>
                         <img src={TrashCan} className="mx-2" />
@@ -291,6 +294,61 @@ export default function TutorInfoBox({
           </tbody>
         )}
       </table>
+      {showTutorDeleteDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to delete this tutor?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowTutorDeleteDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                handleSubmit(); 
+                setShowTutorDeleteDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showTutorPermDeleteDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Permanent Delete</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to permanently delete this tutor?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowTutorPermDeleteDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                handlePermDelete(); 
+                setShowTutorPermDeleteDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
