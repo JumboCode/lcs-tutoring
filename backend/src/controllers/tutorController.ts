@@ -319,7 +319,7 @@ export const permDeleteTutor = async (req: Request, res: Response) => {
 };
 
 export const checkPriorityFlag = async (req: Request, res: Response) => {
-  const tutor_id = req.params.id;
+  const tutor_id = req.body.tutor_id;
   try {
     const query = await db
       .select()
@@ -329,5 +329,33 @@ export const checkPriorityFlag = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error checking priority flag", error });
+  }
+};
+
+export const togglePriorityFlag = async (req: Request, res: Response) => {
+  const tutor_id = req.body.tutor_id;
+  console.log(req.body, "req.body");
+  console.log(req.params, "req.params");
+  console.log(tutor_id, "tutor_id");
+  try {
+    const query = await db
+      .select()
+      .from(tutorTable)
+      .where(eq(tutorTable.id, tutor_id));
+
+    if (query.length > 0) {
+      const currentPriority = query[0].priority;
+      await db
+        .update(tutorTable)
+        .set({ priority: !currentPriority })
+        .where(eq(tutorTable.id, tutor_id));
+      console.log(!currentPriority, "currentPriority");
+      res.json({ priority: !currentPriority });
+    } else {
+      res.status(404).json({ message: "Tutor not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error toggling priority flag", error });
   }
 };
