@@ -409,14 +409,14 @@ export default function FilterModal(props: FilterModalProps) {
                 History/Social Studies
               </button>
               <button
-                onClick={() => handleSubjectClick("SAT/ACT Prep")}
+                onClick={() => handleSubjectClick("SAT/ACT")}
                 className={
-                  selectedSubjects.includes("SAT/ACT Prep")
+                  selectedSubjects.includes("SAT/ACT")
                     ? buttonStyleActive
                     : buttonStyle
                 }
               >
-                SAT/ACT Prep
+                SAT/ACT
               </button>
               <button
                 onClick={() => handleSubjectClick("Music")}
