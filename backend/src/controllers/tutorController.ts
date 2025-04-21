@@ -32,7 +32,7 @@ export const getTutors = async (req: Request, res: Response) => {
       grades = undefined;
     } else {
       // kindergarten is -1 because query url default undefined is [0]
-      grades = grades.map((grade) => (grade === -1 ? 0 : grade))
+      grades = grades.map((grade) => (grade === -1 ? 0 : grade));
     }
 
     // converting URL query string to arrays
@@ -58,17 +58,12 @@ export const getTutors = async (req: Request, res: Response) => {
     } else {
       disability_pref = undefined;
     }
-    
-    // console.log("grades:", grades);
-    // console.log("subjects:", subjects);
-    // console.log("tutoring mode:", tutoringMode);
-    // console.log("disability:", disability_pref);
     // applying the filter
     const filteredTutors = await filterTutors(
       grades,
       subjects,
       disability_pref,
-      tutoringMode?.toString(),
+      tutoringMode?.toString()
     );
 
     // console.log(filteredTutors);
@@ -84,19 +79,22 @@ export const getTutors = async (req: Request, res: Response) => {
       .where(
         inArray(
           tutorTable.id,
-          db.select({ id: matchedTable.tutor_id })
+          db
+            .select({ id: matchedTable.tutor_id })
             .from(matchedTable)
             .where(inArray(matchedTable.tutor_id, tutorIds))
-            .groupBy(matchedTable.tutor_id))
+            .groupBy(matchedTable.tutor_id)
+        )
       );
-    
-    const matched_ids = await db.select({ id: matchedTable.tutor_id })
-      .from(matchedTable)
-  
+
+    const matched_ids = await db
+      .select({ id: matchedTable.tutor_id })
+      .from(matchedTable);
+
     const matched_ids_arr = matched_ids
       .map((row) => row.id)
       .filter((id): id is string => id !== null);
-    
+
     const unmatchedTutors = await db
       .selectDistinct()
       .from(tutorTable)
@@ -104,28 +102,29 @@ export const getTutors = async (req: Request, res: Response) => {
         and(
           inArray(
             tutorTable.id,
-            db.select({ id: unmatchedTable.tutor_id })
+            db
+              .select({ id: unmatchedTable.tutor_id })
               .from(unmatchedTable)
               .where(inArray(unmatchedTable.tutor_id, tutorIds))
-              .groupBy(unmatchedTable.tutor_id)),
-          notInArray(
-            tutorTable.id,
-            matched_ids_arr
-          )
+              .groupBy(unmatchedTable.tutor_id)
+          ),
+          notInArray(tutorTable.id, matched_ids_arr)
         )
       );
-                
+
     const historyTutors = await db
       .selectDistinct()
       .from(tutorTable)
       .where(
         inArray(
           tutorTable.id,
-          db.select({ id: historyTable.tutor_id })
+          db
+            .select({ id: historyTable.tutor_id })
             .from(historyTable)
             .where(inArray(historyTable.tutor_id, tutorIds))
-            .groupBy(historyTable.tutor_id))
-      );  
+            .groupBy(historyTable.tutor_id)
+        )
+      );
 
     res.send({
       matchedTutors: matchedTutors,
@@ -233,18 +232,20 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
         .select()
         .from(unmatchedTable)
         .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
-  
+
       if (query.length > 0) {
-        await db.update(tutorTable)
-          .set({ history_date: new Date().toISOString().split("T")[0], })
+        await db
+          .update(tutorTable)
+          .set({ history_date: new Date().toISOString().split("T")[0] })
           .where(eq(tutorTable.id, tutor_id));
 
         await db.insert(historyTable).values(query[0]);
-  
-        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
-        
-        res.json({ success: true, message: "Tutor moved" });
 
+        await db
+          .delete(unmatchedTable)
+          .where(eq(unmatchedTable.tutor_id, tutor_id));
+
+        res.json({ success: true, message: "Tutor moved" });
       } else {
         throw new Error("ID not found in matched table");
       }
@@ -258,9 +259,9 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
 };
 
 export const unmatchedToMatched = async (req: Request, res: Response) => {
-    // TODO: Implement logic
-    console.error("not implemented yet");
-}
+  // TODO: Implement logic
+  console.error("not implemented yet");
+};
 
 /******* Move a given tutor from unmatched to matched *******
  *
@@ -273,40 +274,83 @@ export const unmatchedToMatched = async (req: Request, res: Response) => {
  *
  ******************************************************************/
 async function moveTutorToMatched(tutor_id: string) {
-    if (tutor_id.length == 7 || tutor_id.length == 8) {
-      const query = await db
-        .select()
-        .from(unmatchedTable)
-        .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
-      if (query.length > 0) {
-        await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
-  
-        await db
-          .delete(unmatchedTable)
-          .where(eq(unmatchedTable.tutor_id, tutor_id));
-  
-        for (let i = 0; i < query.length - 1; i++) {
-          //adding rows back in
-          await db.insert(unmatchedTable).values(query[0]);
-        }
-      } else {
-        throw new Error("ID not found in unmatched table");
+  if (tutor_id.length == 7 || tutor_id.length == 8) {
+    const query = await db
+      .select()
+      .from(unmatchedTable)
+      .where(eq(unmatchedTable.tutor_id, tutor_id)); //returns an array with only one element
+    if (query.length > 0) {
+      await db.insert(matchedTable).values(query[0]); //inserts only one row into matchedTable
+
+      await db
+        .delete(unmatchedTable)
+        .where(eq(unmatchedTable.tutor_id, tutor_id));
+
+      for (let i = 0; i < query.length - 1; i++) {
+        //adding rows back in
+        await db.insert(unmatchedTable).values(query[0]);
       }
     } else {
-      throw new Error("Invalid ID");
+      throw new Error("ID not found in unmatched table");
     }
+  } else {
+    throw new Error("Invalid ID");
   }
-  
+}
 
 export const permDeleteTutor = async (req: Request, res: Response) => {
-    // console.log("in backend for perm delete")
-    try {
-      const tutor_id = req.params.id;
-      await db.delete(historyTable).where(eq(historyTable.tutor_id, tutor_id));
-      await db.delete(tutorTable).where(eq(tutorTable.id, tutor_id));
-      res.status(200).json({ message: "Tutor permanently deleted" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Error permanently deleting tutor", error: error});
+  console.log("in backend for perm delete");
+  try {
+    const tutor_id = req.params.id;
+    await db.delete(historyTable).where(eq(historyTable.tutor_id, tutor_id));
+    await db.delete(tutorTable).where(eq(tutorTable.id, tutor_id));
+    res.status(200).json({ message: "Tutor permanently deleted" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Error permanently deleting tutor", error: error });
+  }
+};
+
+export const checkPriorityFlag = async (req: Request, res: Response) => {
+  const tutor_id = req.body.tutor_id;
+  try {
+    const query = await db
+      .select()
+      .from(tutorTable)
+      .where(and(eq(tutorTable.priority, true), eq(tutorTable.id, tutor_id)));
+    res.json({ priority: query[0]?.priority ?? false });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error checking priority flag", error });
+  }
+};
+
+export const togglePriorityFlag = async (req: Request, res: Response) => {
+  const tutor_id = req.body.tutor_id;
+  console.log(req.body, "req.body");
+  console.log(req.params, "req.params");
+  console.log(tutor_id, "tutor_id");
+  try {
+    const query = await db
+      .select()
+      .from(tutorTable)
+      .where(eq(tutorTable.id, tutor_id));
+
+    if (query.length > 0) {
+      const currentPriority = query[0].priority;
+      await db
+        .update(tutorTable)
+        .set({ priority: !currentPriority })
+        .where(eq(tutorTable.id, tutor_id));
+      console.log(!currentPriority, "currentPriority");
+      res.json({ priority: !currentPriority });
+    } else {
+      res.status(404).json({ message: "Tutor not found" });
     }
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error toggling priority flag", error });
+  }
+};

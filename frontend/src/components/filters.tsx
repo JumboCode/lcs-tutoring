@@ -38,10 +38,14 @@ export default function FilterModal(props: FilterModalProps) {
   const [imageSrc, setImageSrc] = useState(GrayCloseButton);
 
   const handleToggleDisability = (button: boolean) => {
-    setSelectedButtonDisability(button);
+    setSelectedButtonDisability((prevSelected) =>
+      prevSelected === button ? undefined : button
+    );
   };
   const handleToggleMode = (button: string) => {
-    setSelectedButtonMode(button);
+    setSelectedButtonMode((prevSelected) =>
+      prevSelected === button ? "" : button
+    );
   };
 
   const handleGradeClick = (gradeLevel: number) => {
@@ -409,14 +413,14 @@ export default function FilterModal(props: FilterModalProps) {
                 History/Social Studies
               </button>
               <button
-                onClick={() => handleSubjectClick("SAT/ACT Prep")}
+                onClick={() => handleSubjectClick("SAT/ACT")}
                 className={
-                  selectedSubjects.includes("SAT/ACT Prep")
+                  selectedSubjects.includes("SAT/ACT")
                     ? buttonStyleActive
                     : buttonStyle
                 }
               >
-                SAT/ACT Prep
+                SAT/ACT
               </button>
               <button
                 onClick={() => handleSubjectClick("Music")}

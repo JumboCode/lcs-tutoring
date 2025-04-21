@@ -15,6 +15,7 @@ export type tuteeBoxProps = {
   parent_phone: string;
   notes?: string;
   priority: boolean;
+  flagged: boolean;
 };
 
 export type tutorBoxProps = {

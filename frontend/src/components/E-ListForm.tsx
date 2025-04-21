@@ -48,54 +48,65 @@ export default function EListForm() {
     event.preventDefault();
 
     const newErrors: FormErrors = {};
+    const currentYear = new Date().getFullYear();
 
-    // check for empty fields
+    // year between +10 of current year
+    const gradYear = parseInt(formData.gradYear, 10);
+    if (
+      isNaN(gradYear) ||
+      gradYear < currentYear ||
+      gradYear > currentYear + 10
+    ) {
+      newErrors.gradYear = `Graduation year must be between ${currentYear} and ${
+        currentYear + 10
+      }.`;
+    }
+
+    // end with @tufts.edu
+    if (!formData.tuftsEmail.endsWith("@tufts.edu")) {
+      newErrors.tuftsEmail = "Email must end with '@tufts.edu'.";
+    }
+
+    // check if fields are empty
     Object.keys(formData).forEach((key) => {
-      if (
-        // Check required fields
-        formData[key as keyof typeof formData] === ""
-      ) {
+      if (formData[key as keyof typeof formData] === "") {
         newErrors[key as keyof FormData] = "Field needs to be filled out.";
       }
     });
 
     setErrors(newErrors);
 
-    console.log(JSON.stringify(formData));
-    console.log(Object.keys(newErrors));
+    // ensure no more additional errors (undefined behavior)
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
 
-    // if no errors, process the form
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const response = await fetch(`${config.backendUrl}/e-list`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+    try {
+      const response = await fetch(`${config.backendUrl}/e-list`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setFormData({
+          fullName: "",
+          tuftsEmail: "",
+          gradYear: "",
         });
-        if (response.ok) {
-          setFormData({
-            fullName: "",
-            tuftsEmail: "",
-            gradYear: "",
-          });
-          setIsSubmitted(true);
-        }
-        if (response.status === 400) {
-          setErrorMessage(
-            "Unable to submit form. You are already on the E-List."
-          );
-        }
-      } catch (error) {
-        setIsSubmitted(false);
-        console.log("Error submitting form:", error);
-        alert("Unable to submit form. Please try again later.");
+        setIsSubmitted(true);
+        alert("Form submitted successfully!");
+      } else if (response.status === 400) {
+        setErrorMessage(
+          "Unable to submit form. You are already on the E-List."
+        );
       }
-
-      alert("Form submitted successfully!");
-
-      // navigate("/success-page");
+    } catch (error) {
+      setIsSubmitted(false);
+      console.error("Error submitting form:", error);
+      alert("Unable to submit form. Please try again later.");
     }
   };
 
@@ -110,7 +121,7 @@ export default function EListForm() {
       {isSubmitted ? (
         <div className="bg-white rounded-lg max-w-lg mx-auto my-7 p-8 text-center shadow-md">
           <h2 className="text-2xl font-medium text-[#1E3B68] mb-4">
-            Thank you for submitting your email!
+            You're signed-up for the LCS E-List!
           </h2>
           <p className="text-gray-700">Keep an eye out for an email!</p>
         </div>
