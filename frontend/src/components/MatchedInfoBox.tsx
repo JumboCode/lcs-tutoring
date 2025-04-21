@@ -132,6 +132,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const deletePair = async () => {
     await handleDeletePairOperation(async () => {
       try {
+        setIsDropdownOpen(false);
         const token = await getToken();
         const response = await fetch(`${config.backendUrl}/delete-pair`, {
           method: "POST",
@@ -143,7 +144,9 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
         });
 
         if (!response.ok) {
-          throw new Error("Failed to delete pair");
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || "Unknown error occurred"}`);
+          return;
         }
 
         const data = await response.json();
@@ -157,6 +160,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   };
 
   const unmatchPair = async () => {
+    setIsDropdownOpen(false);
     await handleUnmatchOperation(async () => {
       try {
         const token = await getToken();
@@ -183,22 +187,32 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     });
   };
 
-  const handlePermDelete = () => {
-    setIsDropdownOpen(false);
-    const token = getToken();
-    fetch(`${config.backendUrl}/perm-delete-match/${matchId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (onPermDelete) onPermDelete(matchId);
-      })
-      .catch((error) => console.error(error));
+  const handlePermDelete = async () => {
+    try {
+      setIsDropdownOpen(false);
+      const token = await getToken();
+      const response = await fetch(
+        `${config.backendUrl}/perm-delete-match/${matchId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to permanently delete tutee");
+      }
+
+      const data = await response.json();
+      if (onPermDelete) onPermDelete(matchId);
+      return data;
+    } catch (error) {
+      console.error("Error permanently deleting tutee:", error);
+      throw error;
+    }
   };
 
   const handleToggleDescription = () => {

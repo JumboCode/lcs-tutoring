@@ -132,6 +132,8 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 export const approveMatch = async (req: Request, res: Response) => {
   // console.log("IN APPROVE MATCH");
   try {
+    // check if tutor id 
+
     const { tutorId, selectedTuteeId } = req.body;
 
     if (tutorId > 0 && selectedTuteeId > 0) {

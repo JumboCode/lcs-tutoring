@@ -34,49 +34,72 @@ export const deletePair = async (req: Request, res: Response) => {
     if (!match) {
       res.status(404).json("Match not found");
     }
-    // console.log("here");
-    await db
-      .update(approvedMatchesTable)
-      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
-      .where(eq(approvedMatchesTable.id, match_id));
-    // console.log("Match moved to inactive");
-    res.status(200).json("Match moved to inactive");
 
     const tutor_id = match[0].tutor_id;
     const tutee_id = match[0].tutee_id;
 
+    const matchedTutorRows = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutor_id, tutor_id));
+
+    if (matchedTutorRows.length > 1) {
+      console.log("GOT HERE")
+      res.status(400).json({
+        error: `THIS IS AN ERRRRROOOOORRRRRR BAD BAD BAD`,
+      });
+      return
+    }
+
+    // change match to inactive
+    await db
+      .update(approvedMatchesTable)
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
+      .where(eq(approvedMatchesTable.id, match_id));
+    
+    // insert deleted tutor id into history table
     await db.insert(historyTable).values({
       tutor_id: tutor_id,
     });
 
-    const [deleteID] = await db
-    .select({id: matchedTable.id})
-    .from(matchedTable)
-    .where(
-      eq(matchedTable.tutor_id, tutor_id),
-    ).limit(1);
+    // deleting tutor from the matched table
+    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
 
-    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
-
-    // await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
-
+    // gives a history date to the tutor in the tutor table
     await db.update(tutorTable)
       .set({ history_date: new Date().toISOString().split("T")[0], })
       .where(eq(tutorTable.id, tutor_id));
 
+    // insert deleted tutee id into history table
     await db.insert(historyTable).values({
       tutee_id: tutee_id,
     });
 
-
-      
-
+    // deleting tutee from the matched table
     await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 
+    // gives a history date to the tutee in the tutee table
     await db.update(tuteeTable)
       .set({ history_date: new Date().toISOString().split("T")[0], })
       .where(eq(tuteeTable.id, tutee_id));
+    
+    // 1. Get all unmatched rows for this tutor_id
+    const unmatchedTutorRows = await db
+      .select()
+      .from(unmatchedTable)
+      .where(eq(unmatchedTable.tutor_id, tutor_id));
 
+    // 2. Insert them into the history table (assumes one insert per row)
+    for (const row of unmatchedTutorRows) {
+      await db.insert(historyTable).values({
+        tutor_id: row.tutor_id,
+      });
+    }
+
+    // 3. Delete them from unmatched table
+    await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
+    
+    res.status(200).json("Match moved to inactive");
   } catch (error) {
     console.error(error);
     res.status(500).json("Error updating flag status");

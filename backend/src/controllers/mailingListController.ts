@@ -22,7 +22,7 @@ export const fetchMailingList = async (req: Request, res: Response) => {
 };
 
 export const deleteEListUser = async (req: Request, res: Response) => {
-    console.log("Deleting user from mailing list");
+    // console.log("Deleting user from mailing list");
     try {
         const { id } = req.params;
         await db.delete(elist).where(eq(elist.id, Number(id)));
