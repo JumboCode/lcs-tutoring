@@ -45,69 +45,70 @@ export default function EListForm() {
 
   //submit function with data validation
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-      
-        const newErrors: FormErrors = {};
-        const currentYear = new Date().getFullYear();
-      
-        // check if fields are empty
-        Object.keys(formData).forEach((key) => {
-          if (formData[key as keyof typeof formData] === "") {
-            newErrors[key as keyof FormData] = "Field needs to be filled out.";
-          }
-        });
-      
-        // year between +-10 of current year
-        const gradYear = parseInt(formData.gradYear, 10);
-        if (
-          isNaN(gradYear) ||
-          gradYear < currentYear - 10 ||
-          gradYear > currentYear + 10
-        ) {
+    event.preventDefault();
 
-          newErrors.gradYear = `Graduation year must be between ${currentYear-10} and ${currentYear+10}.`;
-        }
-      
-        // end with @tufts.edu
-        if (!formData.tuftsEmail.endsWith("@tufts.edu")) {
-          newErrors.tuftsEmail = "Email must end with '@tufts.edu'.";
-        }
-      
-        setErrors(newErrors);
-      
-        // ensure no more additional errors (undefined behavior)
-        if (Object.keys(newErrors).length > 0) {
-          return;
-        }
-      
-        try {
-          const response = await fetch(`${config.backendUrl}/e-list`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData),
-          });
-      
-          if (response.ok) {
-            setFormData({
-              fullName: "",
-              tuftsEmail: "",
-              gradYear: "",
-            });
-            setIsSubmitted(true);
-            alert("Form submitted successfully!");
-          } else if (response.status === 400) {
-            setErrorMessage(
-              "Unable to submit form. You are already on the E-List."
-            );
-          }
-        } catch (error) {
-          setIsSubmitted(false);
-          console.error("Error submitting form:", error);
-          alert("Unable to submit form. Please try again later.");
-        }
-      };
+    const newErrors: FormErrors = {};
+    const currentYear = new Date().getFullYear();
+
+    // year between +10 of current year
+    const gradYear = parseInt(formData.gradYear, 10);
+    if (
+      isNaN(gradYear) ||
+      gradYear < currentYear ||
+      gradYear > currentYear + 10
+    ) {
+      newErrors.gradYear = `Graduation year must be between ${currentYear} and ${
+        currentYear + 10
+      }.`;
+    }
+
+    // end with @tufts.edu
+    if (!formData.tuftsEmail.endsWith("@tufts.edu")) {
+      newErrors.tuftsEmail = "Email must end with '@tufts.edu'.";
+    }
+
+    // check if fields are empty
+    Object.keys(formData).forEach((key) => {
+      if (formData[key as keyof typeof formData] === "") {
+        newErrors[key as keyof FormData] = "Field needs to be filled out.";
+      }
+    });
+
+    setErrors(newErrors);
+
+    // ensure no more additional errors (undefined behavior)
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.backendUrl}/e-list`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setFormData({
+          fullName: "",
+          tuftsEmail: "",
+          gradYear: "",
+        });
+        setIsSubmitted(true);
+        alert("Form submitted successfully!");
+      } else if (response.status === 400) {
+        setErrorMessage(
+          "Unable to submit form. You are already on the E-List."
+        );
+      }
+    } catch (error) {
+      setIsSubmitted(false);
+      console.error("Error submitting form:", error);
+      alert("Unable to submit form. Please try again later.");
+    }
+  };
 
   return (
     <div className="p-16 bg-[#F5F5F5]">
