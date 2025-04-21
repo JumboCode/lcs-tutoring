@@ -132,6 +132,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const deletePair = async () => {
     await handleDeletePairOperation(async () => {
       try {
+        setIsDropdownOpen(false);
         const token = await getToken();
         const response = await fetch(`${config.backendUrl}/delete-pair`, {
           method: "POST",
@@ -143,7 +144,9 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
         });
 
         if (!response.ok) {
-          throw new Error("Failed to delete pair");
+          const errorData = await response.json();
+          alert(`Error: ${errorData.error || "Unknown error occurred"}`);
+          return;
         }
 
         const data = await response.json();
@@ -157,6 +160,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   };
 
   const unmatchPair = async () => {
+    setIsDropdownOpen(false);
     await handleUnmatchOperation(async () => {
       try {
         const token = await getToken();
@@ -183,22 +187,32 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     });
   };
 
-  const handlePermDelete = () => {
-    setIsDropdownOpen(false);
-    const token = getToken();
-    fetch(`${config.backendUrl}/perm-delete-match/${matchId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (onPermDelete) onPermDelete(matchId);
-      })
-      .catch((error) => console.error(error));
+  const handlePermDelete = async () => {
+    try {
+      setIsDropdownOpen(false);
+      const token = await getToken();
+      const response = await fetch(
+        `${config.backendUrl}/perm-delete-match/${matchId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to permanently delete tutee");
+      }
+
+      const data = await response.json();
+      if (onPermDelete) onPermDelete(matchId);
+      return data;
+    } catch (error) {
+      console.error("Error permanently deleting tutee:", error);
+      throw error;
+    }
   };
 
   const handleToggleDescription = () => {
@@ -280,6 +294,10 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     handleSendEmail();
   };
 
+  const [showPermDeleteDialog, setShowPermDeleteDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showUnmatchDialog, setShowUnmatchDialog] = useState(false);
+  
   return (
     <div
       className={`${
@@ -475,7 +493,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                         )}
                         <button
                           className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                          onClick={unmatchPair}
+                          onClick={() => setShowUnmatchDialog(true)}
                         >
                           <img
                             src={unmatch_pair}
@@ -485,7 +503,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                         </button>
                         <button
                           className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                          onClick={deletePair}
+                          onClick={() => setShowDeleteDialog(true)}
                         >
                           <img
                             src={deleteIcon}
@@ -544,7 +562,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                         )}
                         <button
                           className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
-                          onClick={handlePermDelete}
+                          onClick={() => setShowPermDeleteDialog(true)}
                         >
                           <img
                             src={deleteIcon}
@@ -588,6 +606,90 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
           </tbody>
         )}
       </table>
+
+      {showUnmatchDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Unmatch</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to unmatch this pair?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowUnmatchDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                unmatchPair(); 
+                setShowUnmatchDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+  {showDeleteDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to delete this pair?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                deletePair(); 
+                setShowDeleteDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showPermDeleteDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Permanent Delete</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to permanently delete this pair?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowPermDeleteDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                handlePermDelete(); 
+                setShowPermDeleteDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

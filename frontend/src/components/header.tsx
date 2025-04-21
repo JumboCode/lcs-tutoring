@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FaChevronDown } from "react-icons/fa";
 
@@ -8,14 +8,31 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+  const dropdownRef = useRef<HTMLLIElement>(null);
 
   const handleNavClick = () => {
     window.scrollTo(0, 0);
     setIsDropdownOpen(false);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <header className="border-gray-200 border-b py-3 bg-white sticky top-0 z-50">
+    <header className="border-gray-200 border-b py-3 bg-blue-100 sticky top-0 z-50">
       <div className="flex justify-between items-center w-[90vw] mx-auto">
         <Link to="/" onClick={handleNavClick}>
           <img className="h-12 w-12" src={elephantLogo} alt="Elephant Logo" />
@@ -36,7 +53,7 @@ export default function Header() {
           >
             Team
           </Link>
-          <li className="relative">
+          <li className="relative" ref={dropdownRef}>
             {/* Forms dropdown button */}
             <button
               onClick={toggleDropdown}

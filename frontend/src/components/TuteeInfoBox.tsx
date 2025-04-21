@@ -104,21 +104,31 @@ export default function TuteeInfoBox({
     });
   };
 
-  const handlePermDelete = () => {
-    setIsDropdownOpen(false);
-    const token = getToken();
-    fetch(`${config.backendUrl}/perm-delete-tutee/${id}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        if (onPermDelete) onPermDelete(box_props);
-      })
-      .catch((error) => console.error(error));
+  const handlePermDelete = async () => {
+    try {
+      setIsDropdownOpen(false);
+      const token = await getToken();
+      const response = await fetch(
+        `${config.backendUrl}/perm-delete-tutee/${id}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to permanently delete tutee");
+      }
+
+      const data = await response.json();
+      if (onPermDelete) onPermDelete(box_props);
+      return data;
+    } catch (error) {
+      console.error("Error permanently deleting tutee:", error);
+      throw error;
+    }
   };
 
   useEffect(() => {
@@ -137,6 +147,8 @@ export default function TuteeInfoBox({
     };
   }, []);
 
+  const [showTuteeDeleteDialog, setShowTuteeDeleteDialog] = useState(false);
+  const [showTuteePermDeleteDialog, setShowTuteePermDeleteDialog] = useState(false);
   return (
     <div
       ref={wrapperRef}
@@ -235,7 +247,7 @@ export default function TuteeInfoBox({
 
                     {isDropdownOpen && !isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handleSubmit} className="">
+                        <button onClick={() => setShowTuteeDeleteDialog(true)} className="">
                           Delete Tutee
                         </button>
                         <img src={TrashCan} className="mx-2" />
@@ -244,7 +256,7 @@ export default function TuteeInfoBox({
 
                     {isDropdownOpen && isHistory && (
                       <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <button onClick={handlePermDelete} className="">
+                        <button onClick={() => setShowTuteePermDeleteDialog(true)} className="">
                           Permanently Delete
                         </button>
                         <img src={TrashCan} className="mx-2" />
@@ -294,6 +306,62 @@ export default function TuteeInfoBox({
           </tbody>
         )}
       </table>
+
+      {showTuteeDeleteDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to delete this tutee?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowTuteeDeleteDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                handleSubmit(); 
+                setShowTuteeDeleteDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showTuteePermDeleteDialog && (
+      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+          <h2 className="text-lg font-semibold mb-4">Confirm Permanent Delete</h2>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to permanently delete this tutee?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+              onClick={() => setShowTuteePermDeleteDialog(false)}
+            >
+              No
+            </button>
+            <button
+              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+              onClick={() => {
+                handlePermDelete(); 
+                setShowTuteePermDeleteDialog(false);
+              }}
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
