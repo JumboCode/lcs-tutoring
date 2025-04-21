@@ -2,6 +2,8 @@ import config from "../config.ts";
 import React, { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
+import copyGray from "../assets/images/admin_view/copy_email_gray.svg"
+import copyBlue from "../assets/images/admin_view/copy_email_blue.svg"
 
 interface Member {
   id: string;
@@ -14,6 +16,13 @@ const MailingList: React.FC = () => {
   const [mailingList, setMailingList] = useState<Member[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   const { getToken } = useAuth();
 
@@ -74,6 +83,23 @@ const MailingList: React.FC = () => {
     <div className="flex flex-col justify-center items-center">
       <div className="w-full flex flex-row justify-between">
         <h1 className="text-3xl font-bold text-left">E-List</h1>
+        <button
+          className="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-md hover:bg-[#F0F8FF]"
+          onClick={() =>
+            copyToClipboard(
+              mailingList.map((member) => member.email).filter(Boolean).join(", ")
+            )
+          }
+          onMouseEnter={(e) =>
+            e.currentTarget.children[0].setAttribute("src", copyBlue)
+          }
+          onMouseLeave={(e) =>
+            e.currentTarget.children[0].setAttribute("src", copyGray)
+          }
+        >
+          <img src={copyGray} alt="Copy icon" className="w-4 h-4" />
+          Copy all email addresses
+        </button>
       </div>
       <hr className="border-t-1 border-gray w-full my-2 mt-3" />
 
@@ -117,7 +143,23 @@ const MailingList: React.FC = () => {
               {mailingList.map((member) => (
                 <tr key={member.id} className="border-b">
                   <td className="py-2 px-8">{member.name}</td>
-                  <td className="py-2">{member.email}</td>
+                  <td className="py-2 flex items-center gap-2">
+                    {member.email}
+                    {member.email && (
+                      <button
+                        onClick={() => copyToClipboard(member.email!)}
+                        onMouseEnter={(e) =>
+                          e.currentTarget.children[0].setAttribute("src", copyBlue)
+                        }
+                        onMouseLeave={(e) =>
+                          e.currentTarget.children[0].setAttribute("src", copyGray)
+                        }
+                        className="ml-2"
+                      >
+                        <img src={copyGray} alt="Copy email" className="w-4 h-4" />
+                      </button>
+                    )}
+                  </td>
                   <td className="py-2 pl-4">{member.gradYear}</td>
                   <td className="py-2 pl-4">
                     <button
