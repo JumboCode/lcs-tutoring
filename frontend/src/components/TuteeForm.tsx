@@ -137,22 +137,28 @@ export default function TuteeForm() {
 
     return parts.join("");
   };
-
+  
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  
     if (name === "specialNeeds") {
       if (value === "no") {
         setFormData((prev) => ({
           ...prev,
           specialNeedsInfo: "",
         }));
+        setErrors((prev) => ({
+          ...prev,
+          specialNeedsInfo: "",
+        }));
       }
       setShowTextBox(value === "yes");
     }
+  
     setErrors((prev) => ({
       ...prev,
       [name]: "", // clear error when user selects an option

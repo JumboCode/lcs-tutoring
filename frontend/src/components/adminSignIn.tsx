@@ -34,7 +34,7 @@ export default function AdminLogin() {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-4">
-      <h2 className="text-2xl font-semibold text-center">
+      <h2 className="text-2xl font-semibold text-center hidden sm:block">
         Log In for LCS Admin
       </h2>
       {error && (
@@ -43,7 +43,7 @@ export default function AdminLogin() {
           <span>Incorrect email or password</span>
         </div>
       )}
-      <div className="bg-white shadow-lg rounded-lg p-6 w-[514px] h-[350px] flex flex-col justify-center gap-4">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-[514px] h-[350px] flex flex-col justify-center gap-4 hidden sm:block">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="pb-3">
             <label className="block text-sm font-medium">Tufts Email</label>

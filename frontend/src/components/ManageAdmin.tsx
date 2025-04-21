@@ -76,6 +76,9 @@ const ManageAdmin: React.FC = () => {
   //   return <div>Access Denied</div>;
   // }
 
+  const [showAdminDeleteDialog, setShowAdminDeleteDialog] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="w-full flex flex-row justify-between">
@@ -126,27 +129,64 @@ const ManageAdmin: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {whitelistedUsers.map((adminUser) => (
-                <tr key={adminUser.id} className="border-b">
-                  <td className="py-2 px-8">
-                    {adminUser.firstName} {adminUser.lastName}
-                  </td>
-                  <td className="py-2">
-                    {adminUser.emailAddresses[0].emailAddress}
-                  </td>
-                  <td className="py-2 pl-4">
-                    <button
-                      onClick={() => handleDeleteUser(adminUser.id)}
-                      className="text-red-500 hover:text-red-700"
-                      aria-label="Delete user"
-                    >
-                      <Trash2 />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+            {whitelistedUsers.map((adminUser) => (
+              <tr key={adminUser.id} className="border-b">
+                <td className="py-2 px-8">
+                  {adminUser.firstName} {adminUser.lastName}
+                </td>
+                <td className="py-2">
+                  {adminUser.emailAddresses[0].emailAddress}
+                </td>
+                <td className="py-2 pl-4">
+                  <button
+                    onClick={() => {
+                      setSelectedUserId(adminUser.id);
+                      setShowAdminDeleteDialog(true);
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                    aria-label="Delete user"
+                  >
+                    <Trash2 />
+                  </button>
+                </td>
+              </tr>
+            ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showAdminDeleteDialog && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this admin?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                onClick={() => {
+                  setShowAdminDeleteDialog(false);
+                  setSelectedUserId(null);
+                }}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+                onClick={() => {
+                  if (selectedUserId) {
+                    handleDeleteUser(selectedUserId);
+                  }
+                  setShowAdminDeleteDialog(false);
+                  setSelectedUserId(null);
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -356,7 +356,7 @@ export const unmatchPair = async (req: Request, res: Response) => {
     // Move the pair to inactive in Approved Matches Table
     await db
       .update(approvedMatchesTable)
-      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0], sent_email: false })
       .where(eq(approvedMatchesTable.id, Number(match_id)));
 
     res.json({ success: true, message: "Pair unmatched" });
