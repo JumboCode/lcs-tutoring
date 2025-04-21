@@ -297,7 +297,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const [showPermDeleteDialog, setShowPermDeleteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showUnmatchDialog, setShowUnmatchDialog] = useState(false);
-  
+
   return (
     <div
       className={`${
@@ -608,88 +608,90 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
       </table>
 
       {showUnmatchDialog && (
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
-          <h2 className="text-lg font-semibold mb-4">Confirm Unmatch</h2>
-          <p className="text-gray-600 mb-6">
-            Are you sure you want to unmatch this pair?
-          </p>
-          <div className="flex justify-center gap-4">
-            <button
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-              onClick={() => setShowUnmatchDialog(false)}
-            >
-              No
-            </button>
-            <button
-              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
-              onClick={() => {
-                unmatchPair(); 
-                setShowUnmatchDialog(false);
-              }}
-            >
-              Yes
-            </button>
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Unmatch</h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to unmatch this pair?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                onClick={() => setShowUnmatchDialog(false)}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+                onClick={() => {
+                  unmatchPair();
+                  setShowUnmatchDialog(false);
+                }}
+              >
+                Yes
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
-  {showDeleteDialog && (
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
-          <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
-          <p className="text-gray-600 mb-6">
-            Are you sure you want to delete this pair?
-          </p>
-          <div className="flex justify-center gap-4">
-            <button
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-              onClick={() => setShowDeleteDialog(false)}
-            >
-              No
-            </button>
-            <button
-              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
-              onClick={() => {
-                deletePair(); 
-                setShowDeleteDialog(false);
-              }}
-            >
-              Yes
-            </button>
+      {showDeleteDialog && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this pair?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                onClick={() => setShowDeleteDialog(false)}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+                onClick={() => {
+                  deletePair();
+                  setShowDeleteDialog(false);
+                }}
+              >
+                Yes
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
-    {showPermDeleteDialog && (
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
-          <h2 className="text-lg font-semibold mb-4">Confirm Permanent Delete</h2>
-          <p className="text-gray-600 mb-6">
-            Are you sure you want to permanently delete this pair?
-          </p>
-          <div className="flex justify-center gap-4">
-            <button
-              className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-              onClick={() => setShowPermDeleteDialog(false)}
-            >
-              No
-            </button>
-            <button
-              className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
-              onClick={() => {
-                handlePermDelete(); 
-                setShowPermDeleteDialog(false);
-              }}
-            >
-              Yes
-            </button>
+      {showPermDeleteDialog && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-semibold mb-4">
+              Confirm Permanent Delete
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to permanently delete this pair?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                onClick={() => setShowPermDeleteDialog(false)}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+                onClick={() => {
+                  handlePermDelete();
+                  setShowPermDeleteDialog(false);
+                }}
+              >
+                Yes
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
   );
 }

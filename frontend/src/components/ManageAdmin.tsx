@@ -71,11 +71,6 @@ const ManageAdmin: React.FC = () => {
     }
   };
 
-  // // Ensure only admins can access this page
-  // if (!user || !user.publicMetadata?.role?.includes("admin")) {
-  //   return <div>Access Denied</div>;
-  // }
-
   const [showAdminDeleteDialog, setShowAdminDeleteDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
@@ -98,7 +93,7 @@ const ManageAdmin: React.FC = () => {
       {/* When awaiting the fetch */}
       {loading && (
         <div className="flex items-center justify-center py-10">
-          <p className="text-lg text-gray-500">Loading tutors...</p>
+          <p className="text-lg text-gray-500">Loading admins...</p>
         </div>
       )}
 
@@ -129,28 +124,28 @@ const ManageAdmin: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-            {whitelistedUsers.map((adminUser) => (
-              <tr key={adminUser.id} className="border-b">
-                <td className="py-2 px-8">
-                  {adminUser.firstName} {adminUser.lastName}
-                </td>
-                <td className="py-2">
-                  {adminUser.emailAddresses[0].emailAddress}
-                </td>
-                <td className="py-2 pl-4">
-                  <button
-                    onClick={() => {
-                      setSelectedUserId(adminUser.id);
-                      setShowAdminDeleteDialog(true);
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                    aria-label="Delete user"
-                  >
-                    <Trash2 />
-                  </button>
-                </td>
-              </tr>
-            ))}
+              {whitelistedUsers.map((adminUser) => (
+                <tr key={adminUser.id} className="border-b">
+                  <td className="py-2 px-8">
+                    {adminUser.firstName} {adminUser.lastName}
+                  </td>
+                  <td className="py-2">
+                    {adminUser.emailAddresses[0].emailAddress}
+                  </td>
+                  <td className="py-2 pl-4">
+                    <button
+                      onClick={() => {
+                        setSelectedUserId(adminUser.id);
+                        setShowAdminDeleteDialog(true);
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                      aria-label="Delete user"
+                    >
+                      <Trash2 />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

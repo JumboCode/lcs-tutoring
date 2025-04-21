@@ -101,7 +101,7 @@ export const deletePair = async (req: Request, res: Response) => {
       await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
 
       res.status(200).json("Match moved to inactive");
-    };
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json("Error updating flag status");
