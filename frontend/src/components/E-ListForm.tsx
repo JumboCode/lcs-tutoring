@@ -45,59 +45,69 @@ export default function EListForm() {
 
   //submit function with data validation
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const newErrors: FormErrors = {};
-
-    // check for empty fields
-    Object.keys(formData).forEach((key) => {
-      if (
-        // Check required fields
-        formData[key as keyof typeof formData] === ""
-      ) {
-        newErrors[key as keyof FormData] = "Field needs to be filled out.";
-      }
-    });
-
-    setErrors(newErrors);
-
-    console.log(JSON.stringify(formData));
-    console.log(Object.keys(newErrors));
-
-    // if no errors, process the form
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        const response = await fetch(`${config.backendUrl}/e-list`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
+        event.preventDefault();
+      
+        const newErrors: FormErrors = {};
+        const currentYear = new Date().getFullYear();
+      
+        // check if fields are empty
+        Object.keys(formData).forEach((key) => {
+          if (formData[key as keyof typeof formData] === "") {
+            newErrors[key as keyof FormData] = "Field needs to be filled out.";
+          }
         });
-        if (response.ok) {
-          setFormData({
-            fullName: "",
-            tuftsEmail: "",
-            gradYear: "",
+      
+        // year between +-10 of current year
+        const gradYear = parseInt(formData.gradYear, 10);
+        if (
+          isNaN(gradYear) ||
+          gradYear < currentYear - 10 ||
+          gradYear > currentYear + 10
+        ) {
+
+          newErrors.gradYear = `Graduation year must be between ${currentYear-10} and ${currentYear+10}.`;
+        }
+      
+        // end with @tufts.edu
+        if (!formData.tuftsEmail.endsWith("@tufts.edu")) {
+          newErrors.tuftsEmail = "Email must end with '@tufts.edu'.";
+        }
+      
+        setErrors(newErrors);
+      
+        // ensure no more additional errors (undefined behavior)
+        if (Object.keys(newErrors).length > 0) {
+          return;
+        }
+      
+        try {
+          const response = await fetch(`${config.backendUrl}/e-list`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
           });
-          setIsSubmitted(true);
+      
+          if (response.ok) {
+            setFormData({
+              fullName: "",
+              tuftsEmail: "",
+              gradYear: "",
+            });
+            setIsSubmitted(true);
+            alert("Form submitted successfully!");
+          } else if (response.status === 400) {
+            setErrorMessage(
+              "Unable to submit form. You are already on the E-List."
+            );
+          }
+        } catch (error) {
+          setIsSubmitted(false);
+          console.error("Error submitting form:", error);
+          alert("Unable to submit form. Please try again later.");
         }
-        if (response.status === 400) {
-          setErrorMessage(
-            "Unable to submit form. You are already on the E-List."
-          );
-        }
-      } catch (error) {
-        setIsSubmitted(false);
-        console.log("Error submitting form:", error);
-        alert("Unable to submit form. Please try again later.");
-      }
-
-      alert("Form submitted successfully!");
-
-      // navigate("/success-page");
-    }
-  };
+      };
 
   return (
     <div className="p-16 bg-[#F5F5F5]">
@@ -110,7 +120,7 @@ export default function EListForm() {
       {isSubmitted ? (
         <div className="bg-white rounded-lg max-w-lg mx-auto my-7 p-8 text-center shadow-md">
           <h2 className="text-2xl font-medium text-[#1E3B68] mb-4">
-            Thank you for submitting your email!
+            You're signed-up for the LCS E-List!
           </h2>
           <p className="text-gray-700">Keep an eye out for an email!</p>
         </div>
