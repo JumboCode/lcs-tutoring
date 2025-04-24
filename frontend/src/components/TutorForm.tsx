@@ -275,8 +275,8 @@ export default function TutorForm() {
       }
 
       if (
-        formData["signature"] !==
-        formData["firstName"] + " " + formData["lastName"]
+        formData["signature"].trim() !==
+        `${formData["firstName"].trim()} ${formData["lastName"].trim()}`
       ) {
         newErrors[
           "signature"
