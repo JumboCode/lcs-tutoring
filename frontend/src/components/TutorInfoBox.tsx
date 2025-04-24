@@ -279,7 +279,7 @@ export default function TutorInfoBox({
                             onClick={handleTogglePriority}
                             className="mr-2"
                           >
-                            {priority ? "Deprioritize" : "Priority"} Tutor
+                            {priority ? "Deprioritize" : "Prioritize"} Tutor
                           </button>
                         </div>
                       </div>
