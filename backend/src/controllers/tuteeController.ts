@@ -186,7 +186,10 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
   
       if (query.length > 0) {
         await db.update(tuteeTable)
-          .set({ history_date: new Date().toISOString().split("T")[0], })
+          .set({ 
+            history_date: new Date().toISOString().split("T")[0],
+            priority: false, 
+          })
           .where(eq(tuteeTable.id, tutee_id));
         
         await db.insert(historyTable).values(query[0]); //inserts only one row into matchedTable

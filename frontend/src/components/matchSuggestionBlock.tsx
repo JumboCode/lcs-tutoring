@@ -12,6 +12,7 @@
 import config from "../config.ts";
 import TuteeSuggestionBox from "./tuteeSuggestionBox";
 
+import YELLOW_FLAG from "../assets/images/admin_view/yellow_flag.svg";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import { FaCheck } from "react-icons/fa6";
@@ -136,7 +137,7 @@ const MatchSuggestionBlock = ({
     <>
       {!finishedSubmitting && (
         <div className="border rounded-lg bg-white p-6 my-6">
-          <div className="flex space-x-6 mx-6 my-3">
+          <div className="flex flex-row items-center space-x-6 mx-6 my-3">
             <span className="font-bold text-lg">
               {first_name} {last_name}
             </span>
@@ -148,17 +149,10 @@ const MatchSuggestionBlock = ({
               <FiPhone />
               <span className="pl-2 text-sm text-gray-500">{phone}</span>
             </div>
+            {tutor_info.priority && (
+              <img src={YELLOW_FLAG} alt="flag" className="w-6 h-6" />
+            )}
           </div>
-          {tutor_info.flagged && (
-            <div className="bg-[#FEFDF2] p-2 rounded mx-auto my-2">
-              <div className="flex items-center gap-2 ">
-                <Flag className="text-[#F3CA42]" />
-                <span className="text-sm font-normal text-[#F3CA42]">
-                  Priority Selection Flag
-                </span>
-              </div>
-            </div>
-          )}
           <div
             className={
               "py-1 flex flex-row text-gray-500 px-2 bg-[#fbfbfb] justify-start items-center mx-3"

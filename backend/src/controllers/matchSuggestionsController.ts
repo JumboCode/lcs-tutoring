@@ -62,6 +62,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
             disability_pref: tutorTable.disability_pref,
             tutoring_mode: tutorTable.tutoring_mode,
             notes: tutorTable.notes,
+            priority: tutorTable.priority,
           })
           .from(tutorTable)
           .where(eq(tutorTable.id, match.tutorId));
@@ -76,6 +77,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
             special_needs: tuteeTable.special_needs,
             tutoring_mode: tuteeTable.tutoring_mode,
             notes: tuteeTable.notes,
+            priority: tuteeTable.priority,
           })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId1));
@@ -90,6 +92,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
             special_needs: tuteeTable.special_needs,
             tutoring_mode: tuteeTable.tutoring_mode,
             notes: tuteeTable.notes,
+            priority: tuteeTable.priority,
           })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId2));
@@ -104,6 +107,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
             special_needs: tuteeTable.special_needs,
             tutoring_mode: tuteeTable.tutoring_mode,
             notes: tuteeTable.notes,
+            priority: tuteeTable.priority,
           })
           .from(tuteeTable)
           .where(eq(tuteeTable.id, match.tuteeId3));
@@ -151,6 +155,16 @@ export const approveMatch = async (req: Request, res: Response) => {
         }),
       });
 
+      await db
+        .update(tutorTable)
+        .set({ priority: false })
+        .where(eq(tutorTable.id, tutorId));
+      
+      await db
+        .update(tuteeTable)
+        .set({ priority: false })
+        .where(eq(tuteeTable.id, selectedTuteeId));
+
       const [deleteID] = await db
         .select({id: unmatchedTable.id})
         .from(unmatchedTable)
@@ -160,9 +174,6 @@ export const approveMatch = async (req: Request, res: Response) => {
 
       await db.delete(unmatchedTable).where(eq(unmatchedTable.id, deleteID.id));
       await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
-  
-
-        //console.log(deleteID.id);
 
       res.status(200).json({ success: true });
     } else {

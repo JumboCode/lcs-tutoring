@@ -3,7 +3,7 @@
 import { tuteeInfo } from "../types";
 import { BsEnvelope } from "react-icons/bs";
 import { useState } from "react";
-import { Flag } from "lucide-react";
+import YELLOW_FLAG from "../assets/images/admin_view/yellow_flag.svg";
 // const BG_COLOR = "#fbfbfb";
 
 export default function TuteeSuggestionBox({
@@ -23,7 +23,7 @@ export default function TuteeSuggestionBox({
     grade,
     special_needs,
     tutoring_mode,
-    flagged,
+    priority,
     notes,
   } = tutee_info;
 
@@ -37,28 +37,23 @@ export default function TuteeSuggestionBox({
           onChange={onSelect}
           className="w-4 h-4 mt-1.5 accent-gray-500"
         />
-        <div>
-          <div className="text-lg font-bold flex flex-col items-start gap-2">
-            <div className="flex items-center">
-              {first_name} {last_name}
+        <div className="flex flex-row items-center">
+          <div>
+            <div className="text-lg font-bold flex flex-col items-start gap-2">
+              <div className="flex items-center">
+                {first_name} {last_name}
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-gray-500">
+              <BsEnvelope size={12} color="mr-1" />
+              <span className="text-sm">{email}</span>
             </div>
           </div>
-          <div className="flex items-center gap-1 text-gray-500">
-            <BsEnvelope size={12} color="mr-1" />
-            <span className="text-sm">{email}</span>
-          </div>
+          {priority && (
+            <img src={YELLOW_FLAG} alt="flag" className="w-5 h-5 ml-2" />
+          )}
         </div>
       </div>
-      {flagged && (
-        <div className="bg-[#FEFDF2] p-2 rounded w-5/6 mx-auto">
-          <div className="flex items-center gap-2 ">
-            <Flag className="text-[#F3CA42]" />
-            <span className="text-sm font-normal text-[#F3CA42]">
-              Priority Selection
-            </span>
-          </div>
-        </div>
-      )}
 
       {/*Display Tutee Special Request in box*/}
       {notes && (

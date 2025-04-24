@@ -52,7 +52,12 @@ export const deletePair = async (req: Request, res: Response) => {
     // Set match to inactive
     await db
       .update(approvedMatchesTable)
-      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
+      .set({ 
+        active: false,
+        inactive_date: new Date().toISOString().split("T")[0],
+        sent_email: false,
+        flagged: false,
+      })
       .where(eq(approvedMatchesTable.id, match_id));
 
     // Add tutor and tutee to history
@@ -359,6 +364,7 @@ export const unmatchPair = async (req: Request, res: Response) => {
         active: false,
         inactive_date: new Date().toISOString().split("T")[0],
         sent_email: false,
+        flagged: false,
       })
       .where(eq(approvedMatchesTable.id, Number(match_id)));
 
@@ -391,6 +397,11 @@ async function moveTutorToUnmatched(tutor_id: string) {
       throw new Error("Tutor id does not exist in matched table");
     }
 
+    await db
+      .update(tutorTable)
+      .set({ priority: true })
+      .where(eq(tutorTable.id, tutor_id));
+
     const row = query[0];
     await db.insert(unmatchedTable).values({ tutor_id: row.tutor_id });
 
@@ -413,6 +424,11 @@ async function moveTuteeToUnmatched(tutee_id: number) {
   if (!query || query.length === 0) {
     throw new Error("Tutee id does not exist in matched table");
   }
+
+  await db
+      .update(tuteeTable)
+      .set({ priority: true })
+      .where(eq(tuteeTable.id, tutee_id));
 
   const row = query[0];
   await db.insert(unmatchedTable).values({ tutee_id: row.tutee_id });

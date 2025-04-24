@@ -47,7 +47,7 @@ export interface tutorInfo {
   subject: string[];
   grade_level_pref: string[];
   disability_pref: boolean;
-  flagged: boolean;
+  priority: boolean;
   tutoring_mode: string;
   notes: string;
 }
@@ -61,6 +61,6 @@ export interface tuteeInfo {
   grade: string;
   special_needs: string;
   tutoring_mode?: string;
-  flagged: boolean;
+  priority: boolean;
   notes: string;
 }
