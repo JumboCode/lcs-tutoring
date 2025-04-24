@@ -8,7 +8,7 @@ export default function Intro() {
         <div className="flex flex-col items-left">
           <div className="flex items-center mb-4">
             <span className="font-interBlack text-lg mr-2 text-gray-700">
-              LEONARD CARMICHAEL SOCIETY TUTORING
+              LEONARD CARMICHAEL SOCIETY
             </span>
             <div
               className="border-b border-gray-600"
