@@ -36,8 +36,6 @@ export const tuteeSubmission = async (req: Request, res: Response): Promise<any>
       subjects,
       tutoringMode,
       additionalInfo,
-      agreement,
-      signature,
     } = request;
     const [insertedTutee] = await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
@@ -87,8 +85,6 @@ export const tutorSubmission = async (req: Request, res: Response): Promise<any>
       languageProficiencies,
       tutoringMode,
       notes,
-      agreement,
-      signature,
     } = request;
     await db.insert(tutorTable).values({
       id: id,
@@ -109,10 +105,23 @@ export const tutorSubmission = async (req: Request, res: Response): Promise<any>
       language_proficiencies: languageProficiencies,
     });
     for (let i = 0; i < numTutees; i++) {
-        await db.insert(unmatchedTable).values({
-                tutor_id: id,
-              });
+      await db.insert(unmatchedTable).values({
+        tutor_id: id,
+      });
     }
+    const existingEmail = await db
+      .select()
+      .from(elist)
+      .where(eq(elist.email, email));
+
+    if (existingEmail.length == 0) {
+      await db.insert(elist).values({
+        name: `${firstName} ${lastName}`,
+        email: email,
+        year_grad: yearGrad
+      });
+    }
+
     return res.status(200).json({ message: "Tutor form submitted successfully" });
   } catch (error: any) {
     console.error("Error submitting tutor form:", error);
