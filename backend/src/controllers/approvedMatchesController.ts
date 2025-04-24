@@ -27,81 +27,66 @@ export const deletePair = async (req: Request, res: Response) => {
   try {
     const match_id = Number(req.body.pairId);
 
-    await db.transaction(async (trx) => {
-      const match = await trx
-        .select()
-        .from(approvedMatchesTable)
-        .where(eq(approvedMatchesTable.id, match_id));
-      if (!match) {
-        res.status(404).json("Match not found");
-      }
+    const match = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, match_id));
+    if (!match || match.length === 0) {
+      return res.status(404).json("Match not found");
+    }
 
-      const tutor_id = match[0].tutor_id;
-      const tutee_id = match[0].tutee_id;
+    const tutor_id = match[0].tutor_id;
+    const tutee_id = match[0].tutee_id;
 
-      const matchedTutorRows = await trx
-        .select()
-        .from(matchedTable)
-        .where(eq(matchedTable.tutor_id, tutor_id));
+    const matchedTutorRows = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutor_id, tutor_id));
 
-      if (matchedTutorRows.length > 1) {
-        console.log("GOT HERE")
-        res.status(400).json({
-          error: `THIS IS AN ERRRRROOOOORRRRRR BAD BAD BAD`,
-        });
-        return
-      }
-
-      // change match to inactive
-      await trx
-        .update(approvedMatchesTable)
-        .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
-        .where(eq(approvedMatchesTable.id, match_id));
-
-      // insert deleted tutor id into history table
-      await trx.insert(historyTable).values({
-        tutor_id: tutor_id,
+    if (matchedTutorRows.length > 1) {
+      return res.status(400).json({
+        error: `THIS IS AN ERRRRROOOOORRRRRR BAD BAD BAD`,
       });
+    }
 
-      // deleting tutor from the matched table
-      await trx.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+    // Set match to inactive
+    await db
+      .update(approvedMatchesTable)
+      .set({ active: false, inactive_date: new Date().toISOString().split("T")[0] })
+      .where(eq(approvedMatchesTable.id, match_id));
 
-      // gives a history date to the tutor in the tutor table
-      await trx.update(tutorTable)
-        .set({ history_date: new Date().toISOString().split("T")[0], })
-        .where(eq(tutorTable.id, tutor_id));
+    // Add tutor and tutee to history
+    await db.insert(historyTable).values({ tutor_id });
+    await db.insert(historyTable).values({ tutee_id });
 
-      // insert deleted tutee id into history table
-      await trx.insert(historyTable).values({
-        tutee_id: tutee_id,
-      });
+    // Remove from matched table
+    await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
+    await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 
-      // deleting tutee from the matched table
-      await trx.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
+    // Update tutor and tutee history date
+    await db
+      .update(tutorTable)
+      .set({ history_date: new Date().toISOString().split("T")[0] })
+      .where(eq(tutorTable.id, tutor_id));
 
-      // gives a history date to the tutee in the tutee table
-      await trx.update(tuteeTable)
-        .set({ history_date: new Date().toISOString().split("T")[0], })
-        .where(eq(tuteeTable.id, tutee_id));
+    await db
+      .update(tuteeTable)
+      .set({ history_date: new Date().toISOString().split("T")[0] })
+      .where(eq(tuteeTable.id, tutee_id));
 
-      // 1. Get all unmatched rows for this tutor_id
-      const unmatchedTutorRows = await trx
-        .select()
-        .from(unmatchedTable)
-        .where(eq(unmatchedTable.tutor_id, tutor_id));
+    // Move unmatched tutor rows to history
+    const unmatchedTutorRows = await db
+      .select()
+      .from(unmatchedTable)
+      .where(eq(unmatchedTable.tutor_id, tutor_id));
 
-      // 2. Insert them into the history table (assumes one insert per row)
-      for (const row of unmatchedTutorRows) {
-        await trx.insert(historyTable).values({
-          tutor_id: row.tutor_id,
-        });
-      }
+    for (const row of unmatchedTutorRows) {
+      await db.insert(historyTable).values({ tutor_id: row.tutor_id });
+    }
 
-      // 3. Delete them from unmatched table
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
+    await db.delete(unmatchedTable).where(eq(unmatchedTable.tutor_id, tutor_id));
 
-      res.status(200).json("Match moved to inactive");
-    });
+    res.status(200).json("Match moved to inactive");
   } catch (error) {
     console.error(error);
     res.status(500).json("Error updating flag status");
@@ -355,31 +340,35 @@ export const flagApprovedMatch = async (req: Request, res: Response) => {
 export const unmatchPair = async (req: Request, res: Response) => {
   try {
     const match_id = req.body.pairId;
-    await db.transaction(async (trx) => {
-      const query = await trx
-        .select()
-        .from(approvedMatchesTable)
-        .where(eq(approvedMatchesTable.id, Number(match_id)));
-      
-      await moveTutorToUnmatched(query[0].tutor_id);
-      await moveTuteeToUnmatched(query[0].tutee_id);
-      
-      // Move the pair to inactive in Approved Matches Table
-      await trx
-        .update(approvedMatchesTable)
-        .set({
-          active: false,
-          inactive_date: new Date().toISOString().split("T")[0],
-          sent_email: false,
-        })
-        .where(eq(approvedMatchesTable.id, Number(match_id)));
-      res.json({ success: true, message: "Pair unmatched" });
-    });
+
+    const query = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, Number(match_id)));
+
+    if (query.length === 0) {
+      return res.status(404).json({ error: "Match not found" });
+    }
+
+    await moveTutorToUnmatched(query[0].tutor_id);
+    await moveTuteeToUnmatched(query[0].tutee_id);
+
+    await db
+      .update(approvedMatchesTable)
+      .set({
+        active: false,
+        inactive_date: new Date().toISOString().split("T")[0],
+        sent_email: false,
+      })
+      .where(eq(approvedMatchesTable.id, Number(match_id)));
+
+    res.json({ success: true, message: "Pair unmatched" });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to inactive");
   }
 };
+
 
 /******* Move a given tutor/tutee from matched to unmatched *******
  *
@@ -392,41 +381,45 @@ export const unmatchPair = async (req: Request, res: Response) => {
  *
  ******************************************************************/
 async function moveTutorToUnmatched(tutor_id: string) {
-  if (tutor_id.length == 7) {
-    await db.transaction(async (trx) => {
-      const query = await trx
-        .select()
-        .from(matchedTable)
-        .where(eq(matchedTable.tutor_id, tutor_id));
-      if (!query) {
-        throw new Error("Tutor id does not exist in matched table");
-      }
-      const row = query[0];
-      await trx.insert(unmatchedTable).values({ tutor_id: row.tutor_id });
-      const [deleteID] = await trx
-        .select({ id: matchedTable.id })
-        .from(matchedTable)
-        .where(eq(matchedTable.tutor_id, tutor_id))
-        .limit(1);
-      await trx.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
-    });
+  if (tutor_id.length === 7) {
+    const query = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutor_id, tutor_id));
+
+    if (!query || query.length === 0) {
+      throw new Error("Tutor id does not exist in matched table");
+    }
+
+    const row = query[0];
+    await db.insert(unmatchedTable).values({ tutor_id: row.tutor_id });
+
+    const [deleteID] = await db
+      .select({ id: matchedTable.id })
+      .from(matchedTable)
+      .where(eq(matchedTable.tutor_id, tutor_id))
+      .limit(1);
+
+    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
   }
 }
 
 async function moveTuteeToUnmatched(tutee_id: number) {
-  await db.transaction(async (trx) => {
-    const query = await trx
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutee_id, tutee_id));
-    if (!query) {
-      throw new Error("Tutee id does not exist in matched table");
-    }
-    const row = query[0];
-    await trx.insert(unmatchedTable).values({ tutee_id: row.tutee_id });
-    await trx.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-  });
+  const query = await db
+    .select()
+    .from(matchedTable)
+    .where(eq(matchedTable.tutee_id, tutee_id));
+
+  if (!query || query.length === 0) {
+    throw new Error("Tutee id does not exist in matched table");
+  }
+
+  const row = query[0];
+  await db.insert(unmatchedTable).values({ tutee_id: row.tutee_id });
+
+  await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 }
+
 
 export const emailPair = async (req: Request, res: Response) => {
   try {

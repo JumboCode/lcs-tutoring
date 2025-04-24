@@ -226,34 +226,38 @@ async function filterTutors(
 export const unmatchedToHistory = async (req: Request, res: Response) => {
   try {
     const tutor_id = req.params.id;
-    if (tutor_id.length == 7 || tutor_id.length == 8) {
-      await db.transaction(async (trx) => {
-        const query = await trx
-          .select()
-          .from(unmatchedTable)
+
+    if (tutor_id.length === 7 || tutor_id.length === 8) {
+      const query = await db
+        .select()
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutor_id, tutor_id));
+
+      if (query.length > 0) {
+        await db
+          .update(tutorTable)
+          .set({ history_date: new Date().toISOString().split("T")[0] })
+          .where(eq(tutorTable.id, tutor_id));
+
+        await db.insert(historyTable).values(query[0]);
+
+        await db
+          .delete(unmatchedTable)
           .where(eq(unmatchedTable.tutor_id, tutor_id));
-        if (query.length > 0) {
-          await trx
-            .update(tutorTable)
-            .set({ history_date: new Date().toISOString().split("T")[0] })
-            .where(eq(tutorTable.id, tutor_id));
-          await trx.insert(historyTable).values(query[0]);
-          await trx
-            .delete(unmatchedTable)
-            .where(eq(unmatchedTable.tutor_id, tutor_id));
-          res.json({ success: true, message: "Tutor moved" });
-        } else {
-          throw new Error("ID not found in matched table");
-        }
-      });
+
+        res.json({ success: true, message: "Tutor moved" });
+      } else {
+        res.status(404).json({ error: "Tutor not found in unmatched table" });
+      }
     } else {
-      throw new Error("Invalid ID");
+      res.status(400).json({ error: "Invalid ID format" });
     }
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to history");
   }
 };
+
 
 export const unmatchedToMatched = async (req: Request, res: Response) => {
   // TODO: Implement logic
@@ -270,29 +274,6 @@ export const unmatchedToMatched = async (req: Request, res: Response) => {
  *  - it is ok if the tables have duplicate ids, you just have to move 1.
  *
  ******************************************************************/
-async function moveTutorToMatched(tutor_id: string) {
-  if (tutor_id.length == 7 || tutor_id.length == 8) {
-    await db.transaction(async (trx) => {
-      const query = await trx
-        .select()
-        .from(unmatchedTable)
-        .where(eq(unmatchedTable.tutor_id, tutor_id));
-      if (query.length > 0) {
-        await trx.insert(matchedTable).values(query[0]);
-        await trx
-          .delete(unmatchedTable)
-          .where(eq(unmatchedTable.tutor_id, tutor_id));
-        for (let i = 0; i < query.length - 1; i++) {
-          await trx.insert(unmatchedTable).values(query[0]);
-        }
-      } else {
-        throw new Error("ID not found in unmatched table");
-      }
-    });
-  } else {
-    throw new Error("Invalid ID");
-  }
-}
 
 export const permDeleteTutor = async (req: Request, res: Response) => {
   console.log("in backend for perm delete");
