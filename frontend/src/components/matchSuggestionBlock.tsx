@@ -55,7 +55,7 @@ const MatchSuggestionBlock = ({
   const { handleAsyncOperation } = useRaceConditionHandler();
   const { getToken } = useAuth();
 
-  const approveMatch = async () => {
+  const approveMatch = async (tutee_id: string | null) => {
     setIsSubmitting(true);
     await handleAsyncOperation(async () => {
       try {
@@ -68,7 +68,7 @@ const MatchSuggestionBlock = ({
           },
           body: JSON.stringify({
             tutorId: tutor_info.id,
-            selectedTuteeId: selectedTuteeId,
+            selectedTuteeId: tutee_id,
           }),
         });
 
@@ -255,7 +255,9 @@ const MatchSuggestionBlock = ({
                   : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
               }`}
               type="button"
-              onClick={approveMatch}
+              onClick={() => {
+                approveMatch(selectedTuteeId);
+              }}
               disabled={!selectedTuteeId || isSubmitting}
             >
               <span
@@ -310,7 +312,10 @@ const MatchSuggestionBlock = ({
                     ? "bg-[#7ea5e4] text-white hover:bg-[#4174c2] border-0"
                     : "bg-gray-200 border border-gray-950 text-gray-500 cursor-not-allowed"
                 }`}
-                onClick={approveMatch}
+                onClick={() => {
+                  approveMatch(selectedCustomId);
+                  closeModal;
+                }}
                 disabled={!selectedCustomId || isSubmitting}
               >
                 Approve

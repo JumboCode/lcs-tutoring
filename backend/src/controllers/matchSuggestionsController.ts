@@ -130,11 +130,10 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 };
 
 export const approveMatch = async (req: Request, res: Response) => {
-  // console.log("IN APPROVE MATCH");
   try {
-    // check if tutor id 
-
     const { tutorId, selectedTuteeId } = req.body;
+    console.log("TUTOR ID IS: ", tutorId);
+    console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
 
     if (tutorId > 0 && selectedTuteeId > 0) {
       await db.insert(matchedTable).values({
@@ -143,8 +142,6 @@ export const approveMatch = async (req: Request, res: Response) => {
       await db.insert(matchedTable).values({
         tutor_id: tutorId,
       });
-      
-      // console.log("Are we inserting into matched table??");
 
       await db.insert(approvedMatchesTable).values({
         tutee_id: selectedTuteeId,
@@ -154,7 +151,6 @@ export const approveMatch = async (req: Request, res: Response) => {
         }),
       });
 
-      // Caitlyn Valentina TODO
       const [deleteID] = await db
         .select({id: unmatchedTable.id})
         .from(unmatchedTable)
@@ -162,8 +158,8 @@ export const approveMatch = async (req: Request, res: Response) => {
           eq(unmatchedTable.tutor_id, tutorId),
         ).limit(1);
 
-        await db.delete(unmatchedTable).where(eq(unmatchedTable.id, deleteID.id));
-        await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
+      await db.delete(unmatchedTable).where(eq(unmatchedTable.id, deleteID.id));
+      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
   
 
         //console.log(deleteID.id);
