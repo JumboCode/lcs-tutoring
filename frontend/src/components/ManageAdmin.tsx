@@ -20,6 +20,8 @@ const ManageAdmin: React.FC = () => {
   const [modalShow, setModalShow] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAdminDeleteDialog, setShowAdminDeleteDialog] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const { getToken } = useAuth();
 
@@ -70,9 +72,6 @@ const ManageAdmin: React.FC = () => {
       console.error("Error deleting user:", error);
     }
   };
-
-  const [showAdminDeleteDialog, setShowAdminDeleteDialog] = useState(false);
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col justify-center items-center">

@@ -2,8 +2,8 @@ import config from "../config.ts";
 import React, { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import { useAuth } from "@clerk/clerk-react";
-import copyGray from "../assets/images/admin_view/copy_email_gray.svg"
-import copyBlue from "../assets/images/admin_view/copy_email_blue.svg"
+import copyGray from "../assets/images/admin_view/copy_email_gray.svg";
+import copyBlue from "../assets/images/admin_view/copy_email_blue.svg";
 
 interface Member {
   id: string;
@@ -16,13 +16,15 @@ const MailingList: React.FC = () => {
   const [mailingList, setMailingList] = useState<Member[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
+  const [showElistDeleteDialog, setShowElistDeleteDialog] = useState(false);
+  const [selectedElistId, setSelectedElistId] = useState<string | null>(null);
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, identifier: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  }
+    setCopiedEmail(identifier);
+    setTimeout(() => setCopiedEmail(null), 2000);
+  };
 
   const { getToken } = useAuth();
 
@@ -74,11 +76,6 @@ const MailingList: React.FC = () => {
     }
   };
 
-  // // Ensure only admins can access this page
-  // if (!user || !user.publicMetadata?.role?.includes("admin")) {
-  //   return <div>Access Denied</div>;
-  // }
-
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="w-full flex flex-row justify-between">
@@ -87,7 +84,11 @@ const MailingList: React.FC = () => {
           className="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-md hover:bg-[#F0F8FF]"
           onClick={() =>
             copyToClipboard(
-              mailingList.map((member) => member.email).filter(Boolean).join(", ")
+              mailingList
+                .map((member) => member.email)
+                .filter(Boolean)
+                .join(", "),
+              "all"
             )
           }
           onMouseEnter={(e) =>
@@ -97,8 +98,16 @@ const MailingList: React.FC = () => {
             e.currentTarget.children[0].setAttribute("src", copyGray)
           }
         >
-          <img src={copyGray} alt="Copy icon" className="w-4 h-4" />
-          Copy all email addresses
+          {copiedEmail === "all" ? (
+            <span className="text-[#1f3a68] text-sm font-semibold">
+              ✓ Copied
+            </span>
+          ) : (
+            <>
+              <img src={copyGray} alt="Copy icon" className="w-4 h-4" />
+              Copy all email addresses
+            </>
+          )}
         </button>
       </div>
       <hr className="border-t-1 border-gray w-full my-2 mt-3" />
@@ -147,23 +156,44 @@ const MailingList: React.FC = () => {
                     {member.email}
                     {member.email && (
                       <button
-                        onClick={() => copyToClipboard(member.email!)}
+                        onClick={() =>
+                          copyToClipboard(member.email!, member.email!)
+                        }
                         onMouseEnter={(e) =>
-                          e.currentTarget.children[0].setAttribute("src", copyBlue)
+                          e.currentTarget.children[0].setAttribute(
+                            "src",
+                            copyBlue
+                          )
                         }
                         onMouseLeave={(e) =>
-                          e.currentTarget.children[0].setAttribute("src", copyGray)
+                          e.currentTarget.children[0].setAttribute(
+                            "src",
+                            copyGray
+                          )
                         }
                         className="ml-2"
                       >
-                        <img src={copyGray} alt="Copy email" className="w-4 h-4" />
+                        {copiedEmail === member.email ? (
+                          <span className="text-[#1f3a68] text-sm font-semibold">
+                            ✓
+                          </span>
+                        ) : (
+                          <img
+                            src={copyGray}
+                            alt="Copy email"
+                            className="w-4 h-4"
+                          />
+                        )}
                       </button>
                     )}
                   </td>
                   <td className="py-2 pl-4">{member.gradYear}</td>
                   <td className="py-2 pl-4">
                     <button
-                      onClick={() => handleDelete(member.id)}
+                      onClick={() => {
+                        setSelectedElistId(member.id);
+                        setShowElistDeleteDialog(true);
+                      }}
                       className="text-red-500 hover:text-red-700"
                       aria-label="Delete user"
                     >
@@ -174,6 +204,40 @@ const MailingList: React.FC = () => {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {showElistDeleteDialog && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-semibold mb-4">Confirm Delete</h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this E-List Member?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                onClick={() => {
+                  setShowElistDeleteDialog(false);
+                  setSelectedElistId(null);
+                }}
+              >
+                No
+              </button>
+              <button
+                className="px-4 py-2 rounded bg-[#6a7eae] text-white hover:bg-[#313F60]"
+                onClick={() => {
+                  if (selectedElistId) {
+                    handleDelete(selectedElistId);
+                  }
+                  setShowElistDeleteDialog(false);
+                  setSelectedElistId(null);
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
