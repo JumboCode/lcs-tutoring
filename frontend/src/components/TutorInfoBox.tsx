@@ -139,14 +139,17 @@ export default function TutorInfoBox({
 
   const handleTogglePriority = async () => {
     console.log("priority toggle");
-    const POST_BODY = { tutor_id: id };
-    const response = await fetch(`${config.backendUrl}/toggle-priority-flag`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(POST_BODY),
-    });
+    const token = await getToken();
+    const response = await fetch(
+      `${config.backendUrl}/toggle-tutor-priority-flag/${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     if (onPriority) onPriority(box_props);
     const data = await response.json();
     if (!response.ok) {
@@ -174,7 +177,7 @@ export default function TutorInfoBox({
   return (
     <div
       ref={wrapperRef}
-      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}  ${
+      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} ${
         priority ? "bg-[#FFFCF0]" : "odd:bg-white even:bg-gray-50"
       }`}
     >
@@ -264,10 +267,10 @@ export default function TutorInfoBox({
                         <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
                           <img src={TrashCan} className="w-4 h-4 mr-2" />
                           <button
-                            onClick={() => setShowTutorDeleteDialog(true)}
                             className="mr-2"
+                            onClick={() => setShowTutorDeleteDialog(true)}
                           >
-                            Delete Tutor
+                            <span>Delete Tutor</span>
                           </button>
                         </div>
                         <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">

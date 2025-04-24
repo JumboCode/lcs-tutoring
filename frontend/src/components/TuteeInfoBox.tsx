@@ -1,12 +1,13 @@
 "use client";
 import config from "../config.ts";
 import { useState, useEffect, useRef } from "react";
-import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
+import YELLOW_FLAG from "../assets/images/admin_view/yellow_flag.svg";
 import { tuteeBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
 import TrashCan from "../assets/images/delete.svg";
+import PriorityFlag from "../assets/images/admin_view/flag.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 
 import { useAuth } from "@clerk/clerk-react";
@@ -29,6 +30,7 @@ type TuteeInfoBoxProps = {
   isHistory: boolean;
   onDelete?: (tutee: tuteeBoxProps) => void;
   onPermDelete?: (tutee: tuteeBoxProps) => void;
+  onPriority?: (tutee: tuteeBoxProps) => void;
 };
 
 export default function TuteeInfoBox({
@@ -37,6 +39,7 @@ export default function TuteeInfoBox({
   isHistory,
   onDelete,
   onPermDelete,
+  onPriority,
 }: TuteeInfoBoxProps) {
   const {
     id,
@@ -133,6 +136,27 @@ export default function TuteeInfoBox({
     }
   };
 
+  const handleTogglePriority = async () => {
+    console.log("priority toggle");
+    const token = await getToken();
+    const response = await fetch(
+      `${config.backendUrl}/toggle-tutee-priority-flag/${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (onPriority) onPriority(box_props);
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Error toggling priority flag:", data.message);
+    }
+    setIsDropdownOpen(false);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -152,7 +176,9 @@ export default function TuteeInfoBox({
   return (
     <div
       ref={wrapperRef}
-      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} odd:bg-white even:bg-gray-50`}
+      className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} ${
+        priority ? "bg-[#FFFCF0]" : "odd:bg-white even:bg-gray-50"
+      }`}
     >
       <table className="table-fixed w-full">
         <thead>
@@ -173,7 +199,7 @@ export default function TuteeInfoBox({
                 {notes && ` *`}
                 {priority && (
                   <img
-                    src={RED_FLAG}
+                    src={YELLOW_FLAG}
                     className="w-4 h-4 inline-block ml-3 mr-2"
                   />
                 )}
@@ -246,14 +272,25 @@ export default function TuteeInfoBox({
                     </button>
 
                     {isDropdownOpen && !isHistory && (
-                      <div className="absolute transform translate-y-10 translate-x-6 z-50 w-max text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
-                        <button
-                          className="flex flex-row items-center gap-2 px-4 py-2 hover:bg-gray-100"
-                          onClick={() => setShowTuteeDeleteDialog(true)}
-                        >
-                          <img src={TrashCan} className="w-4 h-4" />
-                          <span>Delete Tutee</span>
-                        </button>
+                      <div className="absolute z-50 flex flex-col whitespace-nowrap transform translate-x-4 translate-y-14 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
+                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
+                          <img src={TrashCan} className="w-4 h-4 mr-2" />
+                          <button
+                            className="mr-2"
+                            onClick={() => setShowTuteeDeleteDialog(true)}
+                          >
+                            <span>Delete Tutee</span>
+                          </button>
+                        </div>
+                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
+                          <img src={PriorityFlag} className="w-4 h-4 mr-2" />
+                          <button
+                            onClick={handleTogglePriority}
+                            className="mr-2"
+                          >
+                            {priority ? "Deprioritize" : "Priority"} Tutee
+                          </button>
+                        </div>
                       </div>
                     )}
 

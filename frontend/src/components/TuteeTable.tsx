@@ -263,6 +263,16 @@ export default function TuteeTable() {
                     // Add the deleted tutee to history tutees
                     setHistoryTutees((prev) => [...prev, updatedTutee]);
                   }}
+                  onPriority={(priorityTutee) => {
+                    console.log("priority tutee id: ", priorityTutee.id);
+                    setUnmatchedTutees((prevTutees) =>
+                      prevTutees.map((tutee) =>
+                        tutee.id === priorityTutee.id
+                          ? { ...tutee, priority: !tutee.priority }
+                          : tutee
+                      )
+                    );
+                  }}
                 />
               ))}
             </div>

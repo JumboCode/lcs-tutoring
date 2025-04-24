@@ -290,25 +290,10 @@ export const permDeleteTutor = async (req: Request, res: Response) => {
   }
 };
 
-export const checkPriorityFlag = async (req: Request, res: Response) => {
-  const tutor_id = req.body.tutor_id;
-  try {
-    const query = await db
-      .select()
-      .from(tutorTable)
-      .where(and(eq(tutorTable.priority, true), eq(tutorTable.id, tutor_id)));
-    res.json({ priority: query[0]?.priority ?? false });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error checking priority flag", error });
-  }
-};
-
 export const togglePriorityFlag = async (req: Request, res: Response) => {
-  const tutor_id = req.body.tutor_id;
   console.log(req.body, "req.body");
   console.log(req.params, "req.params");
-  console.log(tutor_id, "tutor_id");
+  const tutor_id = req.params.id;
   try {
     const query = await db
       .select()

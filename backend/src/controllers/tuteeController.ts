@@ -219,3 +219,30 @@ export const permDeleteTutee = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error permanently deleting tutee", error: error});
   }
 }
+
+export const togglePriorityFlag = async (req: Request, res: Response) => {
+  console.log(req.body, "req.body");
+  console.log(req.params, "req.params");
+  const tutee_id = Number(req.params.id);
+  try {
+    const query = await db
+      .select()
+      .from(tuteeTable)
+      .where(eq(tuteeTable.id, tutee_id));
+
+    if (query.length > 0) {
+      const currentPriority = query[0].priority;
+      await db
+        .update(tuteeTable)
+        .set({ priority: !currentPriority })
+        .where(eq(tuteeTable.id, tutee_id));
+      console.log(!currentPriority, "currentPriority");
+      res.json({ priority: !currentPriority });
+    } else {
+      res.status(404).json({ message: "Tutee not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error toggling priority flag", error });
+  }
+};
