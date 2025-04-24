@@ -256,6 +256,16 @@ export default function TutorTable() {
                     // Add the deleted tutor to history tutors
                     setHistoryTutors((prev) => [...prev, updatedTutor]);
                   }}
+                  onPriority={(priorityTutor) => {
+                    console.log("priority tutor id: ", priorityTutor.id);
+                    setUnmatchedTutors((prevTutors) =>
+                      prevTutors.map((tutor) =>
+                        tutor.id === priorityTutor.id
+                          ? { ...tutor, priority: !tutor.priority }
+                          : tutor
+                      )
+                    );
+                  }}
                 />
               ))}
             </div>

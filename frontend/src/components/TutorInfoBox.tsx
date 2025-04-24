@@ -1,7 +1,7 @@
 "use client";
 import config from "../config.ts";
 import { useState, useEffect, useRef } from "react";
-import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
+import YELLOW_FLAG from "../assets/images/admin_view/yellow_flag.svg";
 import { tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
@@ -30,6 +30,7 @@ type TutorInfoBoxProps = {
   isHistory: boolean;
   onDelete?: (tutor: tutorBoxProps) => void;
   onPermDelete?: (tutor: tutorBoxProps) => void;
+  onPriority?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
@@ -38,6 +39,7 @@ export default function TutorInfoBox({
   isHistory,
   onDelete,
   onPermDelete,
+  onPriority,
 }: TutorInfoBoxProps) {
   const {
     id,
@@ -61,7 +63,11 @@ export default function TutorInfoBox({
   const [showDescription, setShowDescription] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
-  const [isPriority, setIsPriority] = useState(false);
+  const [showTutorDeleteDialog, setShowTutorDeleteDialog] = useState(false);
+  const [showTutorPermDeleteDialog, setShowTutorPermDeleteDialog] =
+    useState(false);
+
+  // auth functions
   const { handleAsyncOperation } = useRaceConditionHandler();
   const { getToken } = useAuth();
 
@@ -131,23 +137,6 @@ export default function TutorInfoBox({
     }
   };
 
-  const checkPriorityFlag = async () => {
-    console.log("priority");
-    const POST_BODY = { tutor_id: id };
-    console.log(POST_BODY);
-    setIsDropdownOpen(false);
-    const response = await fetch(`${config.backendUrl}/check-priority-flag`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(POST_BODY),
-    });
-    const data = await response.json();
-    console.log(data.priority);
-    return data.priority;
-  };
-
   const handleTogglePriority = async () => {
     console.log("priority toggle");
     const POST_BODY = { tutor_id: id };
@@ -158,15 +147,15 @@ export default function TutorInfoBox({
       },
       body: JSON.stringify(POST_BODY),
     });
+    if (onPriority) onPriority(box_props);
     const data = await response.json();
-    setIsPriority(data.priority);
+    if (!response.ok) {
+      console.error("Error toggling priority flag:", data.message);
+    }
     setIsDropdownOpen(false);
   };
 
   useEffect(() => {
-    checkPriorityFlag().then((priority) => {
-      setIsPriority(priority);
-    });
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
@@ -174,22 +163,19 @@ export default function TutorInfoBox({
       ) {
         setIsDropdownOpen(false);
       }
-      document.addEventListener("mousedown", handleClickOutside);
     };
+    document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const [showTutorDeleteDialog, setShowTutorDeleteDialog] = useState(false);
-  const [showTutorPermDeleteDialog, setShowTutorPermDeleteDialog] =
-    useState(false);
-
   return (
     <div
       ref={wrapperRef}
       className={`h-auto border-b-1 text-left ${STYLES.transitions.colors}  ${
-        isPriority ? "bg-yellow-100" : "odd:bg-white even:bg-gray-50"
+        priority ? "bg-[#FFFCF0]" : "odd:bg-white even:bg-gray-50"
       }`}
     >
       <table className="table-fixed w-full">
@@ -211,7 +197,7 @@ export default function TutorInfoBox({
                 {notes && ` *`}
                 {priority && (
                   <img
-                    src={RED_FLAG}
+                    src={YELLOW_FLAG}
                     className="w-4 h-4 inline-block ml-3 mr-2"
                   />
                 )}
@@ -274,8 +260,8 @@ export default function TutorInfoBox({
                     </button>
 
                     {isDropdownOpen && !isHistory && (
-                      <div className="flex flex-col whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
-                        <div className="flex items-center mb-2">
+                      <div className="absolute z-50 flex flex-col whitespace-nowrap transform translate-x-4 translate-y-14 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
+                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
                           <img src={TrashCan} className="w-4 h-4 mr-2" />
                           <button
                             onClick={() => setShowTutorDeleteDialog(true)}
@@ -284,25 +270,26 @@ export default function TutorInfoBox({
                             Delete Tutor
                           </button>
                         </div>
-                        <div className="flex items-center mb-2">
+                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
                           <img src={PriorityFlag} className="w-4 h-4 mr-2" />
                           <button
                             onClick={handleTogglePriority}
                             className="mr-2"
                           >
-                            {isPriority ? "Deprioritize" : "Priority"} Tutor
+                            {priority ? "Deprioritize" : "Priority"} Tutor
                           </button>
                         </div>
                       </div>
                     )}
                     {isDropdownOpen && isHistory && (
-                      <div className="flex flex-row whitespace-nowrap transform -translate-x-24 translate-y-10 text-gray-700 over:bg-gray-100 bg-white border border-gray-200 rounded-md shadow-lg px-4 py-2">
+                      <div className="absolute transform translate-y-10 z-50 w-max text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
                         <button
+                          className="flex flex-row items-center gap-2 px-4 py-2 hover:bg-gray-100"
                           onClick={() => setShowTutorPermDeleteDialog(true)}
                         >
-                          Permanently Delete
+                          <img src={TrashCan} className="w-4 h-4" />
+                          <span>Permanently Delete</span>
                         </button>
-                        <img src={TrashCan} className="mx-2" />
                       </div>
                     )}
                   </>
