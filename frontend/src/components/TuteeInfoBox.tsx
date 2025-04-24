@@ -288,7 +288,7 @@ export default function TuteeInfoBox({
                             onClick={handleTogglePriority}
                             className="mr-2"
                           >
-                            {priority ? "Deprioritize" : "Priority"} Tutee
+                            {priority ? "Deprioritize" : "Prioritize"} Tutee
                           </button>
                         </div>
                       </div>
