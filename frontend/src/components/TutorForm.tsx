@@ -262,14 +262,14 @@ export default function TutorForm() {
         isNaN(Number(formData["yearGrad"])) ||
         !(
           Number(formData["yearGrad"]) >= new Date().getFullYear() &&
-          Number(formData["yearGrad"]) <= new Date().getFullYear() + 10
+          Number(formData["yearGrad"]) <= new Date().getFullYear() + 4
         )
       ) {
         if (formData["yearGrad"].length != 0) {
           newErrors[
             "yearGrad"
           ] = `Invalid Year of Graduation (Between ${new Date().getFullYear()} - ${
-            new Date().getFullYear() + 10
+            new Date().getFullYear() + 4
           })`;
         }
       }

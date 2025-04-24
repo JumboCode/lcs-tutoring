@@ -55,10 +55,10 @@ export default function EListForm() {
     if (
       isNaN(gradYear) ||
       gradYear < currentYear ||
-      gradYear > currentYear + 10
+      gradYear > currentYear + 4
     ) {
       newErrors.gradYear = `Graduation year must be between ${currentYear} and ${
-        currentYear + 10
+        currentYear + 4
       }.`;
     }
 
