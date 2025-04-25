@@ -22,8 +22,7 @@ import { tuteeInfo } from "../types";
 
 import { Modal } from "react-bootstrap";
 import { useState, useRef, useEffect } from "react";
-import { Flag } from "lucide-react";
-import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
+// import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
 import { useAuth } from "@clerk/clerk-react";
 
 // const BG_COLOR = "#fbfbfb";
@@ -38,14 +37,18 @@ const MatchSuggestionBlock = ({
   tutee1,
   tutee2,
   tutee3,
+  unmatched_tutor_id,
   unmatched_names,
+  refetchSuggestions,
 }: {
   tutor_info: tutorInfo;
   tutee1: tuteeInfo | null;
   tutee2: tuteeInfo | null;
   tutee3: tuteeInfo | null;
+  unmatched_tutor_id: number;
   flagged: boolean;
   unmatched_names: TuteeName[];
+  refetchSuggestions: () => void;
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
   const [selectedCustomId, setselectedCustomId] = useState<string | null>(null);
@@ -53,41 +56,42 @@ const MatchSuggestionBlock = ({
   const [finishedSubmitting, setFinishedSubmitting] = useState(false);
   const [maxHeight, setMaxHeight] = useState(0);
   const tuteeRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const { handleAsyncOperation } = useRaceConditionHandler();
+  // const { handleAsyncOperation } = useRaceConditionHandler();
   const { getToken } = useAuth();
 
   const approveMatch = async (tutee_id: string | null) => {
     setIsSubmitting(true);
-    await handleAsyncOperation(async () => {
-      try {
-        const token = await getToken();
-        const response = await fetch(`${config.backendUrl}/approve-match`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            tutorId: tutor_info.id,
-            selectedTuteeId: tutee_id,
-          }),
-        });
+    try {
+      const token = await getToken();
+      const response = await fetch(`${config.backendUrl}/approve-match`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          tutorId: tutor_info.id,
+          selectedTuteeId: tutee_id,
+          unmatchedTutorId: unmatched_tutor_id,
+        }),
+      });
 
-        if (!response.ok) {
-          throw new Error("Failed to approve match");
-        }
-
-        const data = await response.json();
-        setFinishedSubmitting(true);
-        // Handle successful match approval (e.g., update UI, show message)
-        return data;
-      } catch (error) {
-        console.error("Error approving match:", error);
-        throw error;
-      } finally {
-        setIsSubmitting(false);
+      if (!response.ok) {
+        throw new Error("Failed to approve match");
       }
-    });
+
+      const data = await response.json();
+      setFinishedSubmitting(true);
+      // Handle successful match approval (e.g., update UI, show message)
+
+      refetchSuggestions();
+      return data;
+    } catch (error) {
+      console.error("Error approving match:", error);
+      throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -143,7 +147,10 @@ const MatchSuggestionBlock = ({
             </span>
             <div className="flex pt-2" style={{ color: "#6B7280" }}>
               <BsEnvelope />
-              <span className="pl-2 text-sm text-gray-500 ">{email}</span>
+              <span className="pl-2 text-sm text-gray-500 ">
+                {email}
+                {unmatched_tutor_id}
+              </span>
             </div>
             <div className="flex pt-2" style={{ color: "#6B7280" }}>
               <FiPhone />

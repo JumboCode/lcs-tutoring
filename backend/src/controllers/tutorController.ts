@@ -160,9 +160,12 @@ export const getUnmatchedTutors = async (req: Request, res: Response) => {
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
       .where(inArray(tutorTable.id, tutorIds));
 
-    res.send({
-      unmatchedTutors: unmatchedTutors.map((row: any) => row.tutor),
-    });
+      res.send({
+        unmatchedTutors: unmatchedTutors.map((row: any) => ({
+          tutor: row.tutor,
+          unmatchedId: row.unmatched.id,
+        })),
+      });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error fetching tutors");

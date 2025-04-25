@@ -19,6 +19,7 @@ interface MatchSuggestion {
   tutee1: tuteeInfo | null;
   tutee2: tuteeInfo | null;
   tutee3: tuteeInfo | null;
+  unmatchedTutorId: number;
 }
 
 export default function MatchSuggestionTable() {
@@ -34,8 +35,14 @@ export default function MatchSuggestionTable() {
   const [unmatchedNames, setUnmatchedNames] = useState<TuteeName[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [refetchTrigger, setRefetchTrigger] = useState<number>(0);
 
   const { getToken } = useAuth();
+
+  const refetchAfterApprove = async () => {
+    console.log("im in here");
+    setRefetchTrigger((prev) => prev + 1);
+  };
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -50,7 +57,9 @@ export default function MatchSuggestionTable() {
           throw new Error("Failed to fetch match suggestions");
         }
         const data = await response.json();
+        console.log("Data: ", data.matchSuggestions);
         setMatchSuggestions(data.matchSuggestions);
+        console.log("Fetched match suggestions: ", matchSuggestions);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -86,7 +95,7 @@ export default function MatchSuggestionTable() {
 
     fetchTutees();
     fetchSuggestions();
-  }, []);
+  }, [refetchTrigger]);
 
   return (
     <div>
@@ -122,8 +131,10 @@ export default function MatchSuggestionTable() {
                   tutee1={match.tutee1}
                   tutee2={match.tutee2}
                   tutee3={match.tutee3}
+                  unmatched_tutor_id={match.unmatchedTutorId}
                   flagged={match.flagged}
                   unmatched_names={unmatchedNames}
+                  refetchSuggestions={refetchAfterApprove}
                 />
               ))}
             </div>

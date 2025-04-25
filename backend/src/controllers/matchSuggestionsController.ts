@@ -33,6 +33,7 @@ type TutorObjectProps = {
   tuteeId1: number;
   tuteeId2: number;
   tuteeId3: number;
+  unmatchedTutorId: number;
 };
 
 /* returns all the tutor - tutee1-3 match suggestions */
@@ -49,7 +50,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 
     const matchResults = await Promise.all(
       tutorObject.map(async (match: TutorObjectProps) => {
-        // console.log("Tutee 1 ID IS: ", match.tuteeId1);
+        console.log("MATCH OBJECT IS: ", match);
         const tutor_obj = await db
           .select({
             id: tutorTable.id,
@@ -117,7 +118,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
         let tutee2 = tutee2_obj[0] || null;
         let tutee3 = tutee3_obj[0] || null;
 
-        return { tutor, tutee1, tutee2, tutee3 };
+        return { tutor, tutee1, tutee2, tutee3, unmatchedTutorId: match.unmatchedTutorId };
       })
     );
 
@@ -135,9 +136,10 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 
 export const approveMatch = async (req: Request, res: Response) => {
   try {
-    const { tutorId, selectedTuteeId } = req.body;
+    const { tutorId, selectedTuteeId, unmatchedTutorId } = req.body;
     console.log("TUTOR ID IS: ", tutorId);
     console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
+    console.log("UNMATCHED TUTOR ID IS: ", unmatchedTutorId);
 
     if (tutorId > 0 && selectedTuteeId > 0) {
       await db.insert(matchedTable).values({
@@ -165,14 +167,7 @@ export const approveMatch = async (req: Request, res: Response) => {
         .set({ priority: false })
         .where(eq(tuteeTable.id, selectedTuteeId));
 
-      const [deleteID] = await db
-        .select({id: unmatchedTable.id})
-        .from(unmatchedTable)
-        .where(
-          eq(unmatchedTable.tutor_id, tutorId),
-        ).limit(1);
-
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.id, deleteID.id));
+      await db.delete(unmatchedTable).where(eq(unmatchedTable.id, unmatchedTutorId));
       await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
 
       res.status(200).json({ success: true });

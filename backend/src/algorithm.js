@@ -17,6 +17,7 @@
  * @property {number} num_tutees
  * @property {string} notes
  * @property {string} language_proficiencies
+ * @property {number} unmatched_id
  */
 
 /**
@@ -40,8 +41,8 @@
  */
 
 export default class TutorMatcher { 
-  url = "http://localhost:3000";
-  // url = "https://lcsbackend.vercel.app";
+  // url = "http://localhost:3000";
+  url = "https://lcsbackend.vercel.app";
   constructor() {
     /**
      * @type {Tutor[]}
@@ -77,11 +78,12 @@ export default class TutorMatcher {
       }
     );
     const {unmatchedTutors} = await response.json();
-    // console.log(unmatchedTutors);
     for (const unmatchedTutor of unmatchedTutors) {
-      this.addTutor(unmatchedTutor);
+      this.addTutor({
+        ...unmatchedTutor.tutor, // spread tutor fields
+        unmatched_id: unmatchedTutor.unmatchedId, // add unmatched_id field
+      });
     }
-    // console.log("All tutees: ", this.tutees);
   }
 
   async fetchTutees(authToken) {
@@ -139,7 +141,9 @@ export default class TutorMatcher {
         tutorId: tutor.id, 
         tuteeId1: tuteeIds[0],
         tuteeId2: tuteeIds[1],
-        tuteeId3: tuteeIds[2]});
+        tuteeId3: tuteeIds[2],
+        unmatchedTutorId: tutor.unmatched_id,
+      });
     }
     // console.log("Matches: ", matches);
     return matches;
