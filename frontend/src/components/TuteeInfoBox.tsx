@@ -273,24 +273,26 @@ export default function TuteeInfoBox({
 
                     {isDropdownOpen && !isHistory && (
                       <div className="absolute z-50 flex flex-col whitespace-nowrap transform translate-x-4 translate-y-14 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
-                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
-                          <img src={TrashCan} className="w-4 h-4 mr-2" />
-                          <button
-                            className="mr-2"
-                            onClick={() => setShowTuteeDeleteDialog(true)}
-                          >
-                            <span>Delete Tutee</span>
-                          </button>
-                        </div>
-                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
-                          <img src={PriorityFlag} className="w-4 h-4 mr-2" />
-                          <button
-                            onClick={handleTogglePriority}
-                            className="mr-2"
-                          >
-                            {priority ? "Deprioritize" : "Prioritize"} Tutee
-                          </button>
-                        </div>
+                        <button
+                          className="flex items-center hover:bg-gray-100 cursor-pointer px-3 py-2"
+                          onClick={() => setShowTuteeDeleteDialog(true)}
+                        >
+                          <img
+                            src={TrashCan}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          <span>Delete Tutee</span>
+                        </button>
+                        <button
+                          onClick={handleTogglePriority}
+                          className="flex items-center hover:bg-gray-100 cursor-pointer px-3 py-2"
+                        >
+                          <img
+                            src={PriorityFlag}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          {priority ? "Deprioritize" : "Prioritize"} Tutee
+                        </button>
                       </div>
                     )}
 

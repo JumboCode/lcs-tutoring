@@ -266,8 +266,11 @@ export default function TutorInfoBox({
 
                     {isDropdownOpen && !isHistory && (
                       <div className="absolute z-50 flex flex-col whitespace-nowrap transform translate-x-4 translate-y-14 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
-                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
-                          <img src={TrashCan} className="w-4 h-4 mr-2" />
+                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-3 py-2">
+                          <img
+                            src={TrashCan}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
                           <button
                             className="mr-2"
                             onClick={() => setShowTutorDeleteDialog(true)}
@@ -275,8 +278,11 @@ export default function TutorInfoBox({
                             <span>Delete Tutor</span>
                           </button>
                         </div>
-                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-4 py-2">
-                          <img src={PriorityFlag} className="w-4 h-4 mr-2" />
+                        <div className="flex items-center hover:bg-gray-100 cursor-pointer px-3 py-2">
+                          <img
+                            src={PriorityFlag}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
                           <button
                             onClick={handleTogglePriority}
                             className="mr-2"
@@ -292,7 +298,10 @@ export default function TutorInfoBox({
                           className="flex flex-row items-center gap-2 px-4 py-2 hover:bg-gray-100"
                           onClick={() => setShowTutorPermDeleteDialog(true)}
                         >
-                          <img src={TrashCan} className="w-4 h-4" />
+                          <img
+                            src={TrashCan}
+                            className="w-4 h-4 inline-block"
+                          />
                           <span>Permanently Delete</span>
                         </button>
                       </div>

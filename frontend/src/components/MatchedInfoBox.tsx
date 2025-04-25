@@ -1,5 +1,5 @@
 import config from "../config.ts";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Modal } from "react-bootstrap";
 import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
@@ -119,6 +119,10 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
 <p><strong>The LCSTutoring Team</strong></p></div>`);
   const [tutee_input, setTuteeInput] = useState(tutee_email);
   const [tutor_input, setTutorInput] = useState(tutor_email);
+  const [showPermDeleteDialog, setShowPermDeleteDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showUnmatchDialog, setShowUnmatchDialog] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { handleAsyncOperation: handleDeletePairOperation } =
     useRaceConditionHandler();
@@ -295,12 +299,25 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     handleSendEmail();
   };
 
-  const [showPermDeleteDialog, setShowPermDeleteDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showUnmatchDialog, setShowUnmatchDialog] = useState(false);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div
+      ref={wrapperRef}
       className={`${
         isCurrentlyFlagged && isActive
           ? "bg-red-50"
@@ -463,11 +480,11 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                       ></div>
                     </button>
                     {isDropdownOpen && (
-                      <div className="absolute right-0 mt-1 bg-white rounded shadow min-w-[170px] z-50">
+                      <div className="absolute z-50 flex flex-col whitespace-nowrap transform -translate-x-14 translate-y-2 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
                         {emailSent && (
                           <button
                             onClick={handleToggleFlag}
-                            className="w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                            className="flex items-center hover:bg-gray-100 cursor-pointer px-3 py-2"
                           >
                             {isCurrentlyFlagged ? (
                               <>
@@ -475,7 +492,7 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                                   src={RED_FLAG}
                                   className="w-4 h-4 inline-block mr-2"
                                 />
-                                Unflag
+                                <span>Unflag</span>
                               </>
                             ) : (
                               <>
@@ -489,24 +506,24 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                           </button>
                         )}
                         <button
-                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          className="flex items-center hover:bg-gray-100 px-3 py-2 min-w-max"
                           onClick={() => setShowUnmatchDialog(true)}
                         >
                           <img
                             src={unmatch_pair}
                             className="w-4 h-4 inline-block mr-2"
                           />
-                          Unmatch Pair
+                          <span>Unmatch Pair</span>
                         </button>
                         <button
-                          className="flex flex-row w-full px-3 py-2 text-left text-sm hover:bg-gray-100"
+                          className="flex items-center hover:bg-gray-100 px-3 py-2"
                           onClick={() => setShowDeleteDialog(true)}
                         >
                           <img
                             src={deleteIcon}
                             className="w-4 h-4 inline-block mr-2"
                           />
-                          Delete Pair
+                          <span>Delete Pair</span>
                         </button>
                       </div>
                     )}
