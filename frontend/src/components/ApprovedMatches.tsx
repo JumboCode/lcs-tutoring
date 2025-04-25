@@ -88,11 +88,6 @@ export default function ApprovedMatches() {
     fetchMatches();
   }, [appliedFilters]);
 
-  // useEffect(() => {
-  //   console.log("Active matches: ", active_matches); // Added logging
-  //   console.log("Inactive matches: ", inactive_matches); // Added logging
-  // }, [active_matches, inactive_matches]);
-
   return (
     <div className="w-full flex justify-end flex-col">
       <div className="flex flex-row justify-between">
@@ -246,9 +241,9 @@ export default function ApprovedMatches() {
           )}
           {isActive === TABS.ACTIVE && (
             <div>
-              {active_matches.map((match, index) => (
+              {active_matches.map((match) => (
                 <MatchedInfoBox
-                  key={index}
+                  key={match.matchId}
                   tutee_props={match.tutee} // Pass the tutee object
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string

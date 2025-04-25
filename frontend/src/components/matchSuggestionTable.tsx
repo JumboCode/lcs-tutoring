@@ -45,6 +45,10 @@ export default function MatchSuggestionTable() {
   };
 
   useEffect(() => {
+    console.log("match suggestions: ", matchSuggestions);
+  }, [matchSuggestions]);
+
+  useEffect(() => {
     const fetchSuggestions = async () => {
       try {
         const token = await getToken();
@@ -124,19 +128,22 @@ export default function MatchSuggestionTable() {
         {!loading && !error && (
           <div>
             <div>
-              {matchSuggestions.map((match, index) => (
-                <MatchSuggestionBlock
-                  key={index}
-                  tutor_info={match.tutor}
-                  tutee1={match.tutee1}
-                  tutee2={match.tutee2}
-                  tutee3={match.tutee3}
-                  unmatched_tutor_id={match.unmatchedTutorId}
-                  flagged={match.flagged}
-                  unmatched_names={unmatchedNames}
-                  refetchSuggestions={refetchAfterApprove}
-                />
-              ))}
+              {matchSuggestions.map((match) => {
+                // console.log("match: ", match, "index: ", index);
+                return (
+                  <MatchSuggestionBlock
+                    key={match.unmatchedTutorId}
+                    tutor_info={match.tutor}
+                    tutee1={match.tutee1}
+                    tutee2={match.tutee2}
+                    tutee3={match.tutee3}
+                    unmatched_tutor_id={match.unmatchedTutorId}
+                    flagged={match.flagged}
+                    unmatched_names={unmatchedNames}
+                    refetchSuggestions={refetchAfterApprove}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
