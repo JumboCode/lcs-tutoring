@@ -81,7 +81,7 @@ const MailingList: React.FC = () => {
       <div className="w-full flex flex-row justify-between">
         <h1 className="text-3xl font-bold text-left">E-List</h1>
         <button
-          className="flex items-center gap-2 px-3 py-1 bg-white border border-gray-300 rounded-md hover:bg-[#F0F8FF]"
+          className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-[#F0F8FF]"
           onClick={() =>
             copyToClipboard(
               mailingList
@@ -91,22 +91,30 @@ const MailingList: React.FC = () => {
               "all"
             )
           }
-          onMouseEnter={(e) =>
-            e.currentTarget.children[0].setAttribute("src", copyBlue)
-          }
-          onMouseLeave={(e) =>
-            e.currentTarget.children[0].setAttribute("src", copyGray)
-          }
         >
           {copiedEmail === "all" ? (
-            <span className="text-[#1f3a68] text-sm font-semibold">
-              ✓ Copied
-            </span>
+            <span className="text-[#1f3a68]">✓ Copied</span>
           ) : (
-            <>
+            <div
+              className="group flex items-center space-x-2 cursor-pointer"
+              onMouseEnter={(e) =>
+                (e.currentTarget.children[0] as HTMLImageElement).setAttribute(
+                  "src",
+                  copyBlue
+                )
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.children[0] as HTMLImageElement).setAttribute(
+                  "src",
+                  copyGray
+                )
+              }
+            >
               <img src={copyGray} alt="Copy icon" className="w-4 h-4" />
-              Copy all email addresses
-            </>
+              <span className="text-gray-500 group-hover:text-[#1f3a68]">
+                Copy all emails
+              </span>
+            </div>
           )}
         </button>
       </div>
@@ -138,7 +146,7 @@ const MailingList: React.FC = () => {
                   <h1 className="text-gray-500 text-lg">Name</h1>
                 </td>
                 <td className="w-[30%]">
-                  <h1 className="text-gray-500 text-lg">E-Mail</h1>
+                  <h1 className="text-gray-500 text-lg">Email</h1>
                 </td>
                 <td className="w-[30%]">
                   <h1 className="text-gray-500 text-lg">Grad Year</h1>

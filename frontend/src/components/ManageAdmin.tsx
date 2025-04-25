@@ -79,11 +79,11 @@ const ManageAdmin: React.FC = () => {
         <h1 className="text-3xl font-bold text-left">Manage Admin</h1>
         <button
           className={
-            "flex flex-row items-center px-4 py-2 bg-[#FFFFFF] border-[#E7E7E7] rounded-lg border-1 text-[#888888]"
+            "flex flex-row items-center group px-4 py-2 bg-[#FFFFFF] border-[#E7E7E7] rounded-lg border-1 text-[#888888]"
           }
           onClick={() => setModalShow(true)}
         >
-          Add New Admin
+          <span className="group-hover:text-[#1f3a68]">Add New Admin</span>
         </button>
         <AdminSignUp show={modalShow} onHide={() => setModalShow(false)} />
       </div>
@@ -115,7 +115,7 @@ const ManageAdmin: React.FC = () => {
                   <h1 className="text-gray-500 text-lg">Name</h1>
                 </td>
                 <td className="w-[40%]">
-                  <h1 className="text-gray-500 text-lg">E-Mail</h1>
+                  <h1 className="text-gray-500 text-lg">Email</h1>
                 </td>
                 <td className="w-[40%]">
                   <h1 className="text-gray-500 text-lg">Delete</h1>

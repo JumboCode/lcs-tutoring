@@ -178,7 +178,9 @@ export default function TutorInfoBox({
     <div
       ref={wrapperRef}
       className={`h-auto border-b-1 text-left ${STYLES.transitions.colors} ${
-        priority ? "bg-[#FFFCF0]" : "odd:bg-white even:bg-gray-50"
+        priority && isUnmatched
+          ? "bg-[#FFFCF0]"
+          : "odd:bg-white even:bg-gray-50"
       }`}
     >
       <table className="table-fixed w-full">
@@ -198,7 +200,7 @@ export default function TutorInfoBox({
               </span>
               <span className="text-[#D70000]">
                 {notes && ` *`}
-                {priority && (
+                {priority && isUnmatched && (
                   <img
                     src={YELLOW_FLAG}
                     className="w-4 h-4 inline-block ml-3 mr-2"

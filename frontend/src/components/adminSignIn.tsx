@@ -74,6 +74,16 @@ export default function AdminLogin() {
               >
                 Log In
               </button>
+              <p
+                className="text-sm hover:underline mt-2 cursor-pointer text-center"
+                onClick={() =>
+                  (window as any).Clerk.openSignIn({
+                    initialScreen: "resetPassword",
+                  })
+                }
+              >
+                Forgot your password?
+              </p>
             </form>
           </div>
         </div>

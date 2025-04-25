@@ -302,14 +302,16 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   return (
     <div
       className={`${
-        isCurrentlyFlagged ? "bg-red-50" : "odd:bg-white even:bg-gray-50"
+        isCurrentlyFlagged && isActive
+          ? "bg-red-50"
+          : "odd:bg-white even:bg-gray-50"
       } w-full h-auto border-b text-left transition-colors`}
     >
       <table className="table-fixed w-full">
         <thead>
           <tr className={`h-[80px] border-b`}>
             <th className="w-1/5 px-3 font-normal">
-              {isCurrentlyFlagged && (
+              {isCurrentlyFlagged && isActive && (
                 <img src={RED_FLAG} className="w-4 h-4 inline-block mr-2" />
               )}
               <div className="flex flex-col">
@@ -424,9 +426,9 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
               <Modal.Footer>
                 <button
                   onClick={closeAndSubmitModal}
-                  className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  className="bg-[#4e6ca3] text-white px-4 py-2 rounded hover:bg-[#3755a7]"
                 >
-                  Submit
+                  Send
                 </button>
               </Modal.Footer>
             </Modal>

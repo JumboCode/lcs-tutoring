@@ -355,8 +355,56 @@ export const unmatchPair = async (req: Request, res: Response) => {
       return res.status(404).json({ error: "Match not found" });
     }
 
-    await moveTutorToUnmatched(query[0].tutor_id);
-    await moveTuteeToUnmatched(query[0].tutee_id);
+    // Moving tutor to unmatched table
+    const tutor_id = query[0].tutor_id;
+    if (tutor_id.length === 7) {
+      const matched_tutor = await db
+        .select()
+        .from(matchedTable)
+        .where(eq(matchedTable.tutor_id, tutor_id));
+  
+      if (!matched_tutor || matched_tutor.length === 0) {
+        throw new Error("Tutor id does not exist in matched table");
+      }      
+  
+      const row = matched_tutor[0];
+      await db.insert(unmatchedTable).values({ tutor_id: row.tutor_id });
+  
+      const [deleteID] = await db
+        .select({ id: matchedTable.id })
+        .from(matchedTable)
+        .where(eq(matchedTable.tutor_id, tutor_id))
+        .limit(1);
+  
+      await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
+    }
+
+    // Moving tutee to unmatched table
+    const tutee_id = query[0].tutee_id;
+    const matched_tutee = await db
+      .select()
+      .from(matchedTable)
+      .where(eq(matchedTable.tutee_id, tutee_id));
+
+    if (!matched_tutee || matched_tutee.length === 0) {
+      throw new Error("Tutee id does not exist in matched table");
+    }
+
+    if (query[0].flagged) {
+      await db
+        .update(tutorTable)
+        .set({ priority: true })
+        .where(eq(tutorTable.id, tutor_id));
+      await db
+        .update(tuteeTable)
+        .set({ priority: true })
+        .where(eq(tuteeTable.id, tutee_id));
+    }
+
+    const row = matched_tutee[0];
+    await db.insert(unmatchedTable).values({ tutee_id: row.tutee_id });
+
+    await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
 
     await db
       .update(approvedMatchesTable)
@@ -374,68 +422,6 @@ export const unmatchPair = async (req: Request, res: Response) => {
     res.status(500).send("Error moving to inactive");
   }
 };
-
-
-/******* Move a given tutor/tutee from matched to unmatched *******
- *
- *  - given a tutor or tutee's id, move them from the matched table to the
- *    unmatched table
- *
- *  - throw an error if they don't exist in the matched table
- *
- *  - it is ok if the tables have duplicate ids, you just have to move 1.
- *
- ******************************************************************/
-async function moveTutorToUnmatched(tutor_id: string) {
-  if (tutor_id.length === 7) {
-    const query = await db
-      .select()
-      .from(matchedTable)
-      .where(eq(matchedTable.tutor_id, tutor_id));
-
-    if (!query || query.length === 0) {
-      throw new Error("Tutor id does not exist in matched table");
-    }
-
-    await db
-      .update(tutorTable)
-      .set({ priority: true })
-      .where(eq(tutorTable.id, tutor_id));
-
-    const row = query[0];
-    await db.insert(unmatchedTable).values({ tutor_id: row.tutor_id });
-
-    const [deleteID] = await db
-      .select({ id: matchedTable.id })
-      .from(matchedTable)
-      .where(eq(matchedTable.tutor_id, tutor_id))
-      .limit(1);
-
-    await db.delete(matchedTable).where(eq(matchedTable.id, deleteID.id));
-  }
-}
-
-async function moveTuteeToUnmatched(tutee_id: number) {
-  const query = await db
-    .select()
-    .from(matchedTable)
-    .where(eq(matchedTable.tutee_id, tutee_id));
-
-  if (!query || query.length === 0) {
-    throw new Error("Tutee id does not exist in matched table");
-  }
-
-  await db
-      .update(tuteeTable)
-      .set({ priority: true })
-      .where(eq(tuteeTable.id, tutee_id));
-
-  const row = query[0];
-  await db.insert(unmatchedTable).values({ tutee_id: row.tutee_id });
-
-  await db.delete(matchedTable).where(eq(matchedTable.tutee_id, tutee_id));
-}
-
 
 export const emailPair = async (req: Request, res: Response) => {
   try {
