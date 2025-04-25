@@ -45,7 +45,7 @@ export const deletePair = async (req: Request, res: Response) => {
 
     if (matchedTutorRows.length > 1) {
       return res.status(400).json({
-        error: `THIS IS AN ERRRRROOOOORRRRRR BAD BAD BAD`,
+        error: `You cannot delete this match because the tutor is matched with multiple tutees. Try unmatching instead.`,
       });
     }
 
