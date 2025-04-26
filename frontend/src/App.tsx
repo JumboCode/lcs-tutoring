@@ -9,6 +9,7 @@ import TuteeForm from "./components/TuteeForm";
 import TeamPage from "./components/teamPage";
 import Header from "./components/header";
 import Footer from "./components/Footer";
+import NotFound from "./components/NotFound";
 
 /* Admin View */
 import NavigationBar from "./components/navigationBar";
@@ -107,6 +108,8 @@ function App() {
               </div>
             }
           ></Route>
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </ClerkProvider>
