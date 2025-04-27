@@ -69,7 +69,7 @@ export default class TutorMatcher {
   }
 
   async fetchTutors(authToken) {
-    console.log("fetching tutors");
+    // console.log("fetching tutors");
     const response = await fetch(`${this.url}/unmatched-tutors`,
       {
         headers: {
@@ -87,7 +87,7 @@ export default class TutorMatcher {
   }
 
   async fetchTutees(authToken) {
-    console.log("fetching tutees");
+    // console.log("fetching tutees");
     const response = await fetch(`${this.url}/unmatched-tutees`,
       {
         headers: {
@@ -103,7 +103,7 @@ export default class TutorMatcher {
   }
   
   findMatches() {
-    console.log("FINDING MATCHES")
+    // console.log("FINDING MATCHES")
     const matches = [];
   
     for (const tutor of this.tutors) {

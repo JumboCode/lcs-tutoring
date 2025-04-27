@@ -137,7 +137,6 @@ export default function TuteeInfoBox({
   };
 
   const handleTogglePriority = async () => {
-    console.log("priority toggle");
     const token = await getToken();
     const response = await fetch(
       `${config.backendUrl}/toggle-tutee-priority-flag/${id}`,

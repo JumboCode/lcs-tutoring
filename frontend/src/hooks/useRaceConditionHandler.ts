@@ -17,10 +17,8 @@ export const useRaceConditionHandler = () => {
         // Set processing flag to true
         setIsProcessing(true);
 
-        console.log("Starting async operation...");
         // Execute the async operation
         const result = await asyncOperation();
-        console.log("Async operation result:", result);
 
         // Return the result
         return result;

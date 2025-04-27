@@ -138,7 +138,6 @@ export default function TutorInfoBox({
   };
 
   const handleTogglePriority = async () => {
-    console.log("priority toggle");
     const token = await getToken();
     const response = await fetch(
       `${config.backendUrl}/toggle-tutor-priority-flag/${id}`,
@@ -336,20 +335,22 @@ export default function TutorInfoBox({
               </td>
             </tr>
             <tr className="h-[35px] bg-gray-100/50 border-b text-sm">
-              <td className="text-gray-400 px-3 w-1/5">Previous Tutee</td>
-              <td className="text-gray-400 w-1/5">Grade Level Preferences</td>
+              <td className="text-gray-400 px-3 w-1/5">
+                Grade Level Preferences
+              </td>
               <td className="text-gray-400 w-1/5"># of Tutees</td>
               <td className="text-gray-400 w-1/5">Open to Disability</td>
               <td className="text-gray-400 w-1/5">Tutoring Mode</td>
+              <td className="text-gray-400 w-1/5"></td>
             </tr>
             <tr className="h-[55px] border-b text-sm">
-              <td className="px-3 w-1/5">asd</td>
-              <td className="w-1/5">{grade_level_pref.join(", ")}</td>
+              <td className="px-3 w-1/5">{grade_level_pref.join(", ")}</td>
               <td className="w-1/5">{num_tutees}</td>
               <td className="w-1/5">
                 {disability_pref === true ? <span>Yes</span> : <span>No</span>}
               </td>
               <td className="w-1/5">{tutoring_mode}</td>
+              <td className="w-1/5"></td>
             </tr>
             {notes && (
               <tr className="bg-[#FFD6D6] text-sm">

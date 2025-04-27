@@ -137,14 +137,14 @@ export default function TuteeForm() {
 
     return parts.join("");
   };
-  
+
   const handleRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-  
+
     if (name === "specialNeeds") {
       if (value === "no") {
         setFormData((prev) => ({
@@ -158,7 +158,7 @@ export default function TuteeForm() {
       }
       setShowTextBox(value === "yes");
     }
-  
+
     setErrors((prev) => ({
       ...prev,
       [name]: "", // clear error when user selects an option
@@ -291,8 +291,6 @@ export default function TuteeForm() {
 
     setErrors(newErrors);
 
-    console.log(JSON.stringify(formData));
-
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
       formData.phone = digits;
@@ -313,7 +311,6 @@ export default function TuteeForm() {
         }
 
         const data = await response.json();
-        console.log("Success:", data);
         alert("Form submitted successfully!");
         navigate("/success-page");
         return data;

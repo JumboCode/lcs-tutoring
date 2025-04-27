@@ -167,7 +167,6 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     setIsDropdownOpen(false);
     await handleUnmatchOperation(async () => {
       try {
-        console.log("Unmatching pair with ID:", matchId);
         const token = await getToken();
         const response = await fetch(`${config.backendUrl}/unmatch-pair`, {
           method: "POST",

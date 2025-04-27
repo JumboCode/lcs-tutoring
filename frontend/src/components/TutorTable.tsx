@@ -95,7 +95,6 @@ export default function TutorTable() {
           onApply={(filters) => {
             setAppliedFilters(filters);
             setModalShow(false);
-            console.log("FILTERS ARE: ", filters);
           }}
         />
       </div>
@@ -243,7 +242,6 @@ export default function TutorTable() {
                   isUnmatched={true}
                   isHistory={false}
                   onDelete={(deletedTutor) => {
-                    console.log("Deleted tutor id: ", deletedTutor.id);
                     const updatedTutor = {
                       ...deletedTutor,
                       history_date: new Date().toISOString().split("T")[0],
@@ -257,7 +255,6 @@ export default function TutorTable() {
                     setHistoryTutors((prev) => [...prev, updatedTutor]);
                   }}
                   onPriority={(priorityTutor) => {
-                    console.log("priority tutor id: ", priorityTutor.id);
                     setUnmatchedTutors((prevTutors) =>
                       prevTutors.map((tutor) =>
                         tutor.id === priorityTutor.id

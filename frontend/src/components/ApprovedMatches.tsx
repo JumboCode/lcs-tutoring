@@ -54,7 +54,7 @@ export default function ApprovedMatches() {
   const { getToken } = useAuth();
 
   useEffect(() => {
-    console.log("im in approved matches useeffect");
+    // console.log("im in approved matches useeffect");
     const fetchMatches = async () => {
       try {
         const token = await getToken();
@@ -75,7 +75,7 @@ export default function ApprovedMatches() {
           throw new Error("Failed to fetch matches");
         }
         const data = await response.json();
-        console.log("Fetched approved matches: ", data.activeApprovedMatches);
+        // console.log("Fetched approved matches: ", data.activeApprovedMatches);
         setActiveMatches(data.activeApprovedMatches);
         setInactiveMatches(data.inactiveApprovedMatches);
       } catch (error) {
@@ -107,7 +107,7 @@ export default function ApprovedMatches() {
           onApply={(filters) => {
             setAppliedFilters(filters);
             setModalShow(false);
-            console.log("FILTERS ARE: ", filters);
+            // console.log("FILTERS ARE: ", filters);
           }}
         />
       </div>

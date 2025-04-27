@@ -69,7 +69,6 @@ export default function TuteeTable() {
         }
         const data = await response.json();
         const { matchedTutees, unmatchedTutees, historyTutees } = data;
-        console.log("Matched Tutees: ", matchedTutees);
         // const firstNames = matchedTutees.map((matchedTutees) => matchedTutees.first_name);
         setMatchedTutees(matchedTutees);
         setUnmatchedTutees(unmatchedTutees);
@@ -104,7 +103,6 @@ export default function TuteeTable() {
           onApply={(filters) => {
             setAppliedFilters(filters);
             setModalShow(false);
-            console.log("FILTERS ARE: ", filters);
           }}
         />
       </div>
@@ -264,7 +262,6 @@ export default function TuteeTable() {
                     setHistoryTutees((prev) => [...prev, updatedTutee]);
                   }}
                   onPriority={(priorityTutee) => {
-                    console.log("priority tutee id: ", priorityTutee.id);
                     setUnmatchedTutees((prevTutees) =>
                       prevTutees.map((tutee) =>
                         tutee.id === priorityTutee.id

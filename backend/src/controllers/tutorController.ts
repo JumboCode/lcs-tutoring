@@ -282,7 +282,7 @@ export const unmatchedToMatched = async (req: Request, res: Response) => {
  ******************************************************************/
 
 export const permDeleteTutor = async (req: Request, res: Response) => {
-  console.log("in backend for perm delete");
+  // console.log("in backend for perm delete");
   try {
     const tutor_id = req.params.id;
     await db.delete(historyTable).where(eq(historyTable.tutor_id, tutor_id));
@@ -297,8 +297,8 @@ export const permDeleteTutor = async (req: Request, res: Response) => {
 };
 
 export const togglePriorityFlag = async (req: Request, res: Response) => {
-  console.log(req.body, "req.body");
-  console.log(req.params, "req.params");
+  // console.log(req.body, "req.body");
+  // console.log(req.params, "req.params");
   const tutor_id = req.params.id;
   try {
     const query = await db
@@ -312,7 +312,7 @@ export const togglePriorityFlag = async (req: Request, res: Response) => {
         .update(tutorTable)
         .set({ priority: !currentPriority })
         .where(eq(tutorTable.id, tutor_id));
-      console.log(!currentPriority, "currentPriority");
+      // console.log(!currentPriority, "currentPriority");
       res.json({ priority: !currentPriority });
     } else {
       res.status(404).json({ message: "Tutor not found" });

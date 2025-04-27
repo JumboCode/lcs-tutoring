@@ -21,7 +21,7 @@ export default function AdminLogin() {
 
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
-        console.log("Logged in successfully");
+        // console.log("Logged in successfully");
         setError(false);
       } else {
         setError(true);

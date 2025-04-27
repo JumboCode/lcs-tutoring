@@ -49,7 +49,6 @@ export default function FilterModal(props: FilterModalProps) {
   };
 
   const handleGradeClick = (gradeLevel: number) => {
-    console.log(gradeLevels);
     setGradeLevels((prevSelected) =>
       prevSelected.includes(gradeLevel)
         ? prevSelected.filter((grade) => grade !== gradeLevel)
@@ -58,7 +57,6 @@ export default function FilterModal(props: FilterModalProps) {
   };
 
   const handleSubjectClick = (subjectName: string) => {
-    console.log(selectedSubjects);
     setSelectedSubjects((prevSelected) =>
       prevSelected.includes(subjectName)
         ? prevSelected.filter((name) => name !== subjectName)

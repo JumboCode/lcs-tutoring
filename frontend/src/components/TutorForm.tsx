@@ -256,7 +256,6 @@ export default function TutorForm() {
         newErrors.comfortableSpecialNeeds = "Select an option.";
       }
 
-      console.log("DATE: ", new Date().getFullYear());
       if (
         formData["yearGrad"].length != 4 ||
         isNaN(Number(formData["yearGrad"])) ||
@@ -303,10 +302,6 @@ export default function TutorForm() {
 
     setErrors(newErrors);
 
-    console.log("About to submit tutor form");
-    console.log(JSON.stringify(formData));
-    // console.log(Object.keys(newErrors));
-
     // if no errors, process the form
     if (Object.keys(newErrors).length === 0) {
       formData.phone = digits;
@@ -327,7 +322,6 @@ export default function TutorForm() {
         }
 
         const data = await response.json();
-        console.log("Success:", data);
         alert("Form submitted successfully!");
         navigate("/success-page");
         return data;

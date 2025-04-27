@@ -211,7 +211,7 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
 };
 
 export const permDeleteTutee = async (req: Request, res: Response) => {
-  console.log("in backend for perm delete tutee")
+  // console.log("in backend for perm delete tutee")
   try {
     const tutee_id = Number(req.params.id);
     await db.delete(historyTable).where(eq(historyTable.tutee_id, tutee_id));
@@ -224,8 +224,8 @@ export const permDeleteTutee = async (req: Request, res: Response) => {
 }
 
 export const togglePriorityFlag = async (req: Request, res: Response) => {
-  console.log(req.body, "req.body");
-  console.log(req.params, "req.params");
+  // console.log(req.body, "req.body");
+  // console.log(req.params, "req.params");
   const tutee_id = Number(req.params.id);
   try {
     const query = await db
@@ -239,7 +239,7 @@ export const togglePriorityFlag = async (req: Request, res: Response) => {
         .update(tuteeTable)
         .set({ priority: !currentPriority })
         .where(eq(tuteeTable.id, tutee_id));
-      console.log(!currentPriority, "currentPriority");
+      // console.log(!currentPriority, "currentPriority");
       res.json({ priority: !currentPriority });
     } else {
       res.status(404).json({ message: "Tutee not found" });

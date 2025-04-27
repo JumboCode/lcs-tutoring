@@ -45,10 +45,10 @@ export default function AdminSignUp(props: AdminModalProps) {
       });
 
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
       if (response.ok) {
         setSuccess(true);
-        console.log("User created successfully:", result);
+        // console.log("User created successfully:", result);
       } else {
         setError(result.error || "Failed to create account.");
       }

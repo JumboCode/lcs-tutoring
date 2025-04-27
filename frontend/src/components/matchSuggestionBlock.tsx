@@ -83,7 +83,6 @@ const MatchSuggestionBlock = ({
       refetchSuggestions();
       setIsSubmitting(false);
       setselectedCustomId(null);
-      console.log("SET TO NULL");
       return data;
     } catch (error) {
       console.error("Error approving match:", error);
@@ -130,7 +129,6 @@ const MatchSuggestionBlock = ({
 
   // Modal close function
   const closeModal = () => {
-    console.log("Modal closed");
     setModalVisible(false);
     setselectedCustomId(null);
   };

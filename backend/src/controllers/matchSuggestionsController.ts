@@ -40,7 +40,7 @@ type TutorObjectProps = {
 export const getMatchSuggestions = async (req: Request, res: Response) => {
   try {
     const authHeader = req.headers.authorization;
-    console.log("AUTH HEADER IS: ", authHeader);
+    // console.log("AUTH HEADER IS: ", authHeader);
     // Step 1: Pull all unmatched tutees
     // Step 2: Pull all unmatched tutors
     const tutorMatcher = new TutorMatcher();
@@ -50,7 +50,7 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 
     const matchResults = await Promise.all(
       tutorObject.map(async (match: TutorObjectProps) => {
-        console.log("MATCH OBJECT IS: ", match);
+        // console.log("MATCH OBJECT IS: ", match);
         const tutor_obj = await db
           .select({
             id: tutorTable.id,
@@ -137,9 +137,9 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 export const approveMatch = async (req: Request, res: Response) => {
   try {
     const { tutorId, selectedTuteeId, unmatchedTutorId } = req.body;
-    console.log("TUTOR ID IS: ", tutorId);
-    console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
-    console.log("UNMATCHED TUTOR ID IS: ", unmatchedTutorId);
+    // console.log("TUTOR ID IS: ", tutorId);
+    // console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
+    // console.log("UNMATCHED TUTOR ID IS: ", unmatchedTutorId);
 
     if (tutorId > 0 && selectedTuteeId > 0) {
       await db.insert(matchedTable).values({

@@ -40,13 +40,10 @@ export default function MatchSuggestionTable() {
   const { getToken } = useAuth();
 
   const refetchAfterApprove = async () => {
-    console.log("im in here");
     setRefetchTrigger((prev) => prev + 1);
   };
 
-  useEffect(() => {
-    console.log("match suggestions: ", matchSuggestions);
-  }, [matchSuggestions]);
+  useEffect(() => {}, [matchSuggestions]);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -61,9 +58,7 @@ export default function MatchSuggestionTable() {
           throw new Error("Failed to fetch match suggestions");
         }
         const data = await response.json();
-        console.log("Data: ", data.matchSuggestions);
         setMatchSuggestions(data.matchSuggestions);
-        console.log("Fetched match suggestions: ", matchSuggestions);
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -91,7 +86,6 @@ export default function MatchSuggestionTable() {
           unmatchedTuteeId: formData.id,
         }));
         setUnmatchedNames(names);
-        console.log("Unmatched Tutee Names: ", names);
       } catch (error) {
         console.error("Error fetching tutees: ", error);
       }
@@ -128,22 +122,19 @@ export default function MatchSuggestionTable() {
         {!loading && !error && (
           <div>
             <div>
-              {matchSuggestions.map((match) => {
-                // console.log("match: ", match, "index: ", index);
-                return (
-                  <MatchSuggestionBlock
-                    key={match.unmatchedTutorId}
-                    tutor_info={match.tutor}
-                    tutee1={match.tutee1}
-                    tutee2={match.tutee2}
-                    tutee3={match.tutee3}
-                    unmatched_tutor_id={match.unmatchedTutorId}
-                    flagged={match.flagged}
-                    unmatched_names={unmatchedNames}
-                    refetchSuggestions={refetchAfterApprove}
-                  />
-                );
-              })}
+              {matchSuggestions.map((match) => (
+                <MatchSuggestionBlock
+                  key={match.unmatchedTutorId}
+                  tutor_info={match.tutor}
+                  tutee1={match.tutee1}
+                  tutee2={match.tutee2}
+                  tutee3={match.tutee3}
+                  unmatched_tutor_id={match.unmatchedTutorId}
+                  flagged={match.flagged}
+                  unmatched_names={unmatchedNames}
+                  refetchSuggestions={refetchAfterApprove}
+                />
+              ))}
             </div>
           </div>
         )}

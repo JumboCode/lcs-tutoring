@@ -93,7 +93,7 @@ const MailingList: React.FC = () => {
           }
         >
           {copiedEmail === "all" ? (
-            <span className="text-[#1f3a68]">✓ Copied</span>
+            <span className="text-gray-500">✓ Copied</span>
           ) : (
             <div
               className="group flex items-center space-x-2 cursor-pointer"
