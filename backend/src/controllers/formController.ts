@@ -145,6 +145,33 @@ export const handleEList = async (req: Request, res: Response): Promise<any> => 
   try {
     const { tuftsEmail, gradYear, fullName } = req.body;
 
+    const currentYear = new Date().getFullYear();
+
+    if (
+      isNaN(gradYear) ||
+      gradYear < currentYear ||
+      gradYear > currentYear + 4
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: `Graduation year must be between ${currentYear} and ${currentYear + 4}.`,
+      });
+    }
+
+    if (!/^[A-Za-z]+$/.test(fullName.trim()) || fullName.trim().length == 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Must be a valid name",
+      });
+    }
+
+    if (!tuftsEmail.endsWith("@tufts.edu")) {
+      return res.status(400).json({
+        success: false,
+        message: "Email must end with @tufts.edu",
+      });
+    }
+
     // Check for duplicate email in the elist table
     const existingEmail = await db
       .select()
