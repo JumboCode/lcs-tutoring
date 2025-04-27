@@ -253,6 +253,7 @@ export default function TuteeTable() {
                     const updatedTutee = {
                       ...deletedTutee,
                       history_date: new Date().toISOString().split("T")[0],
+                      priority: false,
                     };
                     // Remove the deleted tutee from unmatched tutees
                     setUnmatchedTutees((prev) =>
