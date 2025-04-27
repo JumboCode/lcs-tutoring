@@ -25,13 +25,15 @@
     "node-mailjet": "^6.0.8",
     "pg": "^8.13.1",
     "resend": "^4.1.2",
-    "serverless-http": "^3.2.0"
+    "serverless-http": "^3.2.0",
+    "validator": "^13.15.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.0",
     "@types/pg": "^8.11.10",
+    "@types/validator": "^13.15.0",
     "drizzle-kit": "^0.27.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",

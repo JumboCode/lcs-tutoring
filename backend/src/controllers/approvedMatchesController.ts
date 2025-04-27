@@ -32,12 +32,13 @@ export const deletePair = async (req: Request, res: Response) => {
       .from(approvedMatchesTable)
       .where(eq(approvedMatchesTable.id, match_id));
     if (!match || match.length === 0) {
-      return res.status(404).json("Match not found");
+      return res.status(400).json("Match not found");
     }
 
     const tutor_id = match[0].tutor_id;
     const tutee_id = match[0].tutee_id;
 
+    // all tutors from the matched table
     const matchedTutorRows = await db
       .select()
       .from(matchedTable)
@@ -61,8 +62,8 @@ export const deletePair = async (req: Request, res: Response) => {
       .where(eq(approvedMatchesTable.id, match_id));
 
     // Add tutor and tutee to history
-    await db.insert(historyTable).values({ tutor_id });
-    await db.insert(historyTable).values({ tutee_id });
+    await db.insert(historyTable).values({ tutor_id: tutor_id });
+    await db.insert(historyTable).values({ tutee_id: tutee_id });
 
     // Remove from matched table
     await db.delete(matchedTable).where(eq(matchedTable.tutor_id, tutor_id));
@@ -143,12 +144,6 @@ export const getApprovedMatches = async (req: Request, res: Response) => {
     } else {
       disability_pref = undefined;
     }
-
-    // console.log("grades:", grades);
-    // console.log("subjects:", subjects);
-    // console.log("tutoring mode:", tutoringMode);
-    // console.log("disability:", disability_pref);
-    // console.log("Inside tutees endpoint");
 
     const filteredMatches = await filterMatches(
       grades,

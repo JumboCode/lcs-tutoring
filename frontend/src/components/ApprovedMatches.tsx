@@ -107,7 +107,6 @@ export default function ApprovedMatches() {
           onApply={(filters) => {
             setAppliedFilters(filters);
             setModalShow(false);
-            // console.log("FILTERS ARE: ", filters);
           }}
         />
       </div>
@@ -267,7 +266,12 @@ export default function ApprovedMatches() {
 
                     // Only add the match if it's found
                     if (matchToMove) {
-                      setInactiveMatches((prev) => [...prev, matchToMove]);
+                      const updatedMatch = {
+                        ...matchToMove,
+                        inactive_date: new Date().toISOString().split("T")[0],
+                      };
+
+                      setInactiveMatches((prev) => [...prev, updatedMatch]);
                     }
                   }}
                 />

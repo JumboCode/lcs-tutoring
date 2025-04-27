@@ -5,7 +5,7 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
 import { eq } from "drizzle-orm";
-
+import validator from "validator";
 
 import {
   tuteeTable,
@@ -36,7 +36,89 @@ export const tuteeSubmission = async (req: Request, res: Response): Promise<any>
       subjects,
       tutoringMode,
       additionalInfo,
+      agreement,
+      signature,
     } = request;
+
+    const fields = [
+      childFirstName,
+      childLastName,
+      gender,
+      grade,
+      parentFirstName,
+      parentLastName,
+      phone,
+      email,
+      subjects,
+      tutoringMode,
+      agreement,
+      signature,
+    ];
+
+    const allFieldsFilled = fields.every((field) => {
+      if (Array.isArray(field)) return field.length > 0;
+      if (typeof field === "boolean") return field !== null;
+      return field !== undefined && field !== null && String(field).trim() !== "";
+    });
+    
+    if (!allFieldsFilled) {
+      return res.status(400).json({ error: "Please fill out all required fields." });
+    }
+
+    if (phone.length != 10 || isNaN(Number(phone))) {
+      return res.status(400).json({ error: "Phone number must be a 10-digit number." });
+    }
+
+    if (agreement !== "Yes") {
+      return res.status(400).json({ error: "You must agree to the agreement." });
+    }
+
+    if (signature.trim() !== `${parentFirstName.trim()} ${parentLastName.trim()}`) {
+      return res.status(400).json({ error: `Signature is not of the form "${parentFirstName} ${parentLastName}".` });
+    }
+
+    if (tutoringMode !== "In-Person" && tutoringMode !== "Online" && tutoringMode !== "Hybrid" && tutoringMode !== "Anything") {
+      return res.status(400).json({ error: "Invalid tutoring mode" });
+    }
+
+    if (!validator.isEmail(email)) {
+      if (email.length != 0) {
+        return res.status(400).json({ error: "Invalid email address" });
+      }
+    }
+
+    if (grade < 0 || grade > 12) {
+      return res.status(400).json({ error: "Invalid grade level (0 - 12)" });
+    }
+
+    const allowedSubjects = new Set([
+      "Early Reading",
+      "Reading",
+      "English",
+      "Math",
+      "Geometry",
+      "Algebra",
+      "Precalculus",
+      "Calculus",
+      "Statistics",
+      "Computer Science",
+      "Science",
+      "Biology",
+      "Chemistry",
+      "Spanish",
+      "French",
+      "Italian",
+      "SAT/ACT",
+      "US History",
+      "Global History",
+      "Other",
+    ]);
+
+    if (!Array.isArray(subjects) || !subjects.every((subject: string) =>
+      typeof subject === "string" && allowedSubjects.has(subject))) {
+        return res.status(400).json({ error: "Invalid subject preference" });
+    }
+
     const [insertedTutee] = await db.insert(tuteeTable).values({
       tutee_first_name: childFirstName,
       tutee_last_name: childLastName,
@@ -85,7 +167,123 @@ export const tutorSubmission = async (req: Request, res: Response): Promise<any>
       languageProficiencies,
       tutoringMode,
       notes,
+      agreement,
+      signature,
     } = request;
+
+    const fields = [
+      firstName,
+      lastName,
+      pronouns,
+      id,
+      major,
+      yearGrad,
+      phone,
+      email,
+      numTutees,
+      gradeLevels,
+      comfortableSpecialNeeds,
+      subjects,
+      tutoringMode,
+      agreement,
+      signature,
+    ];
+    
+    const allFieldsFilled = fields.every((field) => {
+      if (Array.isArray(field)) return field.length > 0;
+      if (typeof field === "boolean") return field !== null;
+      return field !== undefined && field !== null && String(field).trim() !== "";
+    });
+    
+    if (!allFieldsFilled) {
+      return res.status(400).json({ error: "Please fill out all required fields." });
+    }
+
+    if (id.length != 7 || isNaN(Number(id))) {
+      return res.status(400).json({ error: "Tufts ID must be a 7-digit number." });
+    }
+
+    if (phone.length != 10 || isNaN(Number(phone))) {
+      return res.status(400).json({ error: "Phone number must be a 10-digit number." });
+    }
+
+    if (
+      yearGrad.length != 4 ||
+      isNaN(Number(yearGrad)) || 
+      !(
+        Number(yearGrad) >= new Date().getFullYear() && 
+        Number(yearGrad) <= new Date().getFullYear() + 4
+      )
+    ) {
+      return res.status(400).json({ error: `Invalid Year of Graduation (Between ${new Date().getFullYear()} - ${
+        new Date().getFullYear() + 4
+      })` });
+    }
+
+    if (!email.endsWith("@tufts.edu")) {
+      return res.status(400).json({ error: "Invalid Tufts Email" });
+    }
+
+    if (agreement !== "Yes") {
+      return res.status(400).json({ error: "You must agree to the agreement." });
+    }
+
+    if (signature.trim() !== `${firstName.trim()} ${lastName.trim()}`) {
+      return res.status(400).json({ error: `Signature is not of the form "${firstName} ${lastName}".` });
+    }
+
+    if (numTutees < 1 || numTutees > 6) {
+      return res.status(400).json({ error: "Number of tutees must be between 1 and 6." });
+    }
+
+    if (tutoringMode !== "In-Person" && tutoringMode !== "Online" && tutoringMode !== "Hybrid" && tutoringMode !== "Anything") {
+      return res.status(400).json({ error: "Invalid tutoring mode" });
+    }
+    
+    if (!Array.isArray(gradeLevels)) {
+      return res.status(400).json({ error: "Invalid grade level preference" });
+    }
+
+    const seen = new Set<number>();
+
+    for (const grade of gradeLevels) {
+      if (typeof grade !== "number" || grade < 0 || grade > 12) {
+        return res.status(400).json({ error: "Invalid grade level preference (0 - 12)" });
+      }
+      if (seen.has(grade)) {
+        return res.status(400).json({ error: "Duplicate grade level preference" });
+      }
+      seen.add(grade);
+    }
+
+    const allowedSubjects = new Set([
+      "Early Reading",
+      "Reading",
+      "English",
+      "Math",
+      "Geometry",
+      "Algebra",
+      "Precalculus",
+      "Calculus",
+      "Statistics",
+      "Computer Science",
+      "Science",
+      "Biology",
+      "Chemistry",
+      "Spanish",
+      "French",
+      "Italian",
+      "SAT/ACT",
+      "US History",
+      "Global History",
+      "Other",
+    ]);
+
+    if (!Array.isArray(subjects) || !subjects.every((subject: string) =>
+      typeof subject === "string" && allowedSubjects.has(subject))) {
+        return res.status(400).json({ error: "Invalid subject preference" });
+    }
+
     await db.insert(tutorTable).values({
       id: id,
       first_name: firstName,
