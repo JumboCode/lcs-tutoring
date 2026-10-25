@@ -279,9 +279,44 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     }
   };
 
-  // Opening modal when clicking "Send Email" button
+  // Turns grade numbers into readable text, e.g. "0" -> "Kindergarten", "3" -> "3rd"
+  const formatGrade = (g: string) =>
+    g == "0" ? "Kindergarten" : g == "1" ? "1st" : g == "2" ? "2nd" : g == "3" ? "3rd" : `${g}th`;
+
+  // Fills placeholders like TUTEE_NAME with this match's real info.
+  // Returns the filled email + a list of placeholders we had no data for.
+  const fillTemplate = (template: string) => {
+    const values: [string, string | undefined][] = [
+      // TUTEE_PARENT_NAME must come before TUTEE_NAME, otherwise
+      // replacing TUTEE_NAME would break the middle of TUTEE_PARENT_NAME
+      ["TUTEE_PARENT_NAME", `${parent_first_name ?? ""} ${parent_last_name ?? ""}`.trim()],
+      ["TUTEE_PARENT_EMAIL", parent_email],
+      ["TUTEE_PARENT_PHONE", tutee_props.parent_phone],
+      ["TUTEE_NAME", `${tutee_first_name ?? ""} ${tutee_last_name ?? ""}`.trim()],
+      ["TUTEE_GRADE", grade ? formatGrade(String(grade)) : undefined],
+      ["TUTEE_SUBJECTS", subjects?.join(", ")],
+      ["TUTOR_NAME", `${first_name ?? ""} ${last_name ?? ""}`.trim()],
+    ];
+    let out = template;
+    const missing: string[] = [];
+    for (const [placeholder, value] of values) {
+      if (!out.includes(placeholder)) continue;   // not used in this email
+      if (!value) { missing.push(placeholder); continue; } // leave it visible
+      out = out.split(placeholder).join(value);
+    }
+    return { out, missing };
+  };
+
+  const [missingFields, setMissingFields] = useState<string[]>([]);
+
+  // Opening modal when clicking "Send Email" button — now pre-filled
   const openModal = () => {
     setIsDropdownOpen(false);
+    const tutee = fillTemplate(tutee_email);
+    const tutor = fillTemplate(tutor_email);
+    setTuteeInput(tutee.out);
+    setTutorInput(tutor.out);
+    setMissingFields([...new Set([...tutee.missing, ...tutor.missing])]);
     setModalVisible(true);
   };
 
@@ -418,6 +453,11 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                 <Modal.Title>Edit Email</Modal.Title>
               </Modal.Header>
               <Modal.Body>
+                {missingFields.length > 0 && (
+                  <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 p-3 rounded mb-3">
+                    Missing info for: {missingFields.join(", ")}. Fill these in below before sending.
+                  </div>
+                )}
                 <span className="font-bold block text-center text-xl">
                   Tutee
                 </span>
