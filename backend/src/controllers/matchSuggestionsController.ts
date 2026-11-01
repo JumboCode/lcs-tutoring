@@ -7,13 +7,14 @@ import { drizzle } from "drizzle-orm/neon-http";
 import {
   tuteeTable,
   tutorTable,
-  unmatchedTable,
-  matchedTable,
-  approvedMatchesTable,
 } from "../db/schema";
 import { eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import { Pool } from "pg";
+import { approvePendingMatch, ApprovalConflict } from "../services/approveMatch";
 import TutorMatcher from "../algorithm.js";
+
+const approvalPool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -135,47 +136,22 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 };
 
 export const approveMatch = async (req: Request, res: Response) => {
+  const tutorId = req.body.tutorId;
+  const selectedTuteeId = Number(req.body.selectedTuteeId);
+  const unmatchedTutorId = Number(req.body.unmatchedTutorId);
+  if (typeof tutorId !== "string" || !tutorId.trim() || tutorId.length > 7 ||
+      !Number.isSafeInteger(selectedTuteeId) || selectedTuteeId <= 0 ||
+      !Number.isSafeInteger(unmatchedTutorId) || unmatchedTutorId <= 0) {
+    res.status(400).json({ error: "Invalid match" });
+    return;
+  }
   try {
-    const { tutorId, selectedTuteeId, unmatchedTutorId } = req.body;
-    // console.log("TUTOR ID IS: ", tutorId);
-    // console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
-    // console.log("UNMATCHED TUTOR ID IS: ", unmatchedTutorId);
-
-    if (tutorId > 0 && selectedTuteeId > 0) {
-      await db.insert(matchedTable).values({
-        tutee_id: selectedTuteeId,
-      });
-      await db.insert(matchedTable).values({
-        tutor_id: tutorId,
-      });
-
-      await db.insert(approvedMatchesTable).values({
-        tutee_id: selectedTuteeId,
-        tutor_id: tutorId,
-        pair_date: new Date().toLocaleDateString("en-CA", {
-          timeZone: "America/New_York",
-        }),
-      });
-
-      await db
-        .update(tutorTable)
-        .set({ priority: false })
-        .where(eq(tutorTable.id, tutorId));
-      
-      await db
-        .update(tuteeTable)
-        .set({ priority: false })
-        .where(eq(tuteeTable.id, selectedTuteeId));
-
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.id, unmatchedTutorId));
-      await db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId));
-
-      res.status(200).json({ success: true });
-    } else {
-      throw new Error("Invalid Match");
-    }
-  } catch (error: any) {
+    await approvePendingMatch(approvalPool, { tutorId, selectedTuteeId, unmatchedTutorId });
+    res.status(200).json({ success: true });
+  } catch (error) {
     console.error("Error in approveMatch:", error);
-    res.status(500).json({ error: error.message });
+    res.status(error instanceof ApprovalConflict ? 409 : 500).json({
+      error: error instanceof ApprovalConflict ? error.message : "Failed to approve match",
+    });
   }
 };
