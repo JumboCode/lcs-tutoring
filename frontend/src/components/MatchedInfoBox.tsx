@@ -71,6 +71,7 @@ export default function MatchedInfoBoxbox_props({
   sent_email,
   onUnpair,
   onPermDelete,
+  onEdit,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
 
@@ -638,6 +639,13 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                             )}
                           </button>
                         )}
+                        <button
+                          className="flex items-center hover:bg-gray-100 px-3 py-2 min-w-max"
+                          onClick={openEditDialog}
+                        >
+                          <BsPencil className="w-4 h-4 inline-block mr-2" />
+                          <span>Edit Pair</span>
+                        </button>
                         <button                
                           className="flex items-center hover:bg-gray-100 px-3 py-2 min-w-max"
                           onClick={() => setShowUnmatchDialog(true)}
