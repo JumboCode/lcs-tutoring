@@ -242,7 +242,7 @@ export default function ApprovedMatches() {
             <div>
               {active_matches.map((match) => (
                 <MatchedInfoBox
-                  key={match.matchId}
+                  key={`${match.matchId}-${match.tutor.id}-${match.tutee.id}`}
                   tutee_props={match.tutee} // Pass the tutee object
                   tutor_props={match.tutor} // Pass the tutor object
                   matchId={match.matchId.toString()} // Ensure matchId is a string
@@ -251,6 +251,13 @@ export default function ApprovedMatches() {
                   bgColor="bg-white"
                   pair_date={match.pair_date}
                   isActive={true}
+                  onEdit={(updatedMatch) => {
+                    setActiveMatches((prev) =>
+                      prev.map((pair) =>
+                        pair.matchId === updatedMatch.matchId ? updatedMatch : pair
+                      )
+                    );
+                  }}
                   onUnpair={(deletedMatchId) => {
                     // Remove the deleted match from active matches
                     setActiveMatches((prev) =>
