@@ -9,7 +9,7 @@
 
 import config from "../config.ts";
 import MatchSuggestionBlock from "./matchSuggestionBlock";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { tuteeInfo, tutorInfo } from "../types";
 import { useAuth } from "@clerk/clerk-react";
 
@@ -37,15 +37,30 @@ export default function MatchSuggestionTable() {
   const [error, setError] = useState<string | null>(null);
   const [refetchTrigger, setRefetchTrigger] = useState<number>(0);
 
+  const approvedTutorSlots = useRef(new Set<number>());
+  const approvedTutees = useRef(new Set<string>());
+
   const { getToken } = useAuth();
 
-  const refetchAfterApprove = async () => {
+  const removeApproved = (suggestions: MatchSuggestion[]) => suggestions
+    .filter((match) => !approvedTutorSlots.current.has(match.unmatchedTutorId))
+    .map((match) => ({
+      ...match,
+      tutee1: match.tutee1 && !approvedTutees.current.has(String(match.tutee1.id)) ? match.tutee1 : null,
+      tutee2: match.tutee2 && !approvedTutees.current.has(String(match.tutee2.id)) ? match.tutee2 : null,
+      tutee3: match.tutee3 && !approvedTutees.current.has(String(match.tutee3.id)) ? match.tutee3 : null,
+    }));
+
+  const refetchAfterApprove = (unmatchedTutorId: number, tuteeId: string) => {
+    approvedTutorSlots.current.add(unmatchedTutorId);
+    approvedTutees.current.add(String(tuteeId));
+    setMatchSuggestions(removeApproved);
+    setUnmatchedNames((names) => names.filter((name) => String(name.unmatchedTuteeId) !== String(tuteeId)));
     setRefetchTrigger((prev) => prev + 1);
   };
 
-  useEffect(() => {}, [matchSuggestions]);
-
   useEffect(() => {
+    let cancelled = false;
     const fetchSuggestions = async () => {
       try {
         const token = await getToken();
@@ -58,11 +73,14 @@ export default function MatchSuggestionTable() {
           throw new Error("Failed to fetch match suggestions");
         }
         const data = await response.json();
-        setMatchSuggestions(data.matchSuggestions);
+        if (!cancelled) {
+          setMatchSuggestions(removeApproved(data.matchSuggestions));
+          setError(null);
+        }
       } catch (error) {
-        setError((error as Error).message);
+        if (!cancelled) setError((error as Error).message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
@@ -85,7 +103,7 @@ export default function MatchSuggestionTable() {
           lastName: formData.tutee_last_name,
           unmatchedTuteeId: formData.id,
         }));
-        setUnmatchedNames(names);
+        if (!cancelled) setUnmatchedNames(names.filter((name: TuteeName) => !approvedTutees.current.has(String(name.unmatchedTuteeId))));
       } catch (error) {
         console.error("Error fetching tutees: ", error);
       }
@@ -93,6 +111,7 @@ export default function MatchSuggestionTable() {
 
     fetchTutees();
     fetchSuggestions();
+    return () => { cancelled = true; };
   }, [refetchTrigger]);
 
   return (
