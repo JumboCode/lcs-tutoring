@@ -14,6 +14,7 @@ import {
 } from "../db/schema";
 import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import type { BatchItem } from "drizzle-orm/batch";
 import Mailjet from "node-mailjet";
 
 const db = drizzle(process.env.DATABASE_URL!);
@@ -415,6 +416,212 @@ export const unmatchPair = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error moving to inactive");
+  }
+};
+
+/* Shape of an approved match row as the admin page expects it */
+const matchFields = {
+  matchId: approvedMatchesTable.id,
+  flagged: approvedMatchesTable.flagged,
+  sent_email: approvedMatchesTable.sent_email,
+  pair_date: approvedMatchesTable.pair_date,
+  inactive_date: approvedMatchesTable.inactive_date,
+  tutor: {
+    id: tutorTable.id,
+    first_name: tutorTable.first_name,
+    last_name: tutorTable.last_name,
+    email: tutorTable.email,
+    major: tutorTable.major,
+    tutoring_mode: tutorTable.tutoring_mode,
+  },
+  tutee: {
+    id: tuteeTable.id,
+    tutee_first_name: tuteeTable.tutee_first_name,
+    tutee_last_name: tuteeTable.tutee_last_name,
+    grade: tuteeTable.grade,
+    parent_email: tuteeTable.parent_email,
+    subjects: tuteeTable.subjects,
+    tutoring_mode: tuteeTable.tutoring_mode,
+    special_needs: tuteeTable.special_needs,
+    parent_first_name: tuteeTable.parent_first_name,
+    parent_last_name: tuteeTable.parent_last_name,
+    parent_phone: tuteeTable.parent_phone,
+  },
+};
+
+/******* Edit an active match by swapping its tutor and/or tutee *******
+ *  body: { pairId, tutorId?, tuteeId? }
+ *  - only unmatched tutors/tutees can be swapped in
+ *  - whoever gets swapped out goes back to unmatched
+ *  - match keeps its id; pair date resets to today, email/flag reset
+ *  - all writes run in one batch so nothing is left half-done
+ ***********************************************************************/
+export const editPair = async (req: Request, res: Response) => {
+  try {
+    const match_id = Number(req.body.pairId);
+    const newTutorId =
+      req.body.tutorId != null && req.body.tutorId !== ""
+        ? String(req.body.tutorId)
+        : undefined;
+    const newTuteeId =
+      req.body.tuteeId != null && req.body.tuteeId !== ""
+        ? Number(req.body.tuteeId)
+        : undefined;
+
+    if (!Number.isInteger(match_id)) {
+      res.status(400).json({ error: "Invalid match id" });
+      return;
+    }
+    if (newTuteeId !== undefined && !Number.isInteger(newTuteeId)) {
+      res.status(400).json({ error: "Invalid tutee id" });
+      return;
+    }
+
+    const [match] = await db
+      .select()
+      .from(approvedMatchesTable)
+      .where(eq(approvedMatchesTable.id, match_id));
+
+    if (!match) {
+      res.status(404).json({ error: "Match not found" });
+      return;
+    }
+    if (!match.active) {
+      res.status(400).json({ error: "Only active matches can be edited" });
+      return;
+    }
+
+    const swapTutor = newTutorId !== undefined && newTutorId !== match.tutor_id;
+    const swapTutee = newTuteeId !== undefined && newTuteeId !== match.tutee_id;
+
+    if (!swapTutor && !swapTutee) {
+      res
+        .status(400)
+        .json({ error: "Pick a different tutor or tutee to edit this match" });
+      return;
+    }
+
+    const writes: BatchItem<"pg">[] = [];
+
+    if (swapTutor) {
+      const [tutor] = await db
+        .select({ id: tutorTable.id })
+        .from(tutorTable)
+        .where(eq(tutorTable.id, newTutorId!));
+      if (!tutor) {
+        res.status(404).json({ error: "That tutor does not exist" });
+        return;
+      }
+
+      // a tutor has one unmatched row per open spot; take one of them
+      const [openSpot] = await db
+        .select({ id: unmatchedTable.id })
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutor_id, newTutorId!))
+        .limit(1);
+      if (!openSpot) {
+        res.status(400).json({
+          error: "That tutor has no open spots. Only unmatched tutors can be swapped in.",
+        });
+        return;
+      }
+
+      // old tutor may have several matched rows (one per tutee); free just one
+      const [oldTutorRow] = await db
+        .select({ id: matchedTable.id })
+        .from(matchedTable)
+        .where(eq(matchedTable.tutor_id, match.tutor_id))
+        .limit(1);
+
+      if (oldTutorRow) {
+        writes.push(
+          db.delete(matchedTable).where(eq(matchedTable.id, oldTutorRow.id)),
+          db.insert(unmatchedTable).values({ tutor_id: match.tutor_id })
+        );
+      } else {
+        console.warn(`editPair: tutor ${match.tutor_id} was not in the matched table`);
+      }
+
+      writes.push(
+        db.delete(unmatchedTable).where(eq(unmatchedTable.id, openSpot.id)),
+        db.insert(matchedTable).values({ tutor_id: newTutorId }),
+        db.update(tutorTable).set({ priority: false }).where(eq(tutorTable.id, newTutorId!))
+      );
+    }
+
+    if (swapTutee) {
+      const [tutee] = await db
+        .select({ id: tuteeTable.id })
+        .from(tuteeTable)
+        .where(eq(tuteeTable.id, newTuteeId!));
+      if (!tutee) {
+        res.status(404).json({ error: "That tutee does not exist" });
+        return;
+      }
+
+      const [unmatchedTutee] = await db
+        .select({ id: unmatchedTable.id })
+        .from(unmatchedTable)
+        .where(eq(unmatchedTable.tutee_id, newTuteeId!))
+        .limit(1);
+      if (!unmatchedTutee) {
+        res.status(400).json({
+          error: "That tutee is not unmatched. Only unmatched tutees can be swapped in.",
+        });
+        return;
+      }
+
+      const [oldTuteeRow] = await db
+        .select({ id: matchedTable.id })
+        .from(matchedTable)
+        .where(eq(matchedTable.tutee_id, match.tutee_id))
+        .limit(1);
+
+      if (oldTuteeRow) {
+        writes.push(
+          db.delete(matchedTable).where(eq(matchedTable.tutee_id, match.tutee_id)),
+          db.insert(unmatchedTable).values({ tutee_id: match.tutee_id })
+        );
+      } else {
+        console.warn(`editPair: tutee ${match.tutee_id} was not in the matched table`);
+      }
+
+      writes.push(
+        db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, newTuteeId!)),
+        db.insert(matchedTable).values({ tutee_id: newTuteeId }),
+        db.update(tuteeTable).set({ priority: false }).where(eq(tuteeTable.id, newTuteeId!))
+      );
+    }
+
+    // replace the old pair with the new one on the same match row
+    writes.push(
+      db
+        .update(approvedMatchesTable)
+        .set({
+          tutor_id: swapTutor ? newTutorId! : match.tutor_id,
+          tutee_id: swapTutee ? newTuteeId! : match.tutee_id,
+          pair_date: new Date().toLocaleDateString("en-CA", {
+            timeZone: "America/New_York",
+          }),
+          sent_email: false,
+          flagged: false,
+        })
+        .where(eq(approvedMatchesTable.id, match_id))
+    );
+
+    await db.batch(writes as [BatchItem<"pg">, ...BatchItem<"pg">[]]);
+
+    const [updated] = await db
+      .select(matchFields)
+      .from(approvedMatchesTable)
+      .innerJoin(tutorTable, eq(approvedMatchesTable.tutor_id, tutorTable.id))
+      .innerJoin(tuteeTable, eq(approvedMatchesTable.tutee_id, tuteeTable.id))
+      .where(eq(approvedMatchesTable.id, match_id));
+
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error editing match" });
   }
 };
 
