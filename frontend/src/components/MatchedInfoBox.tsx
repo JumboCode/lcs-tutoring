@@ -5,6 +5,8 @@ import { tuteeBoxProps, tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { BsCheck2 } from "react-icons/bs";
+import { BsPencil } from "react-icons/bs";
+import Select from "react-select";
 import FLAG from "../assets/images/admin_view/flag.svg";
 import RED_FLAG from "../assets/images/admin_view/red_flag.svg";
 import deleteIcon from "../assets/images/delete.svg";
@@ -25,6 +27,24 @@ const STYLES = {
   },
 } as const;
 
+export type EditedMatch = {
+  matchId: number;
+  flagged: boolean;
+  sent_email: boolean;
+  pair_date: string;
+  inactive_date: string;
+  tutor: tutorBoxProps;
+  tutee: tuteeBoxProps;
+};
+
+type PersonOption = { value: string; label: string };
+
+// "0" -> "Kindergarten", "3" -> "3rd grade", "7" -> "7th grade"
+const gradeLabel = (g: string) =>
+  g == "0"
+    ? "Kindergarten"
+    : `${g}${g == "1" ? "st" : g == "2" ? "nd" : g == "3" ? "rd" : "th"} grade`;
+
 type MatchedInfoBoxProps = {
   tutee_props: tuteeBoxProps;
   tutor_props: tutorBoxProps;
@@ -37,6 +57,7 @@ type MatchedInfoBoxProps = {
   sent_email: boolean;
   onUnpair?: (matchId: string) => void;
   onPermDelete?: (matchId: string) => void;
+  onEdit?: (updatedMatch: EditedMatch) => void;
 };
 
 export default function MatchedInfoBoxbox_props({
@@ -50,6 +71,7 @@ export default function MatchedInfoBoxbox_props({
   sent_email,
   onUnpair,
   onPermDelete,
+  onEdit,
 }: MatchedInfoBoxProps) {
   const { first_name, last_name, email } = tutor_props;
 
@@ -122,6 +144,13 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const [showPermDeleteDialog, setShowPermDeleteDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showUnmatchDialog, setShowUnmatchDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [tutorOptions, setTutorOptions] = useState<PersonOption[]>([]);
+  const [tuteeOptions, setTuteeOptions] = useState<PersonOption[]>([]);
+  const [selectedTutorId, setSelectedTutorId] = useState(String(tutor_props.id));
+  const [selectedTuteeId, setSelectedTuteeId] = useState(String(tutee_props.id));
+  const [editOptionsLoading, setEditOptionsLoading] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const { handleAsyncOperation: handleDeletePairOperation } =
@@ -129,6 +158,8 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
   const { handleAsyncOperation: handleUnmatchOperation } =
     useRaceConditionHandler();
   const { handleAsyncOperation: handleEmailOperation } =
+    useRaceConditionHandler();
+  const {handleAsyncOperation: handleEditOperation, isProcessing: isSavingEdit, } = 
     useRaceConditionHandler();
 
   const { getToken } = useAuth();
@@ -219,6 +250,110 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     }
   };
 
+    // Opens "Edit Pair" and loads who can be swapped in (unmatched only).
+  // Current tutor/tutee are listed first so the admin can keep one.
+  const openEditDialog = async () => {
+    setIsDropdownOpen(false);
+    setSelectedTutorId(String(tutor_props.id));
+    setSelectedTuteeId(String(tutee_props.id));
+    setEditError(null);
+    setShowEditDialog(true);
+    setEditOptionsLoading(true);
+    try {
+      const token = await getToken();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const [tutorRes, tuteeRes] = await Promise.all([
+        fetch(`${config.backendUrl}/unmatched-tutors`, { headers }),
+        fetch(`${config.backendUrl}/unmatched-tutees`, { headers }),
+      ]);
+      if (!tutorRes.ok || !tuteeRes.ok) {
+        throw new Error("Failed to load unmatched tutors/tutees");
+      }
+      const tutorData = await tutorRes.json();
+      const tuteeData = await tuteeRes.json();
+
+      const currentTutor: PersonOption = {
+        value: String(tutor_props.id),
+        label: `${first_name} ${last_name} (current)`,
+      };
+      // a tutor shows up once per open spot, so de-dupe by id
+      const seenTutors = new Set([currentTutor.value]);
+      const otherTutors: PersonOption[] = [];
+      for (const row of tutorData.unmatchedTutors as { tutor: tutorBoxProps }[]) {
+        const id = String(row.tutor.id);
+        if (seenTutors.has(id)) continue;
+        seenTutors.add(id);
+        otherTutors.push({
+          value: id,
+          label: `${row.tutor.first_name} ${row.tutor.last_name} (${row.tutor.email})`,
+        });
+      }
+
+      const currentTutee: PersonOption = {
+        value: String(tutee_props.id),
+        label: `${tutee_first_name} ${tutee_last_name} (current)`,
+      };
+      const seenTutees = new Set([currentTutee.value]);
+      const otherTutees: PersonOption[] = [];
+      for (const tutee of tuteeData.unmatchedTutees as tuteeBoxProps[]) {
+        const id = String(tutee.id);
+        if (seenTutees.has(id)) continue;
+        seenTutees.add(id);
+        otherTutees.push({
+          value: id,
+          label: `${tutee.tutee_first_name} ${tutee.tutee_last_name} (${gradeLabel(String(tutee.grade))})`,
+        });
+      }
+
+      const byLabel = (a: PersonOption, b: PersonOption) =>
+        a.label.localeCompare(b.label);
+      setTutorOptions([currentTutor, ...otherTutors.sort(byLabel)]);
+      setTuteeOptions([currentTutee, ...otherTutees.sort(byLabel)]);
+    } catch (error) {
+      console.error("Error loading edit options:", error);
+      setEditError("Couldn't load unmatched tutors and tutees. Try again.");
+    } finally {
+      setEditOptionsLoading(false);
+    }
+  };
+
+  const tutorChanged = selectedTutorId !== String(tutor_props.id);
+  const tuteeChanged = selectedTuteeId !== String(tutee_props.id);
+
+  const saveEdit = async () => {
+    await handleEditOperation(async () => {
+      try {
+        setEditError(null);
+        const token = await getToken();
+        const response = await fetch(`${config.backendUrl}/edit-pair`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            pairId: matchId,
+            tutorId: tutorChanged ? selectedTutorId : undefined,
+            tuteeId: tuteeChanged ? selectedTuteeId : undefined,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) {
+          setEditError(data.error || "Failed to edit match");
+          return;
+        }
+        setShowEditDialog(false);
+        if (onEdit) onEdit(data);
+      } catch (error) {
+        console.error("Error editing pair:", error);
+        setEditError("Failed to edit match");
+      }
+    });
+  };
+
   const handleToggleDescription = () => {
     setShowDescription(!showDescription);
     setIsRotated(!isRotated);
@@ -279,9 +414,44 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
     }
   };
 
-  // Opening modal when clicking "Send Email" button
+  // Turns grade numbers into readable text, e.g. "0" -> "Kindergarten", "3" -> "3rd"
+  const formatGrade = (g: string) =>
+    g == "0" ? "Kindergarten" : g == "1" ? "1st" : g == "2" ? "2nd" : g == "3" ? "3rd" : `${g}th`;
+
+  // Fills placeholders like TUTEE_NAME with this match's real info.
+  // Returns the filled email + a list of placeholders we had no data for.
+  const fillTemplate = (template: string) => {
+    const values: [string, string | undefined][] = [
+      // TUTEE_PARENT_NAME must come before TUTEE_NAME, otherwise
+      // replacing TUTEE_NAME would break the middle of TUTEE_PARENT_NAME
+      ["TUTEE_PARENT_NAME", `${parent_first_name ?? ""} ${parent_last_name ?? ""}`.trim()],
+      ["TUTEE_PARENT_EMAIL", parent_email],
+      ["TUTEE_PARENT_PHONE", tutee_props.parent_phone],
+      ["TUTEE_NAME", `${tutee_first_name ?? ""} ${tutee_last_name ?? ""}`.trim()],
+      ["TUTEE_GRADE", grade ? formatGrade(String(grade)) : undefined],
+      ["TUTEE_SUBJECTS", subjects?.join(", ")],
+      ["TUTOR_NAME", `${first_name ?? ""} ${last_name ?? ""}`.trim()],
+    ];
+    let out = template;
+    const missing: string[] = [];
+    for (const [placeholder, value] of values) {
+      if (!out.includes(placeholder)) continue;   // not used in this email
+      if (!value) { missing.push(placeholder); continue; } // leave it visible
+      out = out.split(placeholder).join(value);
+    }
+    return { out, missing };
+  };
+
+  const [missingFields, setMissingFields] = useState<string[]>([]);
+
+  // Opening modal when clicking "Send Email" button — now pre-filled
   const openModal = () => {
     setIsDropdownOpen(false);
+    const tutee = fillTemplate(tutee_email);
+    const tutor = fillTemplate(tutor_email);
+    setTuteeInput(tutee.out);
+    setTutorInput(tutor.out);
+    setMissingFields([...new Set([...tutee.missing, ...tutor.missing])]);
     setModalVisible(true);
   };
 
@@ -418,6 +588,11 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                 <Modal.Title>Edit Email</Modal.Title>
               </Modal.Header>
               <Modal.Body>
+                {missingFields.length > 0 && (
+                  <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 p-3 rounded mb-3">
+                    Missing info for: {missingFields.join(", ")}. Fill these in below before sending.
+                  </div>
+                )}
                 <span className="font-bold block text-center text-xl">
                   Tutee
                 </span>
@@ -506,6 +681,23 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
                         )}
                         <button
                           className="flex items-center hover:bg-gray-100 px-3 py-2 min-w-max"
+                          onClick={openEditDialog}
+                        >
+                          <BsPencil className="w-4 h-4 inline-block mr-2" />
+                          <span>Edit Pair</span>
+                        </button>
+                        <button                
+                          className="flex items-center hover:bg-gray-100 px-3 py-2 min-w-max"
+                          onClick={() => setShowUnmatchDialog(true)}
+                        >
+                          <img
+                            src={unmatch_pair}
+                            className="w-4 h-4 inline-block mr-2"
+                          />
+                          <span>Unmatch Pair</span>
+                        </button>
+                        <button
+                          className="flex items-center hover:bg-gray-100 px-3 py-2 min-w-max"
                           onClick={() => setShowUnmatchDialog(true)}
                         >
                           <img
@@ -589,6 +781,81 @@ has been matched with a tutor. Your child's tutor will reach out to you directly
           </tbody>
         )}
       </table>
+
+      <Modal
+        show={showEditDialog}
+        onHide={() => setShowEditDialog(false)}
+        aria-labelledby="edit-pair-modal-title"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="edit-pair-modal-title">Edit Pair</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-gray-600 mb-4 text-sm">
+            Swap in an unmatched tutor, tutee, or both. Whoever you swap out
+            goes back to unmatched, and you'll need to send the match email
+            again.
+          </p>
+          <label className="block font-medium mb-1" htmlFor={`edit-tutor-${matchId}`}>
+            Tutor
+          </label>
+          <Select
+            inputId={`edit-tutor-${matchId}`}
+            options={tutorOptions}
+            value={tutorOptions.find((o) => o.value === selectedTutorId) ?? null}
+            onChange={(option) =>
+              option && setSelectedTutorId((option as PersonOption).value)
+            }
+            isLoading={editOptionsLoading}
+            isDisabled={editOptionsLoading || isSavingEdit}
+            placeholder="Search tutors..."
+            menuPortalTarget={document.body}
+            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+            className="mb-4"
+          />
+          <label className="block font-medium mb-1" htmlFor={`edit-tutee-${matchId}`}>
+            Tutee
+          </label>
+          <Select
+            inputId={`edit-tutee-${matchId}`}
+            options={tuteeOptions}
+            value={tuteeOptions.find((o) => o.value === selectedTuteeId) ?? null}
+            onChange={(option) =>
+              option && setSelectedTuteeId((option as PersonOption).value)
+            }
+            isLoading={editOptionsLoading}
+            isDisabled={editOptionsLoading || isSavingEdit}
+            placeholder="Search tutees..."
+            menuPortalTarget={document.body}
+            styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+          />
+          {editError && (
+            <div className="bg-red-50 border border-red-300 text-red-700 p-3 rounded mt-4 text-sm">
+              {editError}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+            onClick={() => setShowEditDialog(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className={`px-4 py-2 rounded text-white ${
+              (tutorChanged || tuteeChanged) && !isSavingEdit
+                ? "bg-[#6a7eae] hover:bg-[#313F60]"
+                : "bg-gray-300 cursor-not-allowed"
+            }`}
+            onClick={saveEdit}
+            disabled={!(tutorChanged || tuteeChanged) || isSavingEdit}
+          >
+            {isSavingEdit ? "Saving..." : "Save"}
+          </button>
+        </Modal.Footer>
+      </Modal>
 
       {showUnmatchDialog && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
