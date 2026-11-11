@@ -47,17 +47,31 @@ const MatchSuggestionBlock = ({
   unmatched_tutor_id: number;
   flagged: boolean;
   unmatched_names: TuteeName[];
-  refetchSuggestions: () => void;
+  refetchSuggestions: (unmatchedTutorId: number, tuteeId: string) => void;
 }) => {
   const [selectedTuteeId, setselectedTuteeId] = useState<string | null>(null);
   const [selectedCustomId, setselectedCustomId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const submittingRef = useRef(false);
+  const [approvalError, setApprovalError] = useState<string | null>(null);
   const [maxHeight, setMaxHeight] = useState(0);
   const tuteeRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { getToken } = useAuth();
 
+  useEffect(() => {
+    if (selectedTuteeId && ![tutee1, tutee2, tutee3].some((tutee) => tutee?.id === selectedTuteeId)) {
+      setselectedTuteeId(null);
+    }
+    if (selectedCustomId && !unmatched_names.some((name) => name.unmatchedTuteeId === selectedCustomId)) {
+      setselectedCustomId(null);
+    }
+  }, [tutee1, tutee2, tutee3, unmatched_names, selectedTuteeId, selectedCustomId]);
+
   const approveMatch = async (tutee_id: string | null) => {
+    if (!tutee_id || submittingRef.current) return;
+    submittingRef.current = true;
     setIsSubmitting(true);
+    setApprovalError(null);
     try {
       const token = await getToken();
       const response = await fetch(`${config.backendUrl}/approve-match`, {
@@ -80,10 +94,9 @@ const MatchSuggestionBlock = ({
       }
 
       const data = await response.json();
-      // Handle successful match approval (e.g., update UI, show message)
 
-      refetchSuggestions();
-      setIsSubmitting(false);
+      refetchSuggestions(unmatched_tutor_id, tutee_id);
+      setModalVisible(false);
       setselectedCustomId(null);
       return data;
     } catch (error) {
@@ -241,6 +254,7 @@ const MatchSuggestionBlock = ({
         </div>
       </div>
 
+      {approvalError && !modalVisible && <p role="alert" className="text-red-600">{approvalError}</p>}
       {/*buttons*/}
       <div className="flex flex-row-reverse space-x-6 space-x-reverse">
         <button
@@ -265,6 +279,7 @@ const MatchSuggestionBlock = ({
           </span>
         </button>
         <button
+          disabled={isSubmitting}
           onClick={openModal}
           className="rounded-xl bg-[#ffffff] hover:bg-gray-100 px-5 py-3 border text-gray-700 text-lg "
           type="button"
@@ -281,6 +296,7 @@ const MatchSuggestionBlock = ({
           <Modal.Title>Custom Match</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {approvalError && <p role="alert" className="text-red-600">{approvalError}</p>}
           <div>
             <ul>
               {unmatched_names.map((name, index) => (
@@ -288,7 +304,7 @@ const MatchSuggestionBlock = ({
                   <input
                     className="mr-2"
                     type="radio"
-                    onClick={() => {
+                    onChange={() => {
                       setselectedCustomId(name.unmatchedTuteeId);
                       setselectedTuteeId(null);
                     }}

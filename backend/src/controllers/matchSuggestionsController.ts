@@ -7,13 +7,14 @@ import { drizzle } from "drizzle-orm/neon-http";
 import {
   tuteeTable,
   tutorTable,
-  unmatchedTable,
-  matchedTable,
-  approvedMatchesTable,
 } from "../db/schema";
 import { and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import { Pool } from "pg";
+import { approvePendingMatch, ApprovalConflict } from "../services/approveMatch";
 import TutorMatcher from "../algorithm.js";
+
+const approvalPool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const db = drizzle(process.env.DATABASE_URL!);
 
@@ -135,6 +136,15 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
 };
 
 export const approveMatch = async (req: Request, res: Response) => {
+  const tutorId = req.body.tutorId;
+  const selectedTuteeId = Number(req.body.selectedTuteeId);
+  const unmatchedTutorId = Number(req.body.unmatchedTutorId);
+  if (typeof tutorId !== "string" || !tutorId.trim() || tutorId.length > 7 ||
+      !Number.isSafeInteger(selectedTuteeId) || selectedTuteeId <= 0 ||
+      !Number.isSafeInteger(unmatchedTutorId) || unmatchedTutorId <= 0) {
+    res.status(400).json({ error: "Invalid match" });
+    return;
+  }
   try {
     const { tutorId, selectedTuteeId, unmatchedTutorId } = req.body;
     // console.log("TUTOR ID IS: ", tutorId);
@@ -213,6 +223,8 @@ export const approveMatch = async (req: Request, res: Response) => {
     res.status(200).json({ success: true });
   } catch (error: any) {
     console.error("Error in approveMatch:", error);
-    res.status(500).json({ error: error.message });
+    res.status(error instanceof ApprovalConflict ? 409 : 500).json({
+      error: error instanceof ApprovalConflict ? error.message : "Failed to approve match",
+    });
   }
 };
