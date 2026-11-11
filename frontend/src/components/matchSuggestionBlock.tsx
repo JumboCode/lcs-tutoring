@@ -88,7 +88,9 @@ const MatchSuggestionBlock = ({
       });
 
       if (!response.ok) {
-        throw new Error("Failed to approve match");
+        // Use the backend's reason when it sends one (e.g. tutee already matched)
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error || "Failed to approve match");
       }
 
       const data = await response.json();
@@ -98,10 +100,10 @@ const MatchSuggestionBlock = ({
       setselectedCustomId(null);
       return data;
     } catch (error) {
+      // Show the failure and re-enable the button, instead of failing silently and
+      // leaving it stuck on "Processing..."
       console.error("Error approving match:", error);
-      setApprovalError("Could not approve this match. Please try again.");
-    } finally {
-      submittingRef.current = false;
+      alert("Error: " + (error as Error).message);
       setIsSubmitting(false);
     }
   };

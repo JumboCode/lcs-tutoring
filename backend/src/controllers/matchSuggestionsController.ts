@@ -8,7 +8,7 @@ import {
   tuteeTable,
   tutorTable,
 } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
 import { Pool } from "pg";
 import { approvePendingMatch, ApprovalConflict } from "../services/approveMatch";
@@ -146,9 +146,82 @@ export const approveMatch = async (req: Request, res: Response) => {
     return;
   }
   try {
-    await approvePendingMatch(approvalPool, { tutorId, selectedTuteeId, unmatchedTutorId });
+    const { tutorId, selectedTuteeId, unmatchedTutorId } = req.body;
+    // console.log("TUTOR ID IS: ", tutorId);
+    // console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
+    // console.log("UNMATCHED TUTOR ID IS: ", unmatchedTutorId);
+
+    // Reject bad input before any write, so the admin sees why nothing happened
+    if (!tutorId || !(Number(selectedTuteeId) > 0) || !(Number(unmatchedTutorId) > 0)) {
+      return res.status(400).json({ error: "Invalid match: a tutor and a tutee are required" });
+    }
+
+    // A tutor can have several tutees, but a tutee only has one active match. This stops
+    // repeat clicks and stale cards from creating duplicate approved matches.
+    const activeMatches = await db
+      .select({ id: approvedMatchesTable.id })
+      .from(approvedMatchesTable)
+      .where(
+        and(
+          eq(approvedMatchesTable.tutee_id, selectedTuteeId),
+          eq(approvedMatchesTable.active, true)
+        )
+      );
+    if (activeMatches.length > 0) {
+      return res.status(409).json({ error: "This tutee already has an active approved match" });
+    }
+
+    // Each unmatched row is one open slot for this tutor (see num_tutees in the tutor form).
+    // Without this check, a stale id would approve the match while deleting no slot,
+    // leaving the pairing available.
+    const openSlots = await db
+      .select({ id: unmatchedTable.id })
+      .from(unmatchedTable)
+      .where(
+        and(
+          eq(unmatchedTable.id, unmatchedTutorId),
+          eq(unmatchedTable.tutor_id, tutorId)
+        )
+      );
+    if (openSlots.length === 0) {
+      return res.status(409).json({ error: "This tutor is no longer available for this match. Please refresh the page." });
+    }
+
+    // db.batch runs these as one transaction, so a failure partway through rolls back
+    // every write instead of leaving the pair half approved
+    await db.batch([
+      db.insert(matchedTable).values({
+        tutee_id: selectedTuteeId,
+      }),
+      db.insert(matchedTable).values({
+        tutor_id: tutorId,
+      }),
+
+      db.insert(approvedMatchesTable).values({
+        tutee_id: selectedTuteeId,
+        tutor_id: tutorId,
+        pair_date: new Date().toLocaleDateString("en-CA", {
+          timeZone: "America/New_York",
+        }),
+      }),
+
+      db
+        .update(tutorTable)
+        .set({ priority: false })
+        .where(eq(tutorTable.id, tutorId)),
+
+      db
+        .update(tuteeTable)
+        .set({ priority: false })
+        .where(eq(tuteeTable.id, selectedTuteeId)),
+
+      // Delete only this slot by row id, so a tutor with more open slots stays available
+      db.delete(unmatchedTable).where(eq(unmatchedTable.id, unmatchedTutorId)),
+      db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId)),
+    ]);
+
     res.status(200).json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in approveMatch:", error);
     res.status(error instanceof ApprovalConflict ? 409 : 500).json({
       error: error instanceof ApprovalConflict ? error.message : "Failed to approve match",
