@@ -77,6 +77,9 @@ export default class TutorMatcher {
         },
       }
     );
+    if (!response.ok) {
+      throw new Error(`GET /unmatched-tutors failed (${response.status}): ${await response.text()}`);
+    }
     const {unmatchedTutors} = await response.json();
     for (const unmatchedTutor of unmatchedTutors) {
       this.addTutor({
@@ -95,6 +98,9 @@ export default class TutorMatcher {
         },
       }
     );
+    if (!response.ok) {
+      throw new Error(`GET /unmatched-tutees failed (${response.status}): ${await response.text()}`);
+    }
     const {unmatchedTutees} = await response.json();
     // console.log(unmatchedTutees);
     for (const unmatchedTutee of unmatchedTutees) {

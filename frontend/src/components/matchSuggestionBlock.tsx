@@ -100,10 +100,12 @@ const MatchSuggestionBlock = ({
       setselectedCustomId(null);
       return data;
     } catch (error) {
-      // Show the failure and re-enable the button, instead of failing silently and
-      // leaving it stuck on "Processing..."
+      // Show the backend's reason when it sent one, e.g. the match is no longer pending
       console.error("Error approving match:", error);
-      alert("Error: " + (error as Error).message);
+      setApprovalError((error as Error).message || "Could not approve this match. Please try again.");
+    } finally {
+      // Always re-enable the button, including after a failure, so the admin can retry
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };

@@ -8,7 +8,7 @@ import {
   tuteeTable,
   tutorTable,
 } from "../db/schema";
-import { and, eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { Request, Response } from "express";
 import { Pool } from "pg";
 import { approvePendingMatch, ApprovalConflict } from "../services/approveMatch";
@@ -49,79 +49,58 @@ export const getMatchSuggestions = async (req: Request, res: Response) => {
     // Step 3: For each tutor, call the algorithm on all the tutees to find the top 3
     let tutorObject = await tutorMatcher.findMatches();
 
-    const matchResults = await Promise.all(
-      tutorObject.map(async (match: TutorObjectProps) => {
-        // console.log("MATCH OBJECT IS: ", match);
-        const tutor_obj = await db
-          .select({
-            id: tutorTable.id,
-            first_name: tutorTable.first_name,
-            last_name: tutorTable.last_name,
-            phone: tutorTable.phone,
-            email: tutorTable.email,
-            subject: tutorTable.subject_pref,
-            grade_level_pref: tutorTable.grade_level_pref,
-            disability_pref: tutorTable.disability_pref,
-            tutoring_mode: tutorTable.tutoring_mode,
-            notes: tutorTable.notes,
-            priority: tutorTable.priority,
-          })
-          .from(tutorTable)
-          .where(eq(tutorTable.id, match.tutorId));
-        const tutee1_obj = await db
-          .select({
-            id: tuteeTable.id,
-            first_name: tuteeTable.tutee_first_name,
-            last_name: tuteeTable.tutee_last_name,
-            email: tuteeTable.parent_email,
-            grade: tuteeTable.grade,
-            subjects: tuteeTable.subjects,
-            special_needs: tuteeTable.special_needs,
-            tutoring_mode: tuteeTable.tutoring_mode,
-            notes: tuteeTable.notes,
-            priority: tuteeTable.priority,
-          })
-          .from(tuteeTable)
-          .where(eq(tuteeTable.id, match.tuteeId1));
-        const tutee2_obj = await db
-          .select({
-            id: tuteeTable.id,
-            first_name: tuteeTable.tutee_first_name,
-            last_name: tuteeTable.tutee_last_name,
-            email: tuteeTable.parent_email,
-            grade: tuteeTable.grade,
-            subjects: tuteeTable.subjects,
-            special_needs: tuteeTable.special_needs,
-            tutoring_mode: tuteeTable.tutoring_mode,
-            notes: tuteeTable.notes,
-            priority: tuteeTable.priority,
-          })
-          .from(tuteeTable)
-          .where(eq(tuteeTable.id, match.tuteeId2));
-        const tutee3_obj = await db
-          .select({
-            id: tuteeTable.id,
-            first_name: tuteeTable.tutee_first_name,
-            last_name: tuteeTable.tutee_last_name,
-            email: tuteeTable.parent_email,
-            grade: tuteeTable.grade,
-            subjects: tuteeTable.subjects,
-            special_needs: tuteeTable.special_needs,
-            tutoring_mode: tuteeTable.tutoring_mode,
-            notes: tuteeTable.notes,
-            priority: tuteeTable.priority,
-          })
-          .from(tuteeTable)
-          .where(eq(tuteeTable.id, match.tuteeId3));
+    // Load every referenced tutor/tutee in two queries instead of 4 per match.
+    // Firing hundreds of concurrent queries exhausts Neon's connection limit.
+    const tutorIds = [...new Set(tutorObject.map((m: TutorObjectProps) => m.tutorId).filter((id: unknown) => id != null))] as string[];
+    const tuteeIds = [...new Set(
+      tutorObject.flatMap((m: TutorObjectProps) => [m.tuteeId1, m.tuteeId2, m.tuteeId3])
+        .filter((id: unknown) => id != null)
+    )] as number[];
 
-        let tutor = tutor_obj[0] || null;
-        let tutee1 = tutee1_obj[0] || null;
-        let tutee2 = tutee2_obj[0] || null;
-        let tutee3 = tutee3_obj[0] || null;
+    const [tutorRows, tuteeRows] = await Promise.all([
+      tutorIds.length === 0 ? [] : db
+        .select({
+          id: tutorTable.id,
+          first_name: tutorTable.first_name,
+          last_name: tutorTable.last_name,
+          phone: tutorTable.phone,
+          email: tutorTable.email,
+          subject: tutorTable.subject_pref,
+          grade_level_pref: tutorTable.grade_level_pref,
+          disability_pref: tutorTable.disability_pref,
+          tutoring_mode: tutorTable.tutoring_mode,
+          notes: tutorTable.notes,
+          priority: tutorTable.priority,
+        })
+        .from(tutorTable)
+        .where(inArray(tutorTable.id, tutorIds)),
+      tuteeIds.length === 0 ? [] : db
+        .select({
+          id: tuteeTable.id,
+          first_name: tuteeTable.tutee_first_name,
+          last_name: tuteeTable.tutee_last_name,
+          email: tuteeTable.parent_email,
+          grade: tuteeTable.grade,
+          subjects: tuteeTable.subjects,
+          special_needs: tuteeTable.special_needs,
+          tutoring_mode: tuteeTable.tutoring_mode,
+          notes: tuteeTable.notes,
+          priority: tuteeTable.priority,
+        })
+        .from(tuteeTable)
+        .where(inArray(tuteeTable.id, tuteeIds)),
+    ]);
 
-        return { tutor, tutee1, tutee2, tutee3, unmatchedTutorId: match.unmatchedTutorId };
-      })
-    );
+    const tutorsById = new Map(tutorRows.map((t) => [t.id, t]));
+    const tuteesById = new Map(tuteeRows.map((t) => [t.id, t]));
+
+    const matchResults = tutorObject.map((match: TutorObjectProps) => ({
+      tutor: tutorsById.get(match.tutorId) ?? null,
+      tutee1: tuteesById.get(match.tuteeId1) ?? null,
+      tutee2: tuteesById.get(match.tuteeId2) ?? null,
+      tutee3: tuteesById.get(match.tuteeId3) ?? null,
+      unmatchedTutorId: match.unmatchedTutorId,
+    }));
 
     // console.log("these are the tutees: ", tutees);
     // console.log("these are the tutors: ", matchResults);
@@ -146,82 +125,11 @@ export const approveMatch = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const { tutorId, selectedTuteeId, unmatchedTutorId } = req.body;
-    // console.log("TUTOR ID IS: ", tutorId);
-    // console.log("SELECTED TUTEE ID IS: ", selectedTuteeId);
-    // console.log("UNMATCHED TUTOR ID IS: ", unmatchedTutorId);
-
-    // Reject bad input before any write, so the admin sees why nothing happened
-    if (!tutorId || !(Number(selectedTuteeId) > 0) || !(Number(unmatchedTutorId) > 0)) {
-      return res.status(400).json({ error: "Invalid match: a tutor and a tutee are required" });
-    }
-
-    // A tutor can have several tutees, but a tutee only has one active match. This stops
-    // repeat clicks and stale cards from creating duplicate approved matches.
-    const activeMatches = await db
-      .select({ id: approvedMatchesTable.id })
-      .from(approvedMatchesTable)
-      .where(
-        and(
-          eq(approvedMatchesTable.tutee_id, selectedTuteeId),
-          eq(approvedMatchesTable.active, true)
-        )
-      );
-    if (activeMatches.length > 0) {
-      return res.status(409).json({ error: "This tutee already has an active approved match" });
-    }
-
-    // Each unmatched row is one open slot for this tutor (see num_tutees in the tutor form).
-    // Without this check, a stale id would approve the match while deleting no slot,
-    // leaving the pairing available.
-    const openSlots = await db
-      .select({ id: unmatchedTable.id })
-      .from(unmatchedTable)
-      .where(
-        and(
-          eq(unmatchedTable.id, unmatchedTutorId),
-          eq(unmatchedTable.tutor_id, tutorId)
-        )
-      );
-    if (openSlots.length === 0) {
-      return res.status(409).json({ error: "This tutor is no longer available for this match. Please refresh the page." });
-    }
-
-    // db.batch runs these as one transaction, so a failure partway through rolls back
-    // every write instead of leaving the pair half approved
-    await db.batch([
-      db.insert(matchedTable).values({
-        tutee_id: selectedTuteeId,
-      }),
-      db.insert(matchedTable).values({
-        tutor_id: tutorId,
-      }),
-
-      db.insert(approvedMatchesTable).values({
-        tutee_id: selectedTuteeId,
-        tutor_id: tutorId,
-        pair_date: new Date().toLocaleDateString("en-CA", {
-          timeZone: "America/New_York",
-        }),
-      }),
-
-      db
-        .update(tutorTable)
-        .set({ priority: false })
-        .where(eq(tutorTable.id, tutorId)),
-
-      db
-        .update(tuteeTable)
-        .set({ priority: false })
-        .where(eq(tuteeTable.id, selectedTuteeId)),
-
-      // Delete only this slot by row id, so a tutor with more open slots stays available
-      db.delete(unmatchedTable).where(eq(unmatchedTable.id, unmatchedTutorId)),
-      db.delete(unmatchedTable).where(eq(unmatchedTable.tutee_id, selectedTuteeId)),
-    ]);
-
+    // Runs in one transaction with row locks, so repeat clicks and simultaneous
+    // approvals can't create duplicate pairings or leave a pair half approved
+    await approvePendingMatch(approvalPool, { tutorId, selectedTuteeId, unmatchedTutorId });
     res.status(200).json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in approveMatch:", error);
     res.status(error instanceof ApprovalConflict ? 409 : 500).json({
       error: error instanceof ApprovalConflict ? error.message : "Failed to approve match",

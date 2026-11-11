@@ -1,70 +1,27 @@
 /***********************************************
- * Tests for approving a match. The database driver is fully mocked and fetch throws,
- * so nothing here can reach a real database.
+ * Tests for the approveMatch request handler. The approval service and database
+ * drivers are mocked and fetch throws, so nothing here can reach a real database.
+ * The transaction itself is covered by tests/approval.test.ts.
  ***********************************************/
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { PgDialect } from "drizzle-orm/pg-core";
 import { Request, Response } from "express";
 
-const mockDb = vi.hoisted(() => {
+const service = vi.hoisted(() => {
   // Must be set before the controller is imported, in case the mocks below ever fail
   process.env.DATABASE_URL = "postgres://test:test@localhost:1/not-a-real-db";
 
-  return {
-    approved: [] as { tutee_id: number; tutor_id: string }[],
-    openSlots: [] as number[],
-    batchCalls: 0,
-    failBatch: false,
-    lastBatch: [] as any[],
-    select: () => ({
-      from: (table: unknown) => ({
-        where: async (condition: unknown) => mockDb.rowsFor(table, condition),
-      }),
-    }),
-    rowsFor: (_table: unknown, _condition: unknown): unknown[] => [],
-    insert: (table: unknown) => ({
-      values: (values: object) => ({ kind: "insert", table, values }),
-    }),
-    update: (table: unknown) => ({
-      set: () => ({ where: () => ({ kind: "update", table }) }),
-    }),
-    delete: (table: unknown) => ({
-      where: (condition: unknown) => ({ kind: "delete", table, condition }),
-    }),
-    // Applies the writes that later calls read, so a repeat approval sees the first one
-    batch: async (operations: any[]) => {
-      mockDb.batchCalls += 1;
-      mockDb.lastBatch = operations;
-      if (mockDb.failBatch) throw new Error("database write failed");
-      for (const op of operations) {
-        if (op.kind === "insert" && op.values.pair_date) mockDb.approved.push(op.values);
-        if (op.kind === "delete") mockDb.applyDelete(op.condition);
-      }
-    },
-    applyDelete: (_condition: unknown) => {},
-  };
+  class ApprovalConflict extends Error {}
+  return { ApprovalConflict, approvePendingMatch: vi.fn() };
 });
 
 vi.mock("dotenv/config", () => ({}));
-vi.mock("drizzle-orm/neon-http", () => ({ drizzle: () => mockDb }));
+vi.mock("drizzle-orm/neon-http", () => ({ drizzle: () => ({}) }));
+vi.mock("pg", () => ({ Pool: class {} }));
 vi.mock("../algorithm.js", () => ({ default: class {} }));
+vi.mock("../services/approveMatch", () => service);
 
 import { approveMatch } from "./matchSuggestionsController";
-import { unmatchedTable } from "../db/schema";
-
-const toQuery = (condition: any) => new PgDialect().sqlToQuery(condition);
-
-// Slot lookups filter on the row id in the query, approved match lookups return every approved row
-mockDb.rowsFor = (table, condition) =>
-  table === unmatchedTable
-    ? mockDb.openSlots.filter((id) => id === toQuery(condition).params[0]).map((id) => ({ id }))
-    : mockDb.approved;
-
-mockDb.applyDelete = (condition) => {
-  const { sql, params } = toQuery(condition);
-  if (sql.includes('"id"')) mockDb.openSlots = mockDb.openSlots.filter((id) => id !== params[0]);
-};
 
 const approve = async (body: object) => {
   const res = { status: vi.fn().mockReturnThis(), json: vi.fn().mockReturnThis() };
@@ -80,11 +37,8 @@ describe("approveMatch", () => {
   });
 
   beforeEach(() => {
-    mockDb.approved = [];
-    mockDb.openSlots = [99, 100];
-    mockDb.batchCalls = 0;
-    mockDb.failBatch = false;
-    mockDb.lastBatch = [];
+    service.approvePendingMatch.mockReset();
+    service.approvePendingMatch.mockResolvedValue(undefined);
     fetchSpy.mockClear();
     vi.stubGlobal("fetch", fetchSpy);
     vi.spyOn(console, "error").mockImplementation(() => {});
@@ -96,60 +50,52 @@ describe("approveMatch", () => {
     vi.restoreAllMocks();
   });
 
-  it("removes the pairing and creates exactly one approved match", async () => {
+  it("approves a valid pair through the transactional service", async () => {
     const result = await approve(pair);
 
     expect(result.status).toBe(200);
-    expect(mockDb.approved).toHaveLength(1);
-    expect(mockDb.approved[0]).toMatchObject({ tutee_id: 5, tutor_id: "1234567" });
-
-    // The tutee and this one tutor slot leave the available list
-    const deletes = mockDb.lastBatch
-      .filter((op) => op.kind === "delete" && op.table === unmatchedTable)
-      .map((op) => toQuery(op.condition));
-    expect(deletes).toHaveLength(2);
-    expect(deletes[0].sql).toContain('"id"');
-    expect(deletes[0].params).toEqual([99]);
-    expect(deletes[1].sql).toContain('"tutee_id"');
-    expect(deletes[1].params).toEqual([5]);
+    expect(result.body).toEqual({ success: true });
+    expect(service.approvePendingMatch).toHaveBeenCalledTimes(1);
+    expect(service.approvePendingMatch.mock.calls[0][1]).toEqual(pair);
   });
 
-  it("keeps a tutor's other open slots so they can take another tutee", async () => {
-    await approve(pair);
+  it("converts numeric ids sent as strings before calling the service", async () => {
+    await approve({ ...pair, selectedTuteeId: "5", unmatchedTutorId: "99" });
 
-    expect(mockDb.openSlots).toEqual([100]);
+    expect(service.approvePendingMatch.mock.calls[0][1]).toEqual(pair);
   });
 
-  it("does not create a duplicate when the same pair is approved twice", async () => {
-    await approve(pair);
-    const second = await approve(pair);
+  it.each([
+    ["a missing tutee", { ...pair, selectedTuteeId: null }],
+    ["a non-numeric tutee id", { ...pair, selectedTuteeId: "abc" }],
+    ["a missing tutor slot", { ...pair, unmatchedTutorId: undefined }],
+    ["a tutor id that is not a string", { ...pair, tutorId: 1234567 }],
+    ["a blank tutor id", { ...pair, tutorId: "   " }],
+    ["a tutor id longer than 7 characters", { ...pair, tutorId: "12345678" }],
+  ])("rejects %s without calling the service", async (_label, body) => {
+    const result = await approve(body);
 
-    expect(second.status).toBe(409);
-    expect(second.body.error).toBeTruthy();
-    expect(mockDb.approved).toHaveLength(1);
-    expect(mockDb.batchCalls).toBe(1);
+    expect(result.status).toBe(400);
+    expect(service.approvePendingMatch).not.toHaveBeenCalled();
   });
 
-  it("rejects a stale tutor slot without writing", async () => {
-    const result = await approve({ ...pair, unmatchedTutorId: 12345 });
+  it("returns 409 with the conflict message when the match is no longer pending", async () => {
+    service.approvePendingMatch.mockRejectedValue(
+      new service.ApprovalConflict("This match is no longer pending. Refresh suggestions and try again.")
+    );
+
+    const result = await approve(pair);
 
     expect(result.status).toBe(409);
-    expect(mockDb.batchCalls).toBe(0);
+    expect(result.body.error).toBe("This match is no longer pending. Refresh suggestions and try again.");
   });
 
-  it("returns an error when the writes fail", async () => {
-    mockDb.failBatch = true;
+  it("returns 500 without exposing internal error details", async () => {
+    service.approvePendingMatch.mockRejectedValue(new Error("connection string leaked here"));
+
     const result = await approve(pair);
 
     expect(result.status).toBe(500);
-    expect(result.body.error).toBe("database write failed");
-    expect(mockDb.approved).toHaveLength(0);
-  });
-
-  it("rejects invalid input without writing", async () => {
-    const result = await approve({ ...pair, selectedTuteeId: null });
-
-    expect(result.status).toBe(400);
-    expect(mockDb.batchCalls).toBe(0);
+    expect(result.body.error).toBe("Failed to approve match");
   });
 });
