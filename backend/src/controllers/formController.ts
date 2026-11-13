@@ -77,7 +77,10 @@ export const tuteeSubmission = async (req: Request, res: Response): Promise<any>
       return res.status(400).json({ error: `Signature is not of the form "${parentFirstName} ${parentLastName}".` });
     }
 
-    if (tutoringMode !== "In-Person" && tutoringMode !== "Online" && tutoringMode !== "Hybrid" && tutoringMode !== "Anything") {
+    // The sign-up forms (TutorForm.tsx / TuteeForm.tsx) send "In-person" with a lowercase "p",
+    // and that exact casing is what is stored in the DB and compared in algorithm.js.
+    // This must stay "In-person"; "In-Person" would reject every in-person sign-up.
+    if (tutoringMode !== "In-person" && tutoringMode !== "Online" && tutoringMode !== "Hybrid" && tutoringMode !== "Anything") {
       return res.status(400).json({ error: "Invalid tutoring mode" });
     }
 
@@ -236,7 +239,10 @@ export const tutorSubmission = async (req: Request, res: Response): Promise<any>
       return res.status(400).json({ error: "Number of tutees must be between 1 and 6." });
     }
 
-    if (tutoringMode !== "In-Person" && tutoringMode !== "Online" && tutoringMode !== "Hybrid" && tutoringMode !== "Anything") {
+    // The sign-up forms (TutorForm.tsx / TuteeForm.tsx) send "In-person" with a lowercase "p",
+    // and that exact casing is what is stored in the DB and compared in algorithm.js.
+    // This must stay "In-person"; "In-Person" would reject every in-person sign-up.
+    if (tutoringMode !== "In-person" && tutoringMode !== "Online" && tutoringMode !== "Hybrid" && tutoringMode !== "Anything") {
       return res.status(400).json({ error: "Invalid tutoring mode" });
     }
     
