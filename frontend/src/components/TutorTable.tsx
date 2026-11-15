@@ -1,6 +1,6 @@
 import config from "../config.ts";
 import TutorInfoBox from "./TutorInfoBox";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import filtersIcon from "../assets/images/filter/filter.svg";
 import { tutorBoxProps } from "../types";
 import FilterModal from "./filters";
@@ -11,6 +11,7 @@ const TABS = {
   UNMATCHED: 0,
   MATCHED: 1,
   HISTORY: 2,
+  PAUSED: 3,
 } as const;
 
 const COLORS = {
@@ -36,6 +37,7 @@ export default function TutorTable() {
   const [matchedTutors, setMatchedTutors] = useState<tutorBoxProps[]>([]);
   const [unmatchedTutors, setUnmatchedTutors] = useState<tutorBoxProps[]>([]);
   const [historyTutors, setHistoryTutors] = useState<tutorBoxProps[]>([]);
+  const [pausedTutors, setPausedTutors] = useState<tutorBoxProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [modalShow, setModalShow] = useState(false);
@@ -61,10 +63,12 @@ export default function TutorTable() {
           }
         );
         const data = await response.json();
-        const { matchedTutors, unmatchedTutors, historyTutors } = data;
+        const { matchedTutors, unmatchedTutors, historyTutors, pausedTutors } =
+          data;
         setMatchedTutors(matchedTutors);
         setUnmatchedTutors(unmatchedTutors);
         setHistoryTutors(historyTutors);
+        setPausedTutors(pausedTutors ?? []);
       } catch (error) {
         console.error("Error fetching tutors:", error);
         setError((error as Error).message);
@@ -75,6 +79,30 @@ export default function TutorTable() {
 
     fetchTutors();
   }, [appliedFilters]);
+
+  const tabs: { id: TabType; label: string; count: number }[] = [
+    { id: TABS.UNMATCHED, label: "Unmatched", count: unmatchedTutors.length },
+    { id: TABS.MATCHED, label: "Matched", count: matchedTutors.length },
+    { id: TABS.HISTORY, label: "History", count: historyTutors.length },
+    { id: TABS.PAUSED, label: "Paused", count: pausedTutors.length },
+  ];
+
+  // The underline under the active tab is sized from the tab itself, so it
+  // stays lined up when tabs are added or a count gets wider.
+  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [underline, setUnderline] = useState({ left: 0, width: 0 });
+  useLayoutEffect(() => {
+    const tab = tabRefs.current[isActive];
+    if (tab) setUnderline({ left: tab.offsetLeft, width: tab.offsetWidth });
+  }, [
+    isActive,
+    loading,
+    error,
+    unmatchedTutors.length,
+    matchedTutors.length,
+    historyTutors.length,
+    pausedTutors.length,
+  ]);
 
   return (
     <div className="flex flex-col justify-center items-center">
@@ -123,94 +151,39 @@ export default function TutorTable() {
             <div className="relative w-full px-4">
               <div className="flex flex-row justify-start space-x-8 py-4">
                 {/* Tabs */}
-                <div
-                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                  onClick={() => setIsActive(TABS.UNMATCHED)}
-                >
-                  <h1
-                    className={
-                      isActive === TABS.UNMATCHED
-                        ? COLORS.ACTIVE
-                        : COLORS.HISTORY
-                    }
-                  >
-                    Unmatched
-                  </h1>
+                {tabs.map((tab) => (
                   <div
-                    className={
-                      "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.UNMATCHED
-                        ? COLORS.ACTIVE_BG
-                        : COLORS.HISTORY_BG)
-                    }
+                    key={tab.id}
+                    ref={(el) => {
+                      tabRefs.current[tab.id] = el;
+                    }}
+                    className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
+                    onClick={() => setIsActive(tab.id)}
                   >
-                    {unmatchedTutors.length}
+                    <h1
+                      className={
+                        isActive === tab.id ? COLORS.ACTIVE : COLORS.HISTORY
+                      }
+                    >
+                      {tab.label}
+                    </h1>
+                    <div
+                      className={
+                        "flex w-8 h-8 rounded-full items-center justify-center " +
+                        (isActive === tab.id
+                          ? COLORS.ACTIVE_BG
+                          : COLORS.HISTORY_BG)
+                      }
+                    >
+                      {tab.count}
+                    </div>
                   </div>
-                </div>
-
-                <div
-                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                  onClick={() => setIsActive(TABS.MATCHED)}
-                >
-                  <h1
-                    className={
-                      isActive === TABS.MATCHED ? COLORS.ACTIVE : COLORS.HISTORY
-                    }
-                  >
-                    Matched
-                  </h1>
-                  <div
-                    className={
-                      "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.MATCHED
-                        ? COLORS.ACTIVE_BG
-                        : COLORS.HISTORY_BG)
-                    }
-                  >
-                    {matchedTutors.length}
-                  </div>
-                </div>
-
-                <div
-                  className="flex flex-row space-x-2 items-center cursor-pointer text-lg"
-                  onClick={() => setIsActive(TABS.HISTORY)}
-                >
-                  <h1
-                    className={
-                      isActive === TABS.HISTORY ? COLORS.ACTIVE : COLORS.HISTORY
-                    }
-                  >
-                    History
-                  </h1>
-                  <div
-                    className={
-                      "flex w-8 h-8 rounded-full items-center justify-center " +
-                      (isActive === TABS.HISTORY
-                        ? COLORS.ACTIVE_BG
-                        : COLORS.HISTORY_BG)
-                    }
-                  >
-                    {historyTutors.length}
-                  </div>
-                </div>
+                ))}
               </div>
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E7E7E7] rounded-full" />
               <div
                 className="absolute bottom-0 h-0.5 rounded-full bg-[#8DAADD] transition-all duration-300"
-                style={{
-                  width:
-                    isActive === TABS.UNMATCHED
-                      ? "9rem"
-                      : isActive === TABS.MATCHED
-                      ? "7.75rem"
-                      : "6.5rem",
-                  left:
-                    isActive === TABS.UNMATCHED
-                      ? "1rem"
-                      : isActive === TABS.MATCHED
-                      ? "11.5rem"
-                      : "21rem",
-                }}
+                style={{ left: underline.left, width: underline.width }}
               />
             </div>
           </div>
@@ -263,6 +236,15 @@ export default function TutorTable() {
                       )
                     );
                   }}
+                  onPause={(pausedTutor) => {
+                    setUnmatchedTutors((prev) =>
+                      prev.filter((tutor) => tutor.id !== pausedTutor.id)
+                    );
+                    setPausedTutors((prev) => [
+                      ...prev,
+                      { ...pausedTutor, status: "paused" },
+                    ]);
+                  }}
                 />
               ))}
             </div>
@@ -292,6 +274,33 @@ export default function TutorTable() {
                     setHistoryTutors((prev) =>
                       prev.filter((tutor) => tutor.id !== deletedTutor.id)
                     );
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          {isActive === TABS.PAUSED && (
+            <div>
+              {pausedTutors.length === 0 && (
+                <p className="text-gray-500 text-center py-8">
+                  No paused tutors. Pause a tutor from the Unmatched tab.
+                </p>
+              )}
+              {pausedTutors.map((box_props) => (
+                <TutorInfoBox
+                  box_props={box_props}
+                  key={box_props.id}
+                  isUnmatched={false}
+                  isHistory={false}
+                  isPaused={true}
+                  onUnpause={(unpausedTutor) => {
+                    setPausedTutors((prev) =>
+                      prev.filter((tutor) => tutor.id !== unpausedTutor.id)
+                    );
+                    setUnmatchedTutors((prev) => [
+                      ...prev,
+                      { ...unpausedTutor, status: "active" },
+                    ]);
                   }}
                 />
               ))}

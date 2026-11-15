@@ -6,6 +6,7 @@ import { tutorBoxProps } from "../types";
 import { IoIosArrowForward } from "react-icons/io";
 import { BsEnvelope } from "react-icons/bs";
 import { FiPhone } from "react-icons/fi";
+import { BsPauseCircle, BsPlayCircle } from "react-icons/bs";
 import TrashCan from "../assets/images/delete.svg";
 import PriorityFlag from "../assets/images/admin_view/flag.svg";
 import { useRaceConditionHandler } from "../hooks/useRaceConditionHandler";
@@ -28,18 +29,24 @@ type TutorInfoBoxProps = {
   box_props: tutorBoxProps;
   isUnmatched: boolean;
   isHistory: boolean;
+  isPaused?: boolean;
   onDelete?: (tutor: tutorBoxProps) => void;
   onPermDelete?: (tutor: tutorBoxProps) => void;
   onPriority?: (tutor: tutorBoxProps) => void;
+  onPause?: (tutor: tutorBoxProps) => void;
+  onUnpause?: (tutor: tutorBoxProps) => void;
 };
 
 export default function TutorInfoBox({
   box_props,
   isUnmatched,
   isHistory,
+  isPaused = false,
   onDelete,
   onPermDelete,
   onPriority,
+  onPause,
+  onUnpause,
 }: TutorInfoBoxProps) {
   const {
     id,
@@ -66,9 +73,15 @@ export default function TutorInfoBox({
   const [showTutorDeleteDialog, setShowTutorDeleteDialog] = useState(false);
   const [showTutorPermDeleteDialog, setShowTutorPermDeleteDialog] =
     useState(false);
+  const [showPauseDialog, setShowPauseDialog] = useState(false);
+  const [pauseError, setPauseError] = useState<string | null>(null);
 
   // auth functions
   const { handleAsyncOperation } = useRaceConditionHandler();
+  const {
+    handleAsyncOperation: handlePauseOperation,
+    isProcessing: isPausing,
+  } = useRaceConditionHandler();
   const { getToken } = useAuth();
 
   const handleToggleDescription = () => {
@@ -155,6 +168,40 @@ export default function TutorInfoBox({
       console.error("Error toggling priority flag:", data.message);
     }
     setIsDropdownOpen(false);
+  };
+
+  // Pauses or unpauses this tutor. Errors (e.g. the tutor got matched in
+  // another tab) are shown in the dialog instead of failing silently.
+  const setPaused = async (paused: boolean) => {
+    setIsDropdownOpen(false);
+    setPauseError(null);
+    await handlePauseOperation(async () => {
+      try {
+        const token = await getToken();
+        const response = await fetch(
+          `${config.backendUrl}/${paused ? "pause" : "unpause"}-tutor/${id}`,
+          {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setPauseError(
+            data.error ?? `Failed to ${paused ? "pause" : "unpause"} tutor`
+          );
+          setShowPauseDialog(true);
+          return;
+        }
+        setShowPauseDialog(false);
+        if (paused) onPause?.(box_props);
+        else onUnpause?.(box_props);
+      } catch (error) {
+        console.error(`Error ${paused ? "pausing" : "unpausing"} tutor:`, error);
+        setPauseError(`Failed to ${paused ? "pause" : "unpause"} tutor`);
+        setShowPauseDialog(true);
+      }
+    });
   };
 
   useEffect(() => {
@@ -247,7 +294,7 @@ export default function TutorInfoBox({
                   <span className="ml-2 p-0 font-normal">Details</span>
                 </button>
 
-                {(isUnmatched || isHistory) && (
+                {(isUnmatched || isHistory || isPaused) && (
                   <>
                     <button
                       style={{ color: STYLES.colors.textGray }}
@@ -263,7 +310,7 @@ export default function TutorInfoBox({
                       ></div>
                     </button>
 
-                    {isDropdownOpen && !isHistory && (
+                    {isDropdownOpen && isUnmatched && (
                       <div className="absolute z-50 flex flex-col whitespace-nowrap transform translate-x-4 translate-y-14 text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
                         <div className="flex items-center hover:bg-gray-100 cursor-pointer px-3 py-2">
                           <img
@@ -289,6 +336,29 @@ export default function TutorInfoBox({
                             {priority ? "Deprioritize" : "Prioritize"} Tutor
                           </button>
                         </div>
+                        <button
+                          className="flex items-center hover:bg-gray-100 px-3 py-2"
+                          onClick={() => {
+                            setIsDropdownOpen(false);
+                            setPauseError(null);
+                            setShowPauseDialog(true);
+                          }}
+                        >
+                          <BsPauseCircle className="w-4 h-4 inline-block mr-2" />
+                          <span>Pause Tutor</span>
+                        </button>
+                      </div>
+                    )}
+                    {isDropdownOpen && isPaused && (
+                      <div className="absolute transform translate-y-10 z-50 w-max text-gray-700 bg-white border border-gray-200 rounded-md shadow-lg">
+                        <button
+                          className="flex flex-row items-center gap-2 px-4 py-2 hover:bg-gray-100"
+                          onClick={() => setPaused(false)}
+                          disabled={isPausing}
+                        >
+                          <BsPlayCircle className="w-4 h-4 inline-block" />
+                          <span>{isPausing ? "Unpausing..." : "Unpause Tutor"}</span>
+                        </button>
                       </div>
                     )}
                     {isDropdownOpen && isHistory && (
@@ -385,6 +455,49 @@ export default function TutorInfoBox({
               >
                 Yes
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPauseDialog && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md text-center">
+            <h2 className="text-lg font-semibold mb-4">
+              {isPaused ? "Couldn't Unpause Tutor" : "Pause Tutor"}
+            </h2>
+            {!isPaused && (
+              <p className="text-gray-600 mb-6">
+                Pause {first_name} {last_name}? They'll stay in the database
+                but won't show up in match suggestions or be available to
+                match until you unpause them from the Paused tab.
+              </p>
+            )}
+            {pauseError && (
+              <div className="bg-red-50 border border-red-300 text-red-700 p-3 rounded mb-6 text-sm">
+                {pauseError}
+              </div>
+            )}
+            <div className="flex justify-center gap-4">
+              <button
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
+                onClick={() => setShowPauseDialog(false)}
+              >
+                {isPaused || pauseError ? "Close" : "Cancel"}
+              </button>
+              {!isPaused && !pauseError && (
+                <button
+                  className={`px-4 py-2 rounded text-white ${
+                    isPausing
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-[#6a7eae] hover:bg-[#313F60]"
+                  }`}
+                  onClick={() => setPaused(true)}
+                  disabled={isPausing}
+                >
+                  {isPausing ? "Pausing..." : "Pause"}
+                </button>
+              )}
             </div>
           </div>
         </div>
