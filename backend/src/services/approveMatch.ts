@@ -15,7 +15,10 @@ export async function approvePendingMatch(pool: Pool, input: ApprovalInput) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query('SELECT id FROM tutor WHERE id = $1 FOR UPDATE', [tutorId]);
+    const tutor = await client.query('SELECT status FROM tutor WHERE id = $1 FOR UPDATE', [tutorId]);
+    if (tutor.rows[0]?.status === 'paused') {
+      throw new ApprovalConflict("This tutor is paused. Unpause them on the Tutor Database page to match them.");
+    }
     await client.query('SELECT id FROM tutee WHERE id = $1 FOR UPDATE', [selectedTuteeId]);
 
     const existing = await client.query(

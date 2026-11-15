@@ -9,11 +9,27 @@ import {
   tutorTable,
   unmatchedTable,
   historyTable,
+  TUTOR_STATUS,
 } from "../db/schema";
 import { or, inArray, notInArray, arrayContains, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
+import { Pool } from "pg";
+import {
+  pauseTutor as pauseTutorService,
+  unpauseTutor as unpauseTutorService,
+  getTutorStatus,
+  PauseConflict,
+  TutorNotFound,
+} from "../services/pauseTutor";
 
 const db = drizzle(process.env.DATABASE_URL!);
+const pausePool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+// tutor ids are varchar(7)
+const tutorIdParam = (req: Request) => {
+  const id = req.params.id;
+  return typeof id === "string" && id.trim() && id.length <= 7 ? id : null;
+};
 
 /* returns all the matched and unmatched tutors with filter */
 export const getTutors = async (req: Request, res: Response) => {
@@ -108,7 +124,19 @@ export const getTutors = async (req: Request, res: Response) => {
               .where(inArray(unmatchedTable.tutor_id, tutorIds))
               .groupBy(unmatchedTable.tutor_id)
           ),
-          notInArray(tutorTable.id, matched_ids_arr)
+          notInArray(tutorTable.id, matched_ids_arr),
+          eq(tutorTable.status, TUTOR_STATUS.ACTIVE)
+        )
+      );
+
+    // paused tutors keep their unmatched rows, so they are listed here instead
+    const pausedTutors = await db
+      .select()
+      .from(tutorTable)
+      .where(
+        and(
+          inArray(tutorTable.id, tutorIds),
+          eq(tutorTable.status, TUTOR_STATUS.PAUSED)
         )
       );
 
@@ -130,6 +158,7 @@ export const getTutors = async (req: Request, res: Response) => {
       matchedTutors: matchedTutors,
       unmatchedTutors: unmatchedTutors,
       historyTutors: historyTutors,
+      pausedTutors: pausedTutors,
     });
   } catch (error) {
     console.error(error);
@@ -153,12 +182,19 @@ export const getUnmatchedTutors = async (req: Request, res: Response) => {
       .map((tutor: any) => tutor.id)
       .filter((id: any) => id !== undefined);
 
-    // getting the unmatched tutors with the filtered ids
+    // getting the unmatched tutors with the filtered ids. Paused tutors are
+    // left out, which keeps them out of match suggestions, custom matches
+    // and the Edit Pair tutor list (all of which read this endpoint).
     const unmatchedTutors = await db
       .select()
       .from(tutorTable)
       .innerJoin(unmatchedTable, eq(tutorTable.id, unmatchedTable.tutor_id))
-      .where(inArray(tutorTable.id, tutorIds));
+      .where(
+        and(
+          inArray(tutorTable.id, tutorIds),
+          eq(tutorTable.status, TUTOR_STATUS.ACTIVE)
+        )
+      );
 
       res.send({
         unmatchedTutors: unmatchedTutors.map((row: any) => ({
@@ -231,6 +267,15 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
     const tutor_id = req.params.id;
 
     if (tutor_id.length === 7 || tutor_id.length === 8) {
+      // A paused tutor stays paused until unpaused; deleting them from here
+      // would leave them in both the History and Paused tabs.
+      if ((await getTutorStatus(pausePool, String(tutor_id))) === TUTOR_STATUS.PAUSED) {
+        res.status(409).json({
+          error: "This tutor is paused. Unpause them on the Tutor Database page before deleting them.",
+        });
+        return;
+      }
+
       const query = await db
         .select()
         .from(unmatchedTable)
@@ -266,6 +311,32 @@ export const unmatchedToHistory = async (req: Request, res: Response) => {
 
 
 export const unmatchedToMatched = async (req: Request, res: Response) => {
+  const tutorId = tutorIdParam(req);
+  if (!tutorId) {
+    res.status(400).json({ error: "Invalid tutor id" });
+    return;
+  }
+  // Paused tutors can't be matched. When the move below is implemented, it
+  // should lock the tutor row and re-check status in the same transaction,
+  // like approvePendingMatch does, so a pause can't slip in between.
+  try {
+    const status = await getTutorStatus(pausePool, tutorId);
+    if (status === null) {
+      res.status(404).json({ error: "Tutor not found" });
+      return;
+    }
+    if (status === TUTOR_STATUS.PAUSED) {
+      res.status(409).json({
+        error: "This tutor is paused. Unpause them on the Tutor Database page before matching them.",
+      });
+      return;
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to move tutor to matched" });
+    return;
+  }
+
   // TODO: Implement logic
   console.error("not implemented yet");
 };
@@ -320,5 +391,52 @@ export const togglePriorityFlag = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error toggling priority flag", error });
+  }
+};
+
+/******* Pause / unpause a tutor *******
+ *
+ *  - a paused tutor stays in the database but cannot be matched and is
+ *    left out of match suggestions
+ *  - only unmatched tutors can be paused; a tutor with an active match
+ *    gets a 409
+ *  - unpausing puts the tutor back in the Unmatched tab
+ ***************************************/
+const sendPauseError = (res: Response, error: unknown, fallback: string) => {
+  if (error instanceof TutorNotFound) {
+    res.status(404).json({ error: error.message });
+  } else if (error instanceof PauseConflict) {
+    res.status(409).json({ error: error.message });
+  } else {
+    console.error(error);
+    res.status(500).json({ error: fallback });
+  }
+};
+
+export const pauseTutor = async (req: Request, res: Response) => {
+  const tutorId = tutorIdParam(req);
+  if (!tutorId) {
+    res.status(400).json({ error: "Invalid tutor id" });
+    return;
+  }
+  try {
+    await pauseTutorService(pausePool, tutorId);
+    res.json({ success: true, status: TUTOR_STATUS.PAUSED });
+  } catch (error) {
+    sendPauseError(res, error, "Failed to pause tutor");
+  }
+};
+
+export const unpauseTutor = async (req: Request, res: Response) => {
+  const tutorId = tutorIdParam(req);
+  if (!tutorId) {
+    res.status(400).json({ error: "Invalid tutor id" });
+    return;
+  }
+  try {
+    await unpauseTutorService(pausePool, tutorId);
+    res.json({ success: true, status: TUTOR_STATUS.ACTIVE });
+  } catch (error) {
+    sendPauseError(res, error, "Failed to unpause tutor");
   }
 };

@@ -17,7 +17,8 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)('approval transaction regression
     pool = new Pool({ connectionString: process.env.TEST_DATABASE_URL, options: `-c search_path=${schema}` });
     await admin.query(`CREATE SCHEMA "${schema}"`);
     await pool.query(`
-      CREATE TABLE tutor (id varchar(7) PRIMARY KEY, priority boolean DEFAULT true);
+      CREATE TABLE tutor (id varchar(7) PRIMARY KEY, priority boolean DEFAULT true,
+        status varchar(10) NOT NULL DEFAULT 'active');
       CREATE TABLE tutee (id integer PRIMARY KEY, priority boolean DEFAULT true);
       CREATE TABLE unmatched (id serial PRIMARY KEY, tutor_id varchar(7), tutee_id integer);
       CREATE TABLE matched (id serial PRIMARY KEY, tutor_id varchar(7), tutee_id integer);
@@ -84,6 +85,15 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)('approval transaction regression
     } finally {
       await pool.query('ALTER TABLE approved_matches DROP CONSTRAINT fail_insert');
     }
+    await approvePendingMatch(pool, input);
+    assert.deepEqual(await counts(), { pairs: 1, members: 2, pending: 2 });
+  });
+  it('a paused tutor cannot be approved, and can be once unpaused', async () => {
+    await reset();
+    await pool.query(`UPDATE tutor SET status = 'paused' WHERE id = $1`, [input.tutorId]);
+    await assert.rejects(approvePendingMatch(pool, input), ApprovalConflict);
+    assert.deepEqual(await counts(), { pairs: 0, members: 0, pending: 4 });
+    await pool.query(`UPDATE tutor SET status = 'active' WHERE id = $1`, [input.tutorId]);
     await approvePendingMatch(pool, input);
     assert.deepEqual(await counts(), { pairs: 1, members: 2, pending: 2 });
   });

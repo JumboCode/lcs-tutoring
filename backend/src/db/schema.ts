@@ -21,7 +21,15 @@ export const tutorTable = pgTable("tutor", {
   priority: boolean('priority').notNull().default(false),
   notes: text(),
   language_proficiencies: varchar({ length: 100 }),
+  // "active" or "paused" (see TUTOR_STATUS). Paused tutors keep their open
+  // spots in the unmatched table but are left out of all matching.
+  status: varchar({ length: 10 }).notNull().default("active"),
 });
+
+export const TUTOR_STATUS = {
+  ACTIVE: "active",
+  PAUSED: "paused",
+} as const;
 
 export const tuteeTable = pgTable("tutee", {
   id: serial('id').primaryKey(),

@@ -36,6 +36,7 @@ export type tutorBoxProps = {
   num_tutees: number;
   notes: string;
   priority: boolean;
+  status?: "active" | "paused";
 };
 
 export interface tutorInfo {

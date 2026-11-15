@@ -10,6 +10,8 @@ import {
   unmatchedToMatched,
   permDeleteTutor,
   togglePriorityFlag,
+  pauseTutor,
+  unpauseTutor,
 } from "../controllers/tutorController";
 import express from "express";
 import { requireAuth } from "@clerk/express";
@@ -23,5 +25,7 @@ router.post("/move-tutor-to-history/:id", requireAuth({signInUrl:FRONTEND_URL}),
 router.post("/move-tutor-to-matched/:id", requireAuth({signInUrl:FRONTEND_URL}), unmatchedToMatched);
 router.post("/perm-delete-tutor/:id", requireAuth({signInUrl:FRONTEND_URL}), permDeleteTutor);
 router.post("/toggle-tutor-priority-flag/:id", requireAuth({signInUrl:FRONTEND_URL}), togglePriorityFlag);
+router.post("/pause-tutor/:id", requireAuth({signInUrl:FRONTEND_URL}), pauseTutor);
+router.post("/unpause-tutor/:id", requireAuth({signInUrl:FRONTEND_URL}), unpauseTutor);
 
 export default router;

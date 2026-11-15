@@ -11,6 +11,7 @@ import {
   matchedTable,
   unmatchedTable,
   historyTable,
+  TUTOR_STATUS,
 } from "../db/schema";
 import { or, arrayContains, inArray, and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
@@ -505,11 +506,17 @@ export const editPair = async (req: Request, res: Response) => {
 
     if (swapTutor) {
       const [tutor] = await db
-        .select({ id: tutorTable.id })
+        .select({ id: tutorTable.id, status: tutorTable.status })
         .from(tutorTable)
         .where(eq(tutorTable.id, newTutorId!));
       if (!tutor) {
         res.status(404).json({ error: "That tutor does not exist" });
+        return;
+      }
+      if (tutor.status === TUTOR_STATUS.PAUSED) {
+        res.status(400).json({
+          error: "That tutor is paused. Unpause them on the Tutor Database page first.",
+        });
         return;
       }
 
