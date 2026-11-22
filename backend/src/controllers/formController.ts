@@ -4,7 +4,7 @@
 
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import validator from "validator";
 
 import {
@@ -120,6 +120,31 @@ export const tuteeSubmission = async (req: Request, res: Response): Promise<any>
     if (!Array.isArray(subjects) || !subjects.every((subject: string) =>
       typeof subject === "string" && allowedSubjects.has(subject))) {
         return res.status(400).json({ error: "Invalid subject preference" });
+    }
+
+    // Issue #165: parents resubmit this form when their child's needs change, which creates
+    // duplicate tutees. A duplicate is the same child first + last name under the same parent
+    // email (case- and whitespace-insensitive). Done in code rather than as a DB unique
+    // constraint because the client hasn't settled the rules yet, and a constraint would
+    // reject legitimate cases (e.g. twins). For now we only warn the parent.
+    const norm = (s: unknown) => String(s).trim().toLowerCase();
+
+    const existing = await db
+      .select({ id: tuteeTable.id })
+      .from(tuteeTable)
+      .where(and(
+        sql`lower(trim(${tuteeTable.tutee_first_name})) = ${norm(childFirstName)}`,
+        sql`lower(trim(${tuteeTable.tutee_last_name})) = ${norm(childLastName)}`,
+        sql`lower(trim(${tuteeTable.parent_email})) = ${norm(email)}`,
+      ))
+      .limit(1);
+
+    if (existing.length > 0) {
+      // Plain text (not JSON) so TuteeForm's alert("Error: " + text) shows a readable message.
+      return res.status(409).send(
+        `${String(childFirstName).trim()} ${String(childLastName).trim()} is already registered under ${String(email).trim()}. ` +
+        `If your child's needs have changed, please contact LCS instead of resubmitting.`
+      );
     }
 
     const [insertedTutee] = await db.insert(tuteeTable).values({
